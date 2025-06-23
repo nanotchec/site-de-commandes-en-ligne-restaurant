@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Thaï Garden – Contact & Horaires</title>
+
+  <!-- Tailwind + config couleurs -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#704B24',
+            accent:  '#ED8B00'
+          }
+        }
+      }
+    }
+  </script>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="flex flex-col min-h-screen bg-gray-50 font-sans text-gray-800">
+
+  <!-- Navbar -->
+  <header class="bg-[#704B24] text-white">
+    <nav class="max-w-5xl mx-auto flex items-center justify-between p-4">
+      <a href="index.html" class="text-2xl font-bold">Thaï Garden</a>
+      <ul class="flex gap-6">
+        <li><a href="index.html" class="hover:underline">Accueil</a></li>
+        <li><a href="menu.html" class="hover:underline">Menu</a></li>
+        <li><a href="contact.html" class="hover:underline">Contact</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <!-- Carte + Infos -->
+  <section class="bg-white py-12">
+    <div class="max-w-5xl mx-auto px-4 space-y-8">
+      <div class="rounded-lg overflow-hidden shadow-lg">
+        <iframe
+          src="https://maps.google.com/maps?q=Tha%C3%AF%20Garden%2C%20Mauguio&z=16&output=embed"
+          width="100%" height="350" frameborder="0" style="border:0;" allowfullscreen="" loading="lazy"
+        ></iframe>
+      </div>
+      <div>
+        <h2 class="text-3xl font-extrabold text-primary mb-4">Nous trouver</h2>
+        <p>GR François Mitterrand, 34130 Mauguio</p>
+      </div>
+      <div>
+        <h2 class="text-3xl font-extrabold text-primary mb-4">Horaires d'ouverture</h2>
+        <ul class="list-disc list-inside space-y-2">
+          <li>Lundi : fermé</li>
+          <li>Mardi – Vendredi : 11h00–14h00 & 18h30–22h00</li>
+          <li>Samedi – Dimanche : 18h30–22h30</li>
+        </ul>
+      </div>
+      <div>
+        <h2 class="text-3xl font-extrabold text-primary mb-4">Contact</h2>
+        <p>Téléphone : <a href="tel:+33987117057" class="text-accent hover:underline">+33 9 87 11 70 57</a></p>
+        <p>Email : <a href="mailto:etmfood@gmail.com" class="text-accent hover:underline">etmfood@gmail.com</a></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="mt-auto bg-[#704B24] text-white py-6">
+    <div class="max-w-5xl mx-auto text-center">
+      <p>© 2025 Thaï Garden — Mauguio</p>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+</body>
+</html>

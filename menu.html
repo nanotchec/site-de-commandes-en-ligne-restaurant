@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Thaï Garden – Menu</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link 
+    href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;700&family=Playfair+Display:wght@700&display=swap" 
+    rel="stylesheet" 
+  />
+
+  <!-- Tailwind + config couleurs & typographie -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: { primary: '#704B24', accent: '#ED8B00' },
+          fontFamily: {
+            sans: ['Noto Sans', 'sans-serif'],
+            serif: ['Playfair Display', 'serif']
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body { font-family: 'Noto Sans', sans-serif; }
+    h1,h2,h3 { font-family: 'Playfair Display', serif; }
+  </style>
+</head>
+<body class="flex flex-col min-h-screen bg-gradient-to-b from-gray-50 to-white text-gray-800">
+
+  <!-- Navbar -->
+  <header class="fixed top-0 w-full bg-white/70 backdrop-blur-sm shadow-md z-50">
+    <nav class="max-w-5xl mx-auto flex items-center justify-between py-4 px-6">
+      <a href="index.html" class="text-2xl font-bold text-primary">Thaï Garden</a>
+      <ul class="flex gap-8 font-medium">
+        <li><a href="index.html" class="hover:text-accent transition">Accueil</a></li>
+        <li><a href="menu.html" class="hover:text-accent transition">Menu</a></li>
+        <li><a href="index.html#contact" class="hover:text-accent transition">Contact</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <!-- Hero for Menu -->
+  <section class="relative h-80 flex items-center justify-center mt-16 overflow-hidden rounded-b-3xl shadow-lg">
+    <div class="absolute inset-0 bg-cover bg-center" style="background-image:url('assets/images/hero-menu.jpg')"></div>
+    <div class="absolute inset-0 bg-gradient-to-b from-black/20 to-black/60"></div>
+    <div class="relative z-10 text-center text-white px-4">
+      <h1 class="text-[clamp(2rem,5vw,3rem)] font-extrabold text-white drop-shadow-lg">Notre Menu</h1>
+    </div>
+  </section>
+
+  <main class="flex-1 pt-8">
+
+    <!-- Entrées -->
+    <section class="py-12 bg-gradient-to-r from-white via-gray-50 to-gray-100 fade-in-section">
+      <div class="max-w-5xl mx-auto px-6">
+        <h2 class="sticky top-16 z-30 mx-auto inline-block bg-white/50 backdrop-blur-sm text-3xl font-extrabold text-primary text-center px-4 py-2 mb-4 rounded-b-3xl">Entrées</h2>
+        <ul class="grid md:grid-cols-2 gap-8">
+          <li class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition transform hover:scale-105 flex items-center gap-4">
+            <img src="assets/images/nems-poulet.jpg" alt="Nems poulet x4" class="w-20 h-20 rounded-lg object-cover" />
+            <div class="flex-1"><p class="font-medium text-lg">Nems poulet x4</p></div>
+            <span class="font-semibold text-accent">5.00€</span>
+          </li>
+          <li class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition transform hover:scale-105 flex items-center gap-4">
+            <img src="assets/images/nems-crevettes.jpg" alt="Nems crevettes x4" class="w-20 h-20 rounded-lg object-cover" />
+            <div class="flex-1"><p class="font-medium text-lg">Nems crevettes x4</p></div>
+            <span class="font-semibold text-accent">5.50€</span>
+          </li>
+          <li class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition transform hover:scale-105 flex items-center gap-4">
+            <img src="assets/images/nems-legumes.jpg" alt="Nems légumes x4" class="w-20 h-20 rounded-lg object-cover" />
+            <div class="flex-1"><p class="font-medium text-lg">Nems légumes x4</p></div>
+            <span class="font-semibold text-accent">5.00€</span>
+          </li>
+          <li class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition transform hover:scale-105 flex items-center gap-4">
+            <img src="assets/images/crevettes-tempura.jpg" alt="Crevettes tempura x3" class="w-20 h-20 rounded-lg object-cover" />
+            <div class="flex-1"><p class="font-medium text-lg">Crevettes tempura x3</p></div>
+            <span class="font-semibold text-accent">4.90€</span>
+          </li>
+          <li class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition transform hover:scale-105 flex items-center gap-4">
+            <img src="assets/images/beignet-crevette.jpg" alt="Beignet de crevette x3" class="w-20 h-20 rounded-lg object-cover" />
+            <div class="flex-1"><p class="font-medium text-lg">Beignet de crevette x3</p></div>
+            <span class="font-semibold text-accent">4.90€</span>
+          </li>
+          <li class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition transform hover:scale-105 flex items-center gap-4">
+            <img src="assets/images/brochette-poulet-satay.jpg" alt="Brochettes poulet satay x2" class="w-20 h-20 rounded-lg object-cover" />
+            <div class="flex-1"><p class="font-medium text-lg">Brochettes poulet satay x2</p></div>
+            <span class="font-semibold text-accent">5.00€</span>
+          </li>
+          <li class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition transform hover:scale-105 flex items-center gap-4">
+            <img src="assets/images/brochette-poulet-yakitori.jpg" alt="Brochettes poulet yakitori x2" class="w-20 h-20 rounded-lg object-cover" />
+            <div class="flex-1"><p class="font-medium text-lg">Brochettes poulet yakitori x2</p></div>
+            <span class="font-semibold text-accent">4.50€</span>
+          </li>
+          <li class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition transform hover:scale-105 flex items-center gap-4">
+            <img src="assets/images/brochette-boeuf-fromage.jpg" alt="Brochette boeuf fromage x2" class="w-20 h-20 rounded-lg object-cover" />
+            <div class="flex-1"><p class="font-medium text-lg">Brochette boeuf fromage x2</p></div>
+            <span class="font-semibold text-accent">5.50€</span>
+          </li>
+          <li class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition transform hover:scale-105 flex items-center gap-4">
+            <img src="assets/images/pince-crabe.jpg" alt="Pince de crabe x3" class="w-20 h-20 rounded-lg object-cover" />
+            <div class="flex-1"><p class="font-medium text-lg">Pince de crabe x3</p></div>
+            <span class="font-semibold text-accent">4.50€</span>
+          </li>
+          <li class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition transform hover:scale-105 flex items-center gap-4">
+            <img src="assets/images/rouleaux-printemps.jpg" alt="Rouleaux de printemps x2" class="w-20 h-20 rounded-lg object-cover" />
+            <div class="flex-1"><p class="font-medium text-lg">Rouleaux de printemps x2</p></div>
+            <span class="font-semibold text-accent">5.00€</span>
+          </li>
+          <li class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition transform hover:scale-105 flex items-center gap-4">
+            <img src="assets/images/riz-nature.jpg" alt="Riz nature" class="w-20 h-20 rounded-lg object-cover" />
+            <div class="flex-1"><p class="font-medium text-lg">Riz nature</p></div>
+            <span class="font-semibold text-accent">4.00€</span>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- Plats -->
+    <section class="py-12 bg-gradient-to-r from-gray-100 via-white to-gray-50 fade-in-section">
+      <div class="max-w-5xl mx-auto px-6">
+        <h2 class="sticky top-16 z-30 mx-auto inline-block bg-white/50 backdrop-blur-sm text-3xl font-extrabold text-primary text-center px-4 py-2 mb-4 rounded-b-3xl">Plats</h2>
+        <ul class="space-y-8">
+          <li class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition transform hover:scale-105">
+            <h3 class="text-2xl font-semibold">Pad Thaï</h3>
+            <p class="mt-1">Pâtes de riz, oignons, chou, carotte, œuf, soja, cacahuètes, citron, coriandre</p>
+            <ul class="mt-2 list-disc list-inside">
+              <li>Poulet ou Tofu : 12.50€</li>
+              <li>Poulet crousti, Bœuf ou Crevettes : 13.50€</li>
+            </ul>
+          </li>
+          <li class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition transform hover:scale-105">
+            <h3 class="text-2xl font-semibold">Khao Pad</h3>
+            <p class="mt-1">Riz frit, oignons, chou, carotte, œuf, soja, cacahuètes, citron, coriandre</p>
+            <ul class="mt-2 list-disc list-inside">
+              <li>Poulet ou Tofu : 12.50€</li>
+              <li>Poulet crousti, Bœuf ou Crevettes : 13.50€</li>
+            </ul>
+          </li>
+          <li class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition transform hover:scale-105">
+            <h3 class="text-2xl font-semibold">Bò Bún</h3>
+            <p class="mt-1">Vermicelle de riz, nems, salade, carotte, concombre, soja, menthe, coriandre, cacahuètes</p>
+            <ul class="mt-2 list-disc list-inside">
+              <li>Poulet : 12.50€</li>
+              <li>ou Bœuf / Crevettes : 13.50€</li>
+            </ul>
+          </li>
+          <li class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition transform hover:scale-105">
+            <h3 class="text-2xl font-semibold">Soupe Tom Yum</h3>
+            <p class="mt-1">Soupe thaïlandaise épicée à base de galanga, citronnelle, lait de coco et crevettes</p>
+            <p class="mt-2 font-semibold">14.50€</p>
+          </li>
+          <li class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition transform hover:scale-105">
+            <h3 class="text-2xl font-semibold">Poulet au curry</h3>
+            <p class="mt-1">Poulet cuisiné avec des légumes et lait de coco. Accompagné de riz parfumé</p>
+            <p class="mt-2 font-semibold">14.50€</p>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- Wok à composer -->
+    <section class="py-12 bg-gradient-to-r from-white via-gray-50 to-gray-100 fade-in-section">
+      <div class="max-w-5xl mx-auto px-6">
+        <h2 class="sticky top-16 z-30 mx-auto inline-block bg-white/50 backdrop-blur-sm text-3xl font-extrabold text-primary text-center px-4 py-2 mb-4 rounded-b-3xl">Wok à composer</h2>
+        <!-- Choix de la base -->
+        <div class="mb-6">
+          <h3 class="text-xl font-semibold mb-2">1. Choix de la base</h3>
+          <ul class="grid md:grid-cols-2 gap-4">
+            <li class="flex justify-between"><span>Pâtes de riz</span><span>6.90€</span></li>
+            <li class="flex justify-between"><span>Nouilles jaunes</span><span>6.90€</span></li>
+            <li class="flex justify-between"><span>Udon</span><span>6.90€</span></li>
+            <li class="flex justify-between"><span>Riz parfumé</span><span>6.90€</span></li>
+          </ul>
+        </div>
+        <!-- Choix de la pulpe -->
+        <div class="mb-6">
+          <h3 class="text-xl font-semibold mb-2">2. Choix de la pulpe</h3>
+          <ul class="grid md:grid-cols-2 gap-4">
+            <li class="flex justify-between"><span>Oignons</span><span>+0.40€</span></li>
+            <li class="flex justify-between"><span>Ail</span><span>+0.40€</span></li>
+            <li class="flex justify-between"><span>Gingembre</span><span>+0.40€</span></li>
+            <li class="flex justify-between"><span>Piment</span><span>+0.40€</span></li>
+          </ul>
+        </div>
+        <!-- Choix des favoris -->
+        <div class="mb-6">
+          <h3 class="text-xl font-semibold mb-2">3. Choix des favoris</h3>
+          <ul class="grid md:grid-cols-3 gap-4">
+            <li class="flex justify-between"><span>Poulet</span><span>+2.00€</span></li>
+            <li class="flex justify-between"><span>Poulet crousti</span><span>+2.80€</span></li>
+            <li class="flex justify-between"><span>Bœuf</span><span>+2.50€</span></li>
+            <li class="flex justify-between"><span>Crevettes</span><span>+2.50€</span></li>
+            <li class="flex justify-between"><span>Calamar</span><span>+2.50€</span></li>
+            <li class="flex justify-between"><span>Tofu</span><span>+2.00€</span></li>
+            <li class="flex justify-between"><span>Pak choï</span><span>+1.40€</span></li>
+            <li class="flex justify-between"><span>Poivrons</span><span>+1.40€</span></li>
+            <li class="flex justify-between"><span>Oignons doux</span><span>+1.20€</span></li>
+            <li class="flex justify-between"><span>Citronnelle</span><span>+1.20€</span></li>
+            <li class="flex justify-between"><span>Brocolis</span><span>+1.40€</span></li>
+            <li class="flex justify-between"><span>Basilic thaï</span><span>+1.20€</span></li>
+            <li class="flex justify-between"><span>Mini maïs</span><span>+1.40€</span></li>
+            <li class="flex justify-between"><span>Ananas</span><span>+1.40€</span></li>
+            <li class="flex justify-between"><span>Champignon noir</span><span>+1.50€</span></li>
+            <li class="flex justify-between"><span>Champignon de Paris</span><span>+1.50€</span></li>
+            <li class="flex justify-between"><span>Shitaké</span><span>+1.50€</span></li>
+            <li class="flex justify-between"><span>Bambou</span><span>+1.40€</span></li>
+            <li class="flex justify-between"><span>Noix de cajou</span><span>+1.20€</span></li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- Desserts & Boissons -->
+    <section class="py-12 bg-gradient-to-b from-gray-100 via-white to-gray-50 fade-in-section">
+      <div class="max-w-5xl mx-auto px-4">
+        <h2 class="sticky top-16 z-30 mx-auto inline-block bg-white/50 backdrop-blur-sm text-3xl font-extrabold text-primary text-center px-4 py-2 mb-4 rounded-b-3xl">Desserts</h2>
+        <ul class="grid md:grid-cols-2 gap-8 mb-8">
+          <li class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition transform hover:scale-105 flex justify-between">
+            <span>Coupelle mangue</span><span>5.00€</span>
+          </li>
+          <li class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition transform hover:scale-105 flex justify-between">
+            <span>Coupelle ananas</span><span>5.00€</span>
+          </li>
+          <li class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition transform hover:scale-105 flex justify-between">
+            <span>Glace</span><span>4.90€</span>
+          </li>
+          <li class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition transform hover:scale-105 flex justify-between">
+            <span>Mochi glace x2</span><span>5.00€</span>
+          </li>
+        </ul>
+        <h2 class="sticky top-16 z-30 mx-auto inline-block bg-white/50 backdrop-blur-sm text-3xl font-extrabold text-primary text-center px-4 py-2 mb-4 rounded-b-3xl">Boissons</h2>
+        <ul class="grid md:grid-cols-2 gap-8">
+          <li class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition transform hover:scale-105 flex justify-between">
+            <span>Soft</span><span>2.00€</span>
+          </li>
+          <li class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition transform hover:scale-105 flex justify-between">
+            <span>Maya (PAM, litchi, eau de coco)</span><span>3.90€</span>
+          </li>
+          <li class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition transform hover:scale-105 flex justify-between">
+            <span>Citronnade</span><span>2.00€</span>
+          </li>
+          <li class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition transform hover:scale-105 flex justify-between">
+            <span>Ginger beer</span><span>3.00€</span>
+          </li>
+          <li class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition transform hover:scale-105 flex justify-between">
+            <span>Eau / eau gazeuse</span><span>2.00€</span>
+          </li>
+          <li class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition transform hover:scale-105 flex justify-between">
+            <span>Mogu Mogu</span><span>3.00€</span>
+          </li>
+        </ul>
+        <h2 class="sticky top-16 z-30 mx-auto inline-block bg-white/50 backdrop-blur-sm text-3xl font-extrabold text-primary text-center px-4 py-2 mb-4 mt-12 rounded-b-3xl">Bubble Tea (6.00€)</h2>
+        <div class="grid md:grid-cols-2 gap-6">
+          <div>
+            <h3 class="font-semibold mb-2">Boba</h3>
+            <ul class="list-disc list-inside space-y-1">
+              <li>Tropical</li>
+              <li>Pasteque</li>
+              <li>Pomme verte</li>
+              <li>Fraise</li>
+              <li>Mangue</li>
+              <li>Passion</li>
+              <li>Litchi</li>
+              <li>Peche</li>
+            </ul>
+          </div>
+          <div>
+            <h3 class="font-semibold mb-2">Sirops</h3>
+            <ul class="list-disc list-inside space-y-1">
+              <li>Pasteque</li>
+              <li>Pomme verte</li>
+              <li>Fraise</li>
+              <li>Mangue</li>
+              <li>Passion</li>
+              <li>Peche</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-[#704B24] text-white py-6">
+    <div class="max-w-5xl mx-auto text-center">
+      <p>© 2025 Thaï Garden — Mauguio</p>
+      <p>GR François Mitterrand, 34130 Mauguio • <a href="tel:+33987117057" class="text-accent hover:underline">+33 9 87 11 70 57</a></p>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+</body>
+</html>
