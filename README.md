@@ -74,7 +74,7 @@ serve .
 
 Le site sera accessible sur http://localhost:3000.
 
-	3.	Ouvrir dans un navigateur :
+3.	**Ouvrir dans un navigateur :**
 Double-cliquer sur index.html fonctionne aussi si tu n’utilises pas de serveur local.
 
 ⸻
