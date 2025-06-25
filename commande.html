@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Thaï Garden – Demande de disponibilité</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind CDN + couleurs -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#704B24',
+            accent:  '#ED8B00'
+          },
+          fontFamily: {
+            sans: ['Noto Sans', 'sans-serif'],
+            serif: ['Playfair Display', 'serif']
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    body { font-family: 'Noto Sans', sans-serif; }
+    h1, h2 { font-family: 'Playfair Display', serif; }
+  </style>
+</head>
+<body class="flex flex-col min-h-screen bg-gradient-to-b from-gray-50 to-white text-gray-800">
+
+  <!-- Header minimal -->
+  <header class="fixed top-0 w-full bg-white/70 backdrop-blur-sm shadow-md z-50">
+    <nav class="max-w-5xl mx-auto flex items-center justify-between py-4 px-6">
+      <a href="index.html" class="text-2xl font-bold text-primary">Thaï Garden</a>
+      <a href="menu.html" class="text-accent font-semibold hover:underline">Retour menu</a>
+    </nav>
+  </header>
+
+  <!-- Contenu principal -->
+  <main class="flex-1 pt-24 pb-12 max-w-3xl mx-auto px-4">
+
+    <h1 class="text-4xl font-extrabold text-primary text-center mb-10">Commander</h1>
+
+    <!-- Étape 1 : Choix emporter / livraison -->
+    <section id="step-choix" class="text-center space-y-6">
+      <p class="text-lg">Choisissez votre mode de récupération :</p>
+      <div class="flex flex-col sm:flex-row justify-center gap-6">
+        <button
+          id="btn-emporter"
+          class="px-8 py-4 bg-primary text-white rounded-lg shadow hover:shadow-lg transition"
+        >
+          Emporter
+        </button>
+        <button
+          id="btn-livraison"
+          class="px-8 py-4 bg-accent text-white rounded-lg shadow hover:shadow-lg transition"
+        >
+          Livraison
+        </button>
+      </div>
+    </section>
+
+    <!-- Étape 2 : Message pour « Emporter » -->
+    <section
+      id="section-emporter"
+      class="hidden mt-12 text-center bg-white/70 backdrop-blur-sm p-8 rounded-lg shadow-md"
+    >
+      <h2 class="text-2xl font-semibold mb-4">Retrait sur place (Emporter)</h2>
+      <p>Merci de passer directement au restaurant pour récupérer votre commande.<br/>
+         Adresse : GR François Mitterrand, 34130 Mauguio</p>
+      <a href="tel:+33987117057" class="inline-block mt-6 px-6 py-3 border-2 border-primary text-primary font-medium rounded-lg hover:bg-primary hover:text-white transition">
+        Appeler le restaurant
+      </a>
+    </section>
+
+    <!-- Étape 2 : Formulaire « Demande de disponibilité » pour livraison -->
+    <section id="section-livraison" class="mt-12 bg-white/70 backdrop-blur-sm p-8 rounded-lg shadow-md">
+        <h2 class="text-2xl font-semibold mb-6 text-center">Demande de disponibilité – Livraison</h2>
+      
+        <p class="mb-6 text-center text-gray-700">
+          Envoyez votre demande de disponibilité au restaurant.
+          Nous reviendrons vers vous dans <strong>quelques minutes</strong> pour confirmer votre créneau de livraison.
+          Ensuite, vous pourrez finaliser votre commande en ligne.
+          En attendant, découvrez notre
+          <a href="menu.html" class="text-accent underline">menu complet</a>.
+        </p>
+      
+        <form id="form-disponibilite" class="space-y-6" onsubmit="return handleSubmit(event)">
+          <!-- Nom -->
+          <div class="flex flex-col gap-2">
+            <label for="nom" class="font-medium">Nom</label>
+            <input
+              required id="nom" type="text"
+              placeholder="Votre nom complet"
+              class="border rounded px-3 py-2 focus:ring-2 focus:ring-accent"
+            />
+          </div>
+      
+          <!-- Téléphone -->
+          <div class="flex flex-col gap-1">
+            <label for="tel" class="font-medium">Téléphone</label>
+            <input
+              required id="tel" type="tel"
+              placeholder="+33 6 12 34 56 78"
+              class="border rounded px-3 py-2 focus:ring-2 focus:ring-accent"
+            />
+            <p class="text-sm text-gray-500">Format international, ex : +33 6 12 34 56 78</p>
+          </div>
+      
+          <!-- Adresse -->
+          <div class="flex flex-col gap-2">
+            <label for="adresse" class="font-medium">Adresse de livraison</label>
+            <input
+              required id="adresse" type="text"
+              placeholder="Votre adresse de livraison"
+              class="border rounded px-3 py-2 focus:ring-2 focus:ring-accent"
+            />
+          </div>
+      
+          <!-- Bouton d’envoi -->
+          <button
+            type="submit"
+            class="w-full px-6 py-3 bg-accent text-white font-bold rounded-lg shadow-md hover:shadow-lg transition"
+          >
+            Envoyer ma demande de disponibilité
+          </button>
+        </form>
+      
+        <!-- Message de confirmation -->
+        <div id="msg-ok" class="hidden mt-6 text-center text-green-700 font-medium">
+          Merci ! Votre demande de disponibilité a été envoyée.
+          Nous vous recontacterons bientôt pour confirmer votre créneau.
+        </div>
+      </section>
+
+  </main>
+
+  <!-- Script minimal : gestion d’affichage -->
+  <script>
+    const btnEmporter  = document.getElementById('btn-emporter');
+    const btnLivraison = document.getElementById('btn-livraison');
+    const secEmporter  = document.getElementById('section-emporter');
+    const secLivraison = document.getElementById('section-livraison');
+
+    btnEmporter.addEventListener('click', () => {
+      secEmporter.classList.remove('hidden');
+      secLivraison.classList.add('hidden');
+      window.scrollTo({ top: secEmporter.offsetTop - 80, behavior: 'smooth' });
+    });
+
+    btnLivraison.addEventListener('click', () => {
+      secLivraison.classList.remove('hidden');
+      secEmporter.classList.add('hidden');
+      window.scrollTo({ top: secLivraison.offsetTop - 80, behavior: 'smooth' });
+    });
+
+    function handleSubmit(e) {
+      e.preventDefault();
+      // 👉 Ici tu brancheras l’envoi réel (e-mail, API, etc.)
+      document.getElementById('form-disponibilite').classList.add('hidden');
+      document.getElementById('msg-ok').classList.remove('hidden');
+      return false;
+    }
+  </script>
+</body>
+</html>
