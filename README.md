@@ -72,7 +72,11 @@ Installer serve si besoin :
 npm install -g serve
 serve .
 
-Le site sera accessible sur http://localhost:3000.
+ou :
+
+python3 -m http.server 8000
+
+Le site sera accessible sur http://localhost:8000.
 
 3.	**Ouvrir dans un navigateur :**
 Double-cliquer sur index.html fonctionne aussi si tu n’utilises pas de serveur local.
