@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Thaï Garden – Dashboard admin</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind + couleurs -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: { primary: '#704B24', accent: '#ED8B00' },
+          fontFamily: {
+            sans: ['Noto Sans', 'sans-serif'],
+            serif: ['Playfair Display', 'serif']
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    body { font-family: 'Noto Sans', sans-serif; }
+    h1,h2 { font-family: 'Playfair Display', serif; }
+  </style>
+</head>
+<body class="min-h-screen bg-gradient-to-b from-gray-50 to-white text-gray-800">
+
+  <!-- Header -->
+  <header class="fixed top-0 w-full bg-white/70 backdrop-blur-sm shadow z-50">
+    <nav class="max-w-5xl mx-auto flex items-center justify-between py-4 px-6">
+      <span class="text-2xl font-bold text-primary">Dashboard Thaï Garden</span>
+      <a href="index.html" class="text-accent font-semibold hover:underline">← Retour au site</a>
+    </nav>
+  </header>
+
+  <main class="pt-24 pb-12 max-w-5xl mx-auto px-4">
+
+    <!-- Demandes en attente -->
+    <h1 class="text-4xl font-extrabold text-primary text-center mb-10">Demandes en attente</h1>
+    <div id="pending-container" class="space-y-4"></div>
+
+    <!-- Historique -->
+    <h2 class="text-3xl font-extrabold text-primary mt-16 mb-6 text-center">Historique des demandes</h2>
+    <div id="history-container" class="space-y-4"></div>
+  </main>
+
+  <!-- Template carte demande -->
+  <template id="request-template">
+    <div class="bg-white p-4 rounded-lg shadow-md flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+      <div class="flex-1 space-y-1">
+        <p class="font-medium">
+          <span class="req-name"></span> – <span class="req-mode"></span>
+        </p>
+        <p class="text-sm text-gray-600">📞 <span class="req-phone"></span></p>
+        <p class="text-sm text-gray-600">🏠 <span class="req-adresse"></span></p>
+      </div>
+      <div class="flex gap-2 md:gap-4">
+        <button class="btn-refuse px-4 py-2 border border-red-600 text-red-600 rounded hover:bg-red-50 transition">Refuser</button>
+        <button class="btn-accept px-4 py-2 bg-primary text-white rounded hover:bg-primary/90 transition">Accepter</button>
+      </div>
+    </div>
+  </template>
+
+  <!-- Modal pour l’heure -->
+  <div id="modal" class="fixed inset-0 bg-black/50 flex items-center justify-center hidden z-50">
+    <div class="bg-white p-6 rounded-lg shadow-lg w-80">
+      <h3 class="text-xl font-semibold mb-4 text-center">Proposer une heure</h3>
+      <input id="input-heure" type="time" class="w-full border rounded px-3 py-2 mb-4" required />
+      <div class="flex justify-end gap-4">
+        <button id="btn-cancel" class="px-4 py-2 border rounded">Annuler</button>
+        <button id="btn-save" class="px-4 py-2 bg-accent text-white rounded">Valider</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /* === Simu base locale : tableau localStorage 'demandes' === */
+    function loadDemandes() {
+      return JSON.parse(localStorage.getItem('demandes') || '[]');
+    }
+    function saveDemandes(data) {
+      localStorage.setItem('demandes', JSON.stringify(data));
+    }
+
+    const pendingEl   = document.getElementById('pending-container');
+    const historyEl   = document.getElementById('history-container');
+    const tpl         = document.getElementById('request-template');
+    const modal       = document.getElementById('modal');
+    const inputHeure  = document.getElementById('input-heure');
+    const btnCancel   = document.getElementById('btn-cancel');
+    const btnSave     = document.getElementById('btn-save');
+    let currentId     = null; // id de la demande en cours
+
+    /* Rendu initial */
+    render();
+
+    /* Re-render si localStorage change */
+    window.addEventListener('storage', (e) => {
+      if (e.key === 'demandes') {
+        render();
+      }
+    });
+
+    function render() {
+      const data = loadDemandes();
+      pendingEl.innerHTML = '';
+      historyEl.innerHTML = '';
+
+      data.forEach(req => {
+        const node = tpl.content.cloneNode(true);
+        node.querySelector('.req-name').textContent  = req.nom;
+        node.querySelector('.req-mode').textContent  = req.mode;
+        node.querySelector('.req-phone').textContent = req.tel;
+        node.querySelector('.req-adresse').textContent = req.adresse;
+
+        if (req.statut === 'pending') {
+          node.querySelector('.btn-refuse').onclick  = () => updateStatut(req.id, 'refused');
+          node.querySelector('.btn-accept').onclick  = () => openModal(req.id);
+          pendingEl.appendChild(node);
+        } else {
+          // Transformation pour l’historique
+          node.querySelector('.btn-refuse').remove();
+          const btn = node.querySelector('.btn-accept');
+          btn.className =
+            'px-4 py-2 rounded text-white ' +
+            (req.statut === 'accepted' ? 'bg-green-600' : 'bg-red-600');
+          btn.textContent =
+            req.statut === 'accepted' ? `Accepté à ${req.heure}` : 'Refusé';
+          historyEl.appendChild(node);
+        }
+      });
+    }
+
+    function updateStatut(id, statut, heure='') {
+      const data = loadDemandes();
+      const item = data.find(r => r.id === id);
+      if (item) {
+        item.statut = statut;
+        if (heure) item.heure = heure;
+        saveDemandes(data);
+        render();
+      }
+    }
+
+    function openModal(id) {
+      currentId = id;
+      inputHeure.value = '';
+      modal.classList.remove('hidden');
+    }
+    btnCancel.onclick = () => modal.classList.add('hidden');
+    btnSave.onclick   = () => {
+      if (!inputHeure.value) return;
+      updateStatut(currentId, 'accepted', inputHeure.value);
+      modal.classList.add('hidden');
+    };
+  </script>
+</body>
+</html>

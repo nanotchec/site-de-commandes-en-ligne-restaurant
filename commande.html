@@ -138,6 +138,17 @@
           Merci ! Votre demande de disponibilité a été envoyée.
           Nous vous recontacterons bientôt pour confirmer votre créneau.
         </div>
+
+        <!-- Message de refus -->
+        <div id="msg-refused" class="hidden mt-6 text-center text-red-700 font-medium">
+          Désolé, votre demande de disponibilité a été refusée. Veuillez nous contacter directement pour plus d'informations.
+        </div>
+
+        <!-- Message pour commander -->
+        <div id="msg-order-ready" class="hidden mt-6 text-center text-blue-700 font-medium">
+          Votre demande de disponibilité a été acceptée ! Vous pouvez maintenant passer votre commande.
+          <a href="menu.html" class="text-accent underline">Accéder au menu</a>.
+        </div>
       </section>
 
   </main>
@@ -148,6 +159,11 @@
     const btnLivraison = document.getElementById('btn-livraison');
     const secEmporter  = document.getElementById('section-emporter');
     const secLivraison = document.getElementById('section-livraison');
+    const formDisponibilite = document.getElementById('form-disponibilite');
+    const msgOk = document.getElementById('msg-ok');
+    const msgRefused = document.getElementById('msg-refused');
+    const msgOrderReady = document.getElementById('msg-order-ready');
+    const stepChoix = document.getElementById('step-choix');
 
     btnEmporter.addEventListener('click', () => {
       secEmporter.classList.remove('hidden');
@@ -161,11 +177,87 @@
       window.scrollTo({ top: secLivraison.offsetTop - 80, behavior: 'smooth' });
     });
 
+    // Helpers pour le localStorage
+    function loadDemandes() {
+      const demandesJSON = localStorage.getItem('demandes');
+      return demandesJSON ? JSON.parse(demandesJSON) : [];
+    }
+
+    function saveDemandes(demandes) {
+      localStorage.setItem('demandes', JSON.stringify(demandes, null, 2)); // pretty print
+    }
+
+    function showPendingMessage() {
+      stepChoix.classList.add('hidden');
+      formDisponibilite.classList.add('hidden');
+      secLivraison.classList.remove('hidden');
+      msgOk.classList.remove('hidden');
+      msgRefused.classList.add('hidden');
+      msgOrderReady.classList.add('hidden');
+    }
+
+    function showRefusedMessage() {
+      stepChoix.classList.add('hidden');
+      formDisponibilite.classList.add('hidden');
+      secLivraison.classList.remove('hidden');
+      msgOk.classList.add('hidden');
+      msgRefused.classList.remove('hidden');
+      msgOrderReady.classList.add('hidden');
+    }
+
+    function showOrderUI() {
+      stepChoix.classList.add('hidden');
+      formDisponibilite.classList.add('hidden');
+      secLivraison.classList.remove('hidden');
+      msgOk.classList.add('hidden');
+      msgRefused.classList.add('hidden');
+      msgOrderReady.classList.remove('hidden');
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      checkDemandStatusAndDisplay();
+    });
+
+    window.addEventListener('storage', (e) => {
+      if (e.key === 'demandes') {
+        checkDemandStatusAndDisplay();
+      }
+    });
+
+    function checkDemandStatusAndDisplay() {
+      const mesDemandes = loadDemandes();
+      const demande = mesDemandes[mesDemandes.length - 1]; 
+
+      if (demande) {
+        if (demande.statut === 'accepted') {
+          showOrderUI();
+        } else if (demande.statut === 'refused') {
+          showRefusedMessage();
+        } else { // pending
+          showPendingMessage();
+        }
+      }
+    }
+
     function handleSubmit(e) {
       e.preventDefault();
-      // 👉 Ici tu brancheras l’envoi réel (e-mail, API, etc.)
-      document.getElementById('form-disponibilite').classList.add('hidden');
-      document.getElementById('msg-ok').classList.remove('hidden');
+
+      const nomInput = document.getElementById('nom');
+      const telInput = document.getElementById('tel');
+      const adresseInput = document.getElementById('adresse');
+
+      const nouvelles = loadDemandes();
+      nouvelles.push({
+        id: Date.now(),
+        nom: nomInput.value,
+        tel: telInput.value,
+        adresse: adresseInput.value,
+        mode: 'Livraison',
+        statut: 'pending'
+      });
+      saveDemandes(nouvelles);
+
+      showPendingMessage();
       return false;
     }
   </script>
