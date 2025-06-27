@@ -151,10 +151,20 @@
         </div>
       </section>
 
+      <!-- Étape 3 : Affichage du menu pour la commande -->
+      <section id="order-menu" class="hidden mt-12">
+        <h2 class="text-3xl font-extrabold text-primary text-center mb-8">Notre Menu</h2>
+        <ul id="order-menu-list" class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <!-- Les éléments du menu seront injectés ici par le JS -->
+        </ul>
+      </section>
+
   </main>
 
   <!-- Script minimal : gestion d’affichage -->
-  <script>
+  <script type="module">
+    import { menuItems } from './data/menu.js';
+
     const btnEmporter  = document.getElementById('btn-emporter');
     const btnLivraison = document.getElementById('btn-livraison');
     const secEmporter  = document.getElementById('section-emporter');
@@ -164,6 +174,8 @@
     const msgRefused = document.getElementById('msg-refused');
     const msgOrderReady = document.getElementById('msg-order-ready');
     const stepChoix = document.getElementById('step-choix');
+    const orderMenuSection = document.getElementById('order-menu');
+    const orderMenuList = document.getElementById('order-menu-list');
 
     btnEmporter.addEventListener('click', () => {
       secEmporter.classList.remove('hidden');
@@ -194,6 +206,7 @@
       msgOk.classList.remove('hidden');
       msgRefused.classList.add('hidden');
       msgOrderReady.classList.add('hidden');
+      orderMenuSection.classList.add('hidden');
     }
 
     function showRefusedMessage() {
@@ -203,15 +216,26 @@
       msgOk.classList.add('hidden');
       msgRefused.classList.remove('hidden');
       msgOrderReady.classList.add('hidden');
+      orderMenuSection.classList.add('hidden');
     }
 
     function showOrderUI() {
       stepChoix.classList.add('hidden');
-      formDisponibilite.classList.add('hidden');
-      secLivraison.classList.remove('hidden');
-      msgOk.classList.add('hidden');
-      msgRefused.classList.add('hidden');
-      msgOrderReady.classList.remove('hidden');
+      secLivraison.classList.add('hidden');
+      orderMenuSection.classList.remove('hidden');
+
+      orderMenuList.innerHTML = ''; // Clear existing items
+      menuItems.forEach(item => {
+        const li = document.createElement('li');
+        li.className = 'bg-white p-4 rounded-lg shadow-md flex flex-col items-center text-center';
+        li.innerHTML = `
+          <img src="${item.img}" alt="${item.nom}" class="w-32 h-32 rounded-lg object-cover mb-4" />
+          <p class="font-medium text-lg">${item.nom}</p>
+          <span class="font-semibold text-accent">${item.prix.toFixed(2)}€</span>
+          <button data-id="${item.id}" class="mt-4 px-4 py-2 bg-accent text-white font-semibold rounded-full shadow hover:shadow-lg transition">+</button>
+        `;
+        orderMenuList.appendChild(li);
+      });
     }
 
     document.addEventListener('DOMContentLoaded', () => {
@@ -239,7 +263,7 @@
       }
     }
 
-    function handleSubmit(e) {
+    window.handleSubmit = function(e) {
       e.preventDefault();
 
       const nomInput = document.getElementById('nom');
