@@ -161,6 +161,33 @@
 
   </main>
 
+  <!-- Panier flottant -->
+  <div id="cart-float" class="fixed bottom-6 right-6 z-50">
+    <a href="#" class="relative block">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-accent" viewBox="0 0 20 20" fill="currentColor">
+        <path d="M3 1a1 1 0 000 2h1.22l.305 1.222a.997.997 0 00.922.778h9.446a1 1 0 00.922-.778L16.78 3H17a1 1 0 000-2H3zM6.07 7l1.22 4.891a1 1 0 00.922.609h4.576a1 1 0 00.922-.609L14.93 7H6.07z" />
+      </svg>
+      <span id="cart-count" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">0</span>
+    </a>
+  </div>
+
+  <!-- Modale Panier -->
+  <section id="panier-section" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+    <div class="bg-white rounded-lg shadow-xl p-8 max-w-2xl w-full">
+      <h2 class="text-3xl font-extrabold text-primary mb-6">Votre Panier</h2>
+      <ul id="panier-list" class="space-y-4 mb-6">
+        <!-- Les éléments du panier seront injectés ici -->
+      </ul>
+      <div class="text-right font-bold text-xl mb-6">
+        Total: <span id="panier-total">0.00</span>€
+      </div>
+      <div class="flex justify-between">
+        <button id="btn-close-panier" class="px-6 py-2 bg-gray-300 text-gray-800 rounded-lg hover:bg-gray-400 transition">Fermer</button>
+        <button id="btn-valider-commande" class="px-6 py-2 bg-accent text-white font-bold rounded-lg shadow-md hover:shadow-lg transition">Valider ma commande</button>
+      </div>
+    </div>
+  </section>
+
   <!-- Script minimal : gestion d’affichage -->
   <script type="module">
     import { menuItems } from './data/menu.js';
@@ -176,6 +203,31 @@
     const stepChoix = document.getElementById('step-choix');
     const orderMenuSection = document.getElementById('order-menu');
     const orderMenuList = document.getElementById('order-menu-list');
+    const cartFloat = document.getElementById('cart-float');
+    const panierSection = document.getElementById('panier-section');
+    const btnClosePanier = document.getElementById('btn-close-panier');
+    const btnValiderCommande = document.getElementById('btn-valider-commande');
+    const panierList = document.getElementById('panier-list');
+    const panierTotal = document.getElementById('panier-total');
+
+    cartFloat.addEventListener('click', (e) => {
+      e.preventDefault();
+      renderPanier();
+      panierSection.classList.remove('hidden');
+    });
+
+    btnClosePanier.addEventListener('click', () => {
+      panierSection.classList.add('hidden');
+    });
+
+    btnValiderCommande.addEventListener('click', () => {
+      localStorage.removeItem('cart');
+      renderPanier();
+      updateCartBadge();
+      updateItemBadges();
+      panierSection.classList.add('hidden');
+      alert('Votre commande a été validée !');
+    });
 
     btnEmporter.addEventListener('click', () => {
       secEmporter.classList.remove('hidden');
@@ -227,19 +279,140 @@
       orderMenuList.innerHTML = ''; // Clear existing items
       menuItems.forEach(item => {
         const li = document.createElement('li');
-        li.className = 'bg-white p-4 rounded-lg shadow-md flex flex-col items-center text-center';
+        li.className = 'bg-white p-4 rounded-lg shadow-md flex flex-col items-center text-center relative';
         li.innerHTML = `
           <img src="${item.img}" alt="${item.nom}" class="w-32 h-32 rounded-lg object-cover mb-4" />
-          <p class="font-medium text-lg">${item.nom}</p>
+          <div class="flex-grow text-center">
+            <p class="font-medium text-lg">${item.nom}</p>
+          </div>
           <span class="font-semibold text-accent">${item.prix.toFixed(2)}€</span>
           <button data-id="${item.id}" class="mt-4 px-4 py-2 bg-accent text-white font-semibold rounded-full shadow hover:shadow-lg transition">+</button>
+          <span data-id="${item.id}" class="item-qty-badge absolute -top-2 -right-2 bg-blue-500 text-white text-xs font-bold rounded-full h-6 w-6 flex items-center justify-center hidden">0</span>
         `;
         orderMenuList.appendChild(li);
       });
+
+      document.querySelectorAll('#order-menu button').forEach(btn => {
+        btn.addEventListener('click', e => addToCart(+e.target.dataset.id));
+      });
+
+      updateCartBadge();
+      updateItemBadges();
+    }
+
+    function updateItemBadges() {
+      const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+      document.querySelectorAll('.item-qty-badge').forEach(badge => {
+        const itemId = +badge.dataset.id;
+        const itemInCart = cart.find(item => item.itemId === itemId);
+        if (itemInCart && itemInCart.qty > 0) {
+          badge.textContent = itemInCart.qty;
+          badge.classList.remove('hidden');
+        } else {
+          badge.classList.add('hidden');
+        }
+      });
+    }
+
+    function addToCart(id) {
+      const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+      const itemInCart = cart.find(item => item.itemId === id);
+
+      if (itemInCart) {
+        itemInCart.qty++;
+      } else {
+        cart.push({ itemId: id, qty: 1 });
+      }
+
+      localStorage.setItem('cart', JSON.stringify(cart));
+      updateCartBadge();
+      updateItemBadges();
+    }
+
+    function updateCartBadge() {
+      const count = JSON.parse(localStorage.getItem('cart') || '[]')
+        .reduce((sum, it) => sum + it.qty, 0);
+      document.getElementById('cart-count').textContent = count;
+    }
+
+    function renderPanier() {
+      const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+      panierList.innerHTML = '';
+      let total = 0;
+
+      if (cart.length === 0) {
+        panierList.innerHTML = '<p>Votre panier est vide.</p>';
+        panierTotal.textContent = '0.00';
+        return;
+      }
+
+      cart.forEach(cartItem => {
+        const menuItem = menuItems.find(item => item.id === cartItem.itemId);
+        if (menuItem) {
+          const li = document.createElement('li');
+          li.className = 'flex items-center justify-between';
+          li.innerHTML = `
+            <div>
+              <p class="font-medium">${menuItem.nom}</p>
+              <p class="text-sm text-gray-600">${menuItem.prix.toFixed(2)}€</p>
+            </div>
+            <div class="flex items-center gap-2">
+              <button data-id="${cartItem.itemId}" class="btn-qty-decrease px-2 py-1 bg-gray-200 rounded">-</button>
+              <span>${cartItem.qty}</span>
+              <button data-id="${cartItem.itemId}" class="btn-qty-increase px-2 py-1 bg-gray-200 rounded">+</button>
+              <button data-id="${cartItem.itemId}" class="btn-remove-item text-red-500 hover:text-red-700">Supprimer</button>
+            </div>
+          `;
+          panierList.appendChild(li);
+          total += menuItem.prix * cartItem.qty;
+        }
+      });
+
+      panierTotal.textContent = total.toFixed(2);
+
+      // Add event listeners for quantity buttons
+      panierList.querySelectorAll('.btn-qty-increase').forEach(btn => {
+        btn.addEventListener('click', e => updateQuantity(+e.target.dataset.id, 1));
+      });
+
+      panierList.querySelectorAll('.btn-qty-decrease').forEach(btn => {
+        btn.addEventListener('click', e => updateQuantity(+e.target.dataset.id, -1));
+      });
+
+      panierList.querySelectorAll('.btn-remove-item').forEach(btn => {
+        btn.addEventListener('click', e => removeFromCart(+e.target.dataset.id));
+      });
+    }
+
+    function updateQuantity(id, change) {
+      const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+      const itemInCart = cart.find(item => item.itemId === id);
+
+      if (itemInCart) {
+        itemInCart.qty += change;
+        if (itemInCart.qty <= 0) {
+          removeFromCart(id);
+        } else {
+          localStorage.setItem('cart', JSON.stringify(cart));
+          renderPanier();
+          updateCartBadge();
+          updateItemBadges();
+        }
+      }
+    }
+
+    function removeFromCart(id) {
+      let cart = JSON.parse(localStorage.getItem('cart') || '[]');
+      cart = cart.filter(item => item.itemId !== id);
+      localStorage.setItem('cart', JSON.stringify(cart));
+      renderPanier();
+      updateCartBadge();
+      updateItemBadges();
     }
 
     document.addEventListener('DOMContentLoaded', () => {
       checkDemandStatusAndDisplay();
+      updateItemBadges(); // Initial update on page load
     });
 
     window.addEventListener('storage', (e) => {
