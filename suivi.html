@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Thaï Garden – Suivi de commande</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind CDN + couleurs -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#704B24',
+            accent:  '#ED8B00'
+          },
+          fontFamily: {
+            sans: ['Noto Sans', 'sans-serif'],
+            serif: ['Playfair Display', 'serif']
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    body { font-family: 'Noto Sans', sans-serif; }
+    h1, h2 { font-family: 'Playfair Display', serif; }
+  </style>
+</head>
+<body class="flex flex-col min-h-screen bg-gradient-to-b from-gray-50 to-white text-gray-800">
+
+  <!-- Header minimal -->
+  <header class="fixed top-0 w-full bg-white/70 backdrop-blur-sm shadow-md z-50">
+    <nav class="max-w-5xl mx-auto flex items-center justify-between py-4 px-6">
+      <a href="index.html" class="text-2xl font-bold text-primary">Thaï Garden</a>
+      <a href="menu.html" class="text-accent font-semibold hover:underline">Retour menu</a>
+    </nav>
+  </header>
+
+  <!-- Contenu principal -->
+  <main class="flex-1 pt-24 pb-12 max-w-3xl mx-auto px-4 text-center">
+    <h1 class="text-4xl font-extrabold text-primary mb-10">Suivi de votre commande</h1>
+
+    <div id="order-details" class="bg-white/70 backdrop-blur-sm p-8 rounded-lg shadow-md space-y-4">
+      <p class="text-lg"><strong>Numéro de commande :</strong> <span id="order-id"></span></p>
+      <p class="text-lg"><strong>Statut actuel :</strong> <span id="order-status" class="font-semibold"></span></p>
+      <p class="text-lg"><strong>Créneau de livraison :</strong> <span id="delivery-slot"></span></p>
+      <div id="order-items" class="text-left mt-4">
+        <h3 class="font-semibold text-xl mb-2">Articles :</h3>
+        <ul id="items-list" class="list-disc list-inside"></ul>
+      </div>
+      <p class="text-xl font-bold mt-4">Total : <span id="order-total"></span>€</p>
+    </div>
+
+    </main>
+
+  <script>
+    function loadCommandes() {
+      const commandesJSON = localStorage.getItem('commandes');
+      return commandesJSON ? JSON.parse(commandesJSON) : [];
+    }
+
+    function renderOrderStatus() {
+      const currentOrderId = localStorage.getItem('currentOrderId');
+      if (!currentOrderId) {
+        document.getElementById('order-details').innerHTML = '<p class="text-red-500">Aucune commande en cours à suivre.</p>';
+        return;
+      }
+
+      const commandes = loadCommandes();
+      const order = commandes.find(cmd => cmd.id === currentOrderId);
+
+      const statusConfig = {
+          submitted: { icon: '⏳', color: 'text-yellow-500', text: 'En attente' },
+          preparing: { icon: '<span class="text-accent">🍳</span>', color: 'text-yellow-500', text: 'En préparation' },
+          ready: { icon: '<span class="text-green-500">✅</span>', color: 'text-green-500', text: 'Prête' },
+          delivered: { icon: '<span class="text-gray-500">🚚</span>', color: 'text-gray-500', text: 'Livrée' }
+      };
+
+      if (order) {
+        document.getElementById('order-id').textContent = order.id.slice(4);
+        document.getElementById('delivery-slot').textContent = order.deliverySlot;
+        document.getElementById('order-total').textContent = order.total.toFixed(2);
+
+        const config = statusConfig[order.status] || {};
+        const statusElement = document.getElementById('order-status');
+        statusElement.innerHTML = `${config.icon || ''} ${config.text || order.status}`;
+        statusElement.className = 'font-semibold'; // Reset classes
+        statusElement.classList.add(config.color || '');
+
+        const itemsList = document.getElementById('items-list');
+        itemsList.innerHTML = '';
+        if (order.items && order.items.length > 0) {
+          order.items.forEach(item => {
+            const li = document.createElement('li');
+            li.textContent = `${item.name} (${item.quantity})`;
+            itemsList.appendChild(li);
+          });
+        } else {
+          itemsList.innerHTML = '<li>Aucun article détaillé.</li>';
+        }
+
+      } else {
+        document.getElementById('order-details').innerHTML = '<p class="text-red-500">Commande introuvable.</p>';
+      }
+    }
+
+    function getStatusText(status) {
+      const statusMap = {
+        submitted: 'En attente',
+        preparing: 'En préparation',
+        ready: 'Prête',
+        delivered: 'Livrée'
+      };
+      return statusMap[status] || status;
+    }
+
+    document.addEventListener('DOMContentLoaded', renderOrderStatus);
+    window.addEventListener('storage', (e) => {
+      if (e.key === 'commandes') {
+        renderOrderStatus();
+      }
+    });
+  </script>
+</body>
+</html>
