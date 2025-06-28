@@ -34,36 +34,77 @@
 
   <!-- Header -->
   <header class="fixed top-0 w-full bg-white/70 backdrop-blur-sm shadow z-50">
-    <nav class="max-w-5xl mx-auto flex items-center justify-between py-4 px-6">
+    <!-- Top bar -->
+    <div class="max-w-5xl mx-auto flex items-center justify-between py-4 px-6">
       <span class="text-2xl font-bold text-primary">Dashboard Thaï Garden</span>
       <a href="index.html" class="text-accent font-semibold hover:underline">← Retour au site</a>
+    </div>
+    <!-- Secondary navigation -->
+    <nav class="border-t border-gray-200">
+        <div class="max-w-5xl mx-auto flex gap-4 px-6">
+             <button id="tab-demandes" class="flex items-center gap-2 py-3 px-4 border-b-2 border-accent font-semibold">
+                Demandes <span id="badge-demandes" class="ml-1 bg-red-500 text-white rounded-full px-2 text-sm hidden">0</span>
+            </button>
+            <button id="tab-commandes" class="flex items-center gap-2 py-3 px-4 text-gray-600 hover:text-primary">
+                Commandes <span id="badge-commandes" class="ml-1 bg-red-500 text-white rounded-full px-2 text-sm hidden">0</span>
+            </button>
+             <button id="tab-historique" class="flex items-center gap-2 py-3 px-4 text-gray-600 hover:text-primary">
+                Historique
+            </button>
+        </div>
     </nav>
   </header>
 
-  <main class="pt-24 pb-12 max-w-5xl mx-auto px-4">
+  <main class="pt-32 pb-12 max-w-5xl mx-auto px-4">
 
-    <!-- Demandes en attente -->
-    <h1 class="text-4xl font-extrabold text-primary text-center mb-10">Demandes en attente</h1>
-    <div id="pending-container" class="space-y-4"></div>
+    <div id="view-demandes">
+        <!-- Demandes en attente -->
+        <h1 class="text-4xl font-extrabold text-primary text-center mb-10">Demandes en attente</h1>
+        <div id="pending-container" class="space-y-4"></div>
+    </div>
 
-    <!-- Historique -->
-    <h2 class="text-3xl font-extrabold text-primary mt-16 mb-6 text-center">Historique des demandes</h2>
-    <div id="history-container" class="space-y-4"></div>
+    <div id="view-commandes" class="hidden">
+        <h1 class="text-4xl font-extrabold text-primary text-center mb-10">Commandes</h1>
+        <table class="w-full text-left border-collapse">
+            <thead>
+              <tr class="border-b">
+                <th class="p-4">Client</th>
+                <th class="p-4">Adresse</th>
+                <th class="p-4">Créneau</th>
+                <th class="p-4">Contenu</th>
+                <th class="p-4">Total</th>
+                <th class="p-4">Statut</th>
+                <th class="p-4">Action</th>
+              </tr>
+            </thead>
+            <tbody id="commandes-body">
+              <!-- Les lignes de commande seront injectées ici par le JS -->
+            </tbody>
+        </table>
+    </div>
+
+    <div id="view-historique" class="hidden">
+        <h1 class="text-4xl font-extrabold text-primary text-center mb-10">Historique des demandes</h1>
+        <div id="history-container" class="space-y-4"></div>
+    </div>
+
   </main>
 
-  <!-- Template carte demande -->
+
+
+
+
   <template id="request-template">
-    <div class="bg-white p-4 rounded-lg shadow-md flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-      <div class="flex-1 space-y-1">
-        <p class="font-medium">
-          <span class="req-name"></span> – <span class="req-mode"></span>
-        </p>
-        <p class="text-sm text-gray-600">📞 <span class="req-phone"></span></p>
-        <p class="text-sm text-gray-600">🏠 <span class="req-adresse"></span></p>
+    <div class="bg-white p-4 rounded-lg shadow-md flex items-center justify-between">
+      <div>
+        <p class="text-lg font-semibold req-name"></p>
+        <p class="text-gray-600 req-mode"></p>
+        <p class="text-gray-600 req-phone"></p>
+        <p class="text-gray-600 req-adresse"></p>
       </div>
-      <div class="flex gap-2 md:gap-4">
-        <button class="btn-refuse px-4 py-2 border border-red-600 text-red-600 rounded hover:bg-red-50 transition">Refuser</button>
-        <button class="btn-accept px-4 py-2 bg-primary text-white rounded hover:bg-primary/90 transition">Accepter</button>
+      <div class="flex gap-2">
+        <button class="px-4 py-2 bg-red-500 text-white rounded btn-refuse">Refuser</button>
+        <button class="px-4 py-2 bg-green-500 text-white rounded btn-accept">Accepter</button>
       </div>
     </div>
   </template>
@@ -80,6 +121,20 @@
     </div>
   </div>
 
+  <!-- Order Detail Drawer -->
+  <div id="order-drawer" class="fixed inset-y-0 right-0 w-96 bg-white shadow-lg transform translate-x-full transition-transform z-[60]" role="dialog" aria-modal="true">
+    <header class="flex justify-between items-center p-4 border-b">
+      <h3 id="drawer-title" class="text-xl font-semibold"></h3>
+      <button id="drawer-close" class="text-gray-600 hover:text-gray-800" aria-label="Fermer le panneau de détails">✖️</button>
+    </header>
+    <div id="drawer-content" class="p-4 overflow-y-auto h-[calc(100%-64px)]"></div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="fixed bottom-4 right-4 hidden p-4 bg-gray-800 text-white rounded"></div>
+
+</body>
+
   <script>
     /* === Simu base locale : tableau localStorage 'demandes' === */
     function loadDemandes() {
@@ -88,6 +143,16 @@
     function saveDemandes(data) {
       localStorage.setItem('demandes', JSON.stringify(data));
     }
+
+    function loadCommandes() {
+        return JSON.parse(localStorage.getItem('commandes') || '[]');
+    }
+
+    function saveCommandes(data) {
+        localStorage.setItem('commandes', JSON.stringify(data));
+    }
+
+    const commandesBody = document.getElementById('commandes-body');
 
     const pendingEl   = document.getElementById('pending-container');
     const historyEl   = document.getElementById('history-container');
@@ -98,18 +163,133 @@
     const btnSave     = document.getElementById('btn-save');
     let currentId     = null; // id de la demande en cours
 
+    const tabDemandes = document.getElementById('tab-demandes');
+    const tabCommandes = document.getElementById('tab-commandes');
+    const tabHistorique = document.getElementById('tab-historique');
+    const viewDemandes = document.getElementById('view-demandes');
+    const viewCommandes = document.getElementById('view-commandes');
+    const viewHistorique = document.getElementById('view-historique');
+
+    const badgeDemandes = document.getElementById('badge-demandes');
+    const badgeCommandes = document.getElementById('badge-commandes');
+
+    const drawer = document.getElementById('order-drawer');
+    const drawerTitle = document.getElementById('drawer-title');
+    const drawerContent = document.getElementById('drawer-content');
+    const drawerClose = document.getElementById('drawer-close');
+    const toast = document.getElementById('toast');
+
+    drawerClose.onclick = () => closeDrawer();
+
+    function openDetailsDrawer(orderId) {
+        const commandes = loadCommandes();
+        const order = commandes.find(c => c.id === orderId);
+        if (!order) return;
+
+        // If the drawer is already open for this order, close it
+        if (!drawer.classList.contains('translate-x-full') && drawerTitle.textContent.includes(order.id.slice(4))) {
+            closeDrawer();
+            return;
+        }
+
+        drawerTitle.textContent = `Commande #${order.id.slice(4)}`;
+        let contentHtml = `
+            <p><strong>Client:</strong> ${order.customer.name}</p>
+            <p><strong>Adresse:</strong> ${order.customer.address}</p>
+            <p><strong>Téléphone:</strong> ${order.customer.phone}</p>
+            <p><strong>Créneau:</strong> ${order.deliverySlot}</p>
+            <p><strong>Total:</strong> ${order.total.toFixed(2)}€</p>
+            <h4 class="font-semibold mt-4">Articles:</h4>
+            <ul>${order.items.length > 0 ? order.items.map(i => `<li>- ${i.name} (${i.quantity})</li>`).join('') : '<li>Aucun article détaillé.</li>'}</ul>
+        `;
+        drawerContent.innerHTML = contentHtml;
+        drawer.classList.remove('translate-x-full');
+    }
+
+    function closeDrawer() {
+      drawer.classList.add('translate-x-full');
+    }
+
+    // Close drawer when clicking outside
+    document.addEventListener('click', (event) => {
+      const isClickInsideDrawer = drawer.contains(event.target);
+      const isDetailButton = event.target.classList.contains('text-accent'); // Assuming 'text-accent' is unique to detail buttons
+      if (!isClickInsideDrawer && !isDetailButton && !drawer.classList.contains('translate-x-full')) {
+        closeDrawer();
+      }
+    });
+
+    function showToast(msg) {
+      toast.textContent = msg;
+      toast.classList.remove('hidden');
+      setTimeout(() => toast.classList.add('hidden'), 3000);
+    }
+
+    function setActiveTab(activeTab) {
+        const tabs = [tabDemandes, tabCommandes, tabHistorique];
+        const views = [viewDemandes, viewCommandes, viewHistorique];
+
+        tabs.forEach((tab, index) => {
+            const view = views[index];
+            if (tab === activeTab) {
+                view.classList.remove('hidden');
+                tab.classList.add('border-accent', 'font-semibold');
+                tab.classList.remove('text-gray-600', 'hover:text-primary');
+            } else {
+                view.classList.add('hidden');
+                tab.classList.remove('border-accent', 'font-semibold');
+                tab.classList.add('text-gray-600', 'hover:text-primary');
+            }
+        });
+    }
+
+    tabDemandes.addEventListener('click', () => setActiveTab(tabDemandes));
+    tabCommandes.addEventListener('click', () => setActiveTab(tabCommandes));
+    tabHistorique.addEventListener('click', () => setActiveTab(tabHistorique));
+
     /* Rendu initial */
     render();
 
     /* Re-render si localStorage change */
-    window.addEventListener('storage', (e) => {
-      if (e.key === 'demandes') {
-        render();
-      }
+    window.addEventListener('storage', () => {
+      render();
     });
 
     function render() {
-      const data = loadDemandes();
+      const demandes = loadDemandes();
+      renderDemandes(demandes);
+
+      const commandes = loadCommandes();
+      renderCommandes(commandes);
+
+      updateBadges(demandes, commandes);
+    }
+
+    function updateBadges(demandes, commandes) {
+        const badgeDemandes = document.getElementById('badge-demandes');
+        const badgeCommandes = document.getElementById('badge-commandes');
+
+        const pendingDemandes = demandes.filter(d => d.statut === 'pending').length;
+        badgeDemandes.textContent = pendingDemandes;
+        badgeDemandes.classList.toggle('hidden', pendingDemandes === 0);
+
+        const activeCommandes = commandes.filter(c => c.status !== 'Livrée').length;
+        badgeCommandes.textContent = activeCommandes;
+        badgeCommandes.classList.toggle('hidden', activeCommandes === 0);
+    }
+
+    function updateOrderStatus(orderId, newStatus) {
+        const commandes = loadCommandes();
+        const order = commandes.find(o => o.id === orderId);
+        if (order) {
+            order.status = newStatus;
+            saveCommandes(commandes);
+            render();
+            showToast('Statut de la commande mis à jour.');
+        }
+    }
+
+    function renderDemandes(data) {
       pendingEl.innerHTML = '';
       historyEl.innerHTML = '';
 
@@ -138,14 +318,51 @@
       });
     }
 
+    function renderCommandes(commandes) {
+        commandesBody.innerHTML = '';
+        const statusConfig = {
+            submitted: { icon: '⏳', color: 'bg-accent/10', text: 'En attente' },
+            preparing: { icon: '<span class="text-accent-dark">🍳</span>', color: 'bg-yellow-100', text: 'En préparation' },
+            ready: { icon: '<span class="text-green-600">✅</span>', color: 'bg-green-100', text: 'Prête' },
+            delivered: { icon: '<span class="text-gray-500">🚚</span>', color: 'bg-gray-100', text: 'Livrée' }
+        };
+
+        commandes.forEach(order => {
+            const config = statusConfig[order.status] || {};
+            const tr = document.createElement('tr');
+            tr.className = `border-b ${config.color || ''}`;
+            tr.innerHTML = `
+                <td class="p-4">${order.customer.name}</td>
+                <td class="p-4">${order.customer.address}</td>
+                <td class="p-4">${order.deliverySlot}</td>
+                <td class="p-4">${order.items.length} article(s)</td>
+                <td class="p-4">${order.total.toFixed(2)}€</td>
+                <td class="p-4">
+                    ${config.icon || ''} 
+                    <select class="border rounded px-2 py-1" onchange="updateOrderStatus('${order.id}', this.value)">
+                        <option value="submitted" ${order.status === 'submitted' ? 'selected' : ''}>${statusConfig.submitted.text}</option>
+                        <option value="preparing" ${order.status === 'preparing' ? 'selected' : ''}>${statusConfig.preparing.text}</option>
+                        <option value="ready" ${order.status === 'ready' ? 'selected' : ''}>${statusConfig.ready.text}</option>
+                        <option value="delivered" ${order.status === 'delivered' ? 'selected' : ''}>${statusConfig.delivered.text}</option>
+                    </select>
+                </td>
+                <td class="p-4"><button class="text-accent underline" onclick="openDetailsDrawer('${order.id}')">Détail</button></td>
+            `;
+            commandesBody.appendChild(tr);
+        });
+    }
+
     function updateStatut(id, statut, heure='') {
       const data = loadDemandes();
       const item = data.find(r => r.id === id);
       if (item) {
         item.statut = statut;
-        if (heure) item.heure = heure;
+        if (heure) {
+            item.heure = heure;
+        }
         saveDemandes(data);
         render();
+        showToast('Statut de la demande mis à jour.');
       }
     }
 

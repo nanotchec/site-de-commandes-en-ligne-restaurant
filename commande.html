@@ -162,7 +162,7 @@
   </main>
 
   <!-- Panier flottant -->
-  <div id="cart-float" class="fixed bottom-6 right-6 z-50">
+  <div id="cart-float" class="fixed bottom-6 right-6 z-50 hidden">
     <a href="#" class="relative block">
       <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-accent" viewBox="0 0 20 20" fill="currentColor">
         <path d="M3 1a1 1 0 000 2h1.22l.305 1.222a.997.997 0 00.922.778h9.446a1 1 0 00.922-.778L16.78 3H17a1 1 0 000-2H3zM6.07 7l1.22 4.891a1 1 0 00.922.609h4.576a1 1 0 00.922-.609L14.93 7H6.07z" />
@@ -221,12 +221,46 @@
     });
 
     btnValiderCommande.addEventListener('click', () => {
-      localStorage.removeItem('cart');
-      renderPanier();
-      updateCartBadge();
-      updateItemBadges();
-      panierSection.classList.add('hidden');
-      alert('Votre commande a été validée !');
+      const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+      const total = parseFloat(panierTotal.textContent);
+
+      const demandes = loadDemandes();
+      const lastDemande = demandes.find(d => d.statut === 'accepted'); // Find the accepted demand
+
+      if (lastDemande) {
+        let commandes = loadCommandes();
+        let command = commandes.find(cmd => cmd.demandeId === lastDemande.id);
+
+        if (!command) {
+          // Create a new command if it doesn't exist for this accepted demand
+          command = {
+            id: `cmd-${Date.now()}`,
+            demandeId: lastDemande.id,
+            customer: { name: lastDemande.nom, address: lastDemande.adresse, phone: lastDemande.tel },
+            deliverySlot: lastDemande.heure,
+            items: [],
+            total: 0,
+            status: 'submitted'
+          };
+          commandes.push(command);
+        }
+
+        // Update command details with cart content
+        command.items = cart.map(item => {
+          const menuItem = menuItems.find(m => m.id === item.itemId);
+          return { id: item.itemId, name: menuItem.nom, quantity: item.qty, price: menuItem.prix };
+        });
+        command.total = total;
+        command.status = 'submitted'; // Ensure status is submitted
+
+        saveCommandes(commandes);
+
+        localStorage.removeItem('cart');
+        localStorage.setItem('currentOrderId', command.id); // Store order ID for tracking page
+        window.location.href = 'suivi.html'; // Redirect to tracking page
+      } else {
+        alert("Erreur: Aucune demande acceptée trouvée pour créer la commande.");
+      }
     });
 
     btnEmporter.addEventListener('click', () => {
@@ -249,6 +283,15 @@
 
     function saveDemandes(demandes) {
       localStorage.setItem('demandes', JSON.stringify(demandes, null, 2)); // pretty print
+    }
+
+    function loadCommandes() {
+      const commandesJSON = localStorage.getItem('commandes');
+      return commandesJSON ? JSON.parse(commandesJSON) : [];
+    }
+
+    function saveCommandes(commandes) {
+      localStorage.setItem('commandes', JSON.stringify(commandes, null, 2));
     }
 
     function showPendingMessage() {
@@ -275,6 +318,7 @@
       stepChoix.classList.add('hidden');
       secLivraison.classList.add('hidden');
       orderMenuSection.classList.remove('hidden');
+      cartFloat.classList.remove('hidden');
 
       orderMenuList.innerHTML = ''; // Clear existing items
       menuItems.forEach(item => {
@@ -445,7 +489,7 @@
 
       const nouvelles = loadDemandes();
       nouvelles.push({
-        id: Date.now(),
+        id: `req-${Date.now()}`,
         nom: nomInput.value,
         tel: telInput.value,
         adresse: adresseInput.value,
