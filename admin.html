@@ -233,11 +233,11 @@
             const view = views[index];
             if (tab === activeTab) {
                 view.classList.remove('hidden');
-                tab.classList.add('border-accent', 'font-semibold');
+                tab.classList.add('border-b-2', 'border-accent', 'font-semibold');
                 tab.classList.remove('text-gray-600', 'hover:text-primary');
             } else {
                 view.classList.add('hidden');
-                tab.classList.remove('border-accent', 'font-semibold');
+                tab.classList.remove('border-b-2', 'border-accent', 'font-semibold');
                 tab.classList.add('text-gray-600', 'hover:text-primary');
             }
         });
@@ -249,6 +249,7 @@
 
     /* Rendu initial */
     render();
+    setActiveTab(tabDemandes);
 
     /* Re-render si localStorage change */
     window.addEventListener('storage', () => {
@@ -273,7 +274,7 @@
         badgeDemandes.textContent = pendingDemandes;
         badgeDemandes.classList.toggle('hidden', pendingDemandes === 0);
 
-        const activeCommandes = commandes.filter(c => c.status !== 'Livrée').length;
+        const activeCommandes = commandes.filter(c => c.status !== 'delivered').length;
         badgeCommandes.textContent = activeCommandes;
         badgeCommandes.classList.toggle('hidden', activeCommandes === 0);
     }
