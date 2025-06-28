@@ -489,6 +489,14 @@
     function checkDemandStatusAndDisplay() {
       const mesDemandes = loadDemandes();
       const commandes = loadCommandes();
+      const currentOrderId = localStorage.getItem('currentOrderId');
+      const currentOrder = commandes.find(cmd => cmd.id === currentOrderId);
+
+      // If there's an active order that's not delivered, redirect to suivi.html
+      if (currentOrder && currentOrder.status !== 'delivered') {
+        window.location.href = 'suivi.html';
+        return;
+      }
 
       const lastDemande = mesDemandes[mesDemandes.length - 1]; 
 
@@ -502,6 +510,7 @@
         if (associatedCommand && associatedCommand.status === 'delivered') {
           showInitialChoice();
         } else {
+          // If the demand is accepted but no active order is being tracked, show the order UI
           showOrderUI();
         }
       } else if (lastDemande.statut === 'refused') {
