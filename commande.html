@@ -141,7 +141,8 @@
 
         <!-- Message de refus -->
         <div id="msg-refused" class="hidden mt-6 text-center text-red-700 font-medium">
-          Désolé, votre demande de disponibilité a été refusée. Veuillez nous contacter directement pour plus d'informations.
+          Désolé, le restaurant n'est pas en mesure de prendre votre commande pour le moment. Veuillez réessayer plus tard.
+          <button id="btn-new-demand" class="mt-4 px-6 py-3 bg-accent text-white font-bold rounded-lg shadow-md hover:shadow-lg transition">Faire une nouvelle demande</button>
         </div>
 
         <!-- Message pour commander -->
@@ -209,6 +210,11 @@
     const btnValiderCommande = document.getElementById('btn-valider-commande');
     const panierList = document.getElementById('panier-list');
     const panierTotal = document.getElementById('panier-total');
+    const btnNewDemand = document.getElementById('btn-new-demand');
+
+    btnNewDemand.addEventListener('click', () => {
+      showInitialChoice();
+    });
 
     cartFloat.addEventListener('click', (e) => {
       e.preventDefault();
@@ -272,6 +278,10 @@
     btnLivraison.addEventListener('click', () => {
       secLivraison.classList.remove('hidden');
       secEmporter.classList.add('hidden');
+      formDisponibilite.classList.remove('hidden'); // Ensure form is visible
+      msgOk.classList.add('hidden');
+      msgRefused.classList.add('hidden');
+      msgOrderReady.classList.add('hidden');
       window.scrollTo({ top: secLivraison.offsetTop - 80, behavior: 'smooth' });
     });
 
@@ -292,6 +302,17 @@
 
     function saveCommandes(commandes) {
       localStorage.setItem('commandes', JSON.stringify(commandes, null, 2));
+    }
+
+    function showInitialChoice() {
+      stepChoix.classList.remove('hidden');
+      secEmporter.classList.add('hidden');
+      secLivraison.classList.add('hidden');
+      msgOk.classList.add('hidden');
+      msgRefused.classList.add('hidden');
+      msgOrderReady.classList.add('hidden');
+      orderMenuSection.classList.add('hidden');
+      cartFloat.classList.add('hidden'); // Hide cart float
     }
 
     function showPendingMessage() {
@@ -467,16 +488,26 @@
 
     function checkDemandStatusAndDisplay() {
       const mesDemandes = loadDemandes();
-      const demande = mesDemandes[mesDemandes.length - 1]; 
+      const commandes = loadCommandes();
 
-      if (demande) {
-        if (demande.statut === 'accepted') {
+      const lastDemande = mesDemandes[mesDemandes.length - 1]; 
+
+      if (!lastDemande) {
+        showInitialChoice();
+        return;
+      }
+
+      if (lastDemande.statut === 'accepted') {
+        const associatedCommand = commandes.find(cmd => cmd.demandeId === lastDemande.id);
+        if (associatedCommand && associatedCommand.status === 'delivered') {
+          showInitialChoice();
+        } else {
           showOrderUI();
-        } else if (demande.statut === 'refused') {
-          showRefusedMessage();
-        } else { // pending
-          showPendingMessage();
         }
+      } else if (lastDemande.statut === 'refused') {
+        showRefusedMessage();
+      } else { // pending
+        showPendingMessage();
       }
     }
 
