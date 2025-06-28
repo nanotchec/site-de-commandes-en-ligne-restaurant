@@ -109,17 +109,7 @@
     </div>
   </template>
 
-  <!-- Modal pour l’heure -->
-  <div id="modal" class="fixed inset-0 bg-black/50 flex items-center justify-center hidden z-50">
-    <div class="bg-white p-6 rounded-lg shadow-lg w-80">
-      <h3 class="text-xl font-semibold mb-4 text-center">Proposer une heure</h3>
-      <input id="input-heure" type="time" class="w-full border rounded px-3 py-2 mb-4" required />
-      <div class="flex justify-end gap-4">
-        <button id="btn-cancel" class="px-4 py-2 border rounded">Annuler</button>
-        <button id="btn-save" class="px-4 py-2 bg-accent text-white rounded">Valider</button>
-      </div>
-    </div>
-  </div>
+  
 
   <!-- Order Detail Drawer -->
   <div id="order-drawer" class="fixed inset-y-0 right-0 w-96 bg-white shadow-lg transform translate-x-full transition-transform z-[60]" role="dialog" aria-modal="true">
@@ -157,10 +147,6 @@
     const pendingEl   = document.getElementById('pending-container');
     const historyEl   = document.getElementById('history-container');
     const tpl         = document.getElementById('request-template');
-    const modal       = document.getElementById('modal');
-    const inputHeure  = document.getElementById('input-heure');
-    const btnCancel   = document.getElementById('btn-cancel');
-    const btnSave     = document.getElementById('btn-save');
     let currentId     = null; // id de la demande en cours
 
     const tabDemandes = document.getElementById('tab-demandes');
@@ -301,6 +287,17 @@
         }
     }
 
+    function updateDeliverySlot(orderId, newSlot) {
+        const commandes = loadCommandes();
+        const order = commandes.find(o => o.id === orderId);
+        if (order) {
+            order.deliverySlot = newSlot;
+            saveCommandes(commandes);
+            render();
+            showToast(`Créneau de livraison mis à jour pour la commande #${order.id.slice(4)}.`);
+        }
+    }
+
     function renderDemandes(data) {
       pendingEl.innerHTML = '';
       historyEl.innerHTML = '';
@@ -314,7 +311,7 @@
 
         if (req.statut === 'pending') {
           node.querySelector('.btn-refuse').onclick  = () => { updateStatut(req.id, 'refused'); showToast('Demande refusée.'); };
-          node.querySelector('.btn-accept').onclick  = () => openModal(req.id);
+          node.querySelector('.btn-accept').onclick  = () => { updateStatut(req.id, 'accepted'); showToast('Demande acceptée.'); };
           pendingEl.appendChild(node);
         } else {
           // Transformation pour l’historique
@@ -324,7 +321,7 @@
             'px-4 py-2 rounded text-white ' +
             (req.statut === 'accepted' ? 'bg-green-600' : 'bg-red-600');
           btn.textContent =
-            req.statut === 'accepted' ? `Accepté à ${req.heure}` : 'Refusé';
+            req.statut === 'accepted' ? 'Accepté' : 'Refusé';
           historyEl.appendChild(node);
         }
       });
@@ -346,7 +343,9 @@
             tr.innerHTML = `
                 <td class="p-4">${order.customer.name}</td>
                 <td class="p-4">${order.customer.address}</td>
-                <td class="p-4">${order.deliverySlot}</td>
+                <td class="p-4">
+                    <input type="time" class="border rounded px-2 py-1" value="${order.deliverySlot || ''}" onchange="updateDeliverySlot('${order.id}', this.value)">
+                </td>
                 <td class="p-4">${order.items.length} article(s)</td>
                 <td class="p-4">${order.total.toFixed(2)}€</td>
                 <td class="p-4">
@@ -364,30 +363,15 @@
         });
     }
 
-    function updateStatut(id, statut, heure='') {
+    function updateStatut(id, statut) {
       const data = loadDemandes();
       const item = data.find(r => r.id === id);
       if (item) {
         item.statut = statut;
-        if (heure) {
-            item.heure = heure;
-        }
         saveDemandes(data);
         render();
       }
     }
-
-    function openModal(id) {
-      currentId = id;
-      inputHeure.value = '';
-      modal.classList.remove('hidden');
-    }
-    btnCancel.onclick = () => modal.classList.add('hidden');
-    btnSave.onclick   = () => {
-      if (!inputHeure.value) return;
-      updateStatut(currentId, 'accepted', inputHeure.value);
-      modal.classList.add('hidden');
-    };
   </script>
 </body>
 </html>
