@@ -193,9 +193,26 @@
 
       <section id="order-menu" class="hidden mt-12">
         <h2 class="text-3xl font-extrabold text-primary text-center mb-8">Notre Menu</h2>
-        <ul id="order-menu-list" class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          <!-- Les éléments du menu seront injectés ici par le JS -->
-        </ul>
+
+        <div id="entrees-section" class="mb-8">
+          <h3 class="text-2xl font-bold text-primary mb-4">Entrées</h3>
+          <ul id="order-entrees-list" class="grid md:grid-cols-2 lg:grid-cols-3 gap-8"></ul>
+        </div>
+
+        <div id="plats-section" class="mb-8">
+          <h3 class="text-2xl font-bold text-primary mb-4">Plats</h3>
+          <ul id="order-plats-list" class="grid md:grid-cols-2 lg:grid-cols-3 gap-8"></ul>
+        </div>
+
+        <div id="desserts-section" class="mb-8">
+          <h3 class="text-2xl font-bold text-primary mb-4">Desserts</h3>
+          <ul id="order-desserts-list" class="grid md:grid-cols-2 lg:grid-cols-3 gap-8"></ul>
+        </div>
+
+        <div id="boissons-section" class="mb-8">
+          <h3 class="text-2xl font-bold text-primary mb-4">Boissons</h3>
+          <ul id="order-boissons-list" class="grid md:grid-cols-2 lg:grid-cols-3 gap-8"></ul>
+        </div>
       </section>
 
   </main>
@@ -293,7 +310,22 @@
 
         // Update command details with cart content
         command.items = cart.map(item => {
-          const menuItem = item.isWok ? item.details : menuItems.find(m => m.id == item.itemId);
+          const menuItem = item.isWok ? item.details : menuItems.find(m => String(m.id) === item.itemId);
+          
+          if (!menuItem) {
+            console.error("Erreur: Article non trouvé dans menuItems pour l'ID:", item.itemId);
+            // Vous pouvez choisir de sauter cet article, ou de lancer une erreur, ou d'utiliser des valeurs par défaut
+            // Pour l'instant, nous allons retourner un objet avec des valeurs par défaut pour éviter le crash
+            return { 
+              id: item.itemId, 
+              name: "Article inconnu", 
+              quantity: item.qty, 
+              price: 0, 
+              isWok: item.isWok || false,
+              details: item.isWok ? item.details : null
+            };
+          }
+
           return { 
             id: item.itemId, 
             name: menuItem.nom, 
@@ -392,7 +424,12 @@
       wokComposerSection.classList.remove('hidden');
       cartFloat.classList.remove('hidden');
 
-      orderMenuList.innerHTML = ''; // Clear existing items
+      // Clear existing items in all category lists
+      document.getElementById('order-entrees-list').innerHTML = '';
+      document.getElementById('order-plats-list').innerHTML = '';
+      document.getElementById('order-desserts-list').innerHTML = '';
+      document.getElementById('order-boissons-list').innerHTML = '';
+
       menuItems.forEach(item => {
         const li = document.createElement('li');
         li.className = 'bg-white p-4 rounded-lg shadow-md flex flex-col items-center text-center relative';
@@ -405,7 +442,21 @@
           <button data-id="${item.id}" class="mt-4 px-4 py-2 bg-accent text-white font-semibold rounded-full shadow hover:shadow-lg transition">+</button>
           <span data-id="${item.id}" class="item-qty-badge absolute -top-2 -right-2 bg-blue-500 text-white text-xs font-bold rounded-full h-6 w-6 flex items-center justify-center hidden">0</span>
         `;
-        orderMenuList.appendChild(li);
+        
+        switch (item.categorie) {
+          case 'Entrées':
+            document.getElementById('order-entrees-list').appendChild(li);
+            break;
+          case 'Plats':
+            document.getElementById('order-plats-list').appendChild(li);
+            break;
+          case 'Desserts':
+            document.getElementById('order-desserts-list').appendChild(li);
+            break;
+          case 'Boissons':
+            document.getElementById('order-boissons-list').appendChild(li);
+            break;
+        }
       });
 
       document.querySelectorAll('#order-menu button').forEach(btn => {
@@ -420,7 +471,7 @@
     function updateItemBadges() {
       const cart = JSON.parse(localStorage.getItem('cart') || '[]');
       document.querySelectorAll('.item-qty-badge').forEach(badge => {
-        const itemId = +badge.dataset.id;
+        const itemId = badge.dataset.id;
         const itemInCart = cart.find(item => item.itemId === itemId);
         if (itemInCart && itemInCart.qty > 0) {
           badge.textContent = itemInCart.qty;
@@ -433,12 +484,13 @@
 
     function addToCart(id) {
       const cart = JSON.parse(localStorage.getItem('cart') || '[]');
-      const itemInCart = cart.find(item => item.itemId === id);
+      const itemIdString = String(id); // Ensure ID is a string
+      const itemInCart = cart.find(item => item.itemId === itemIdString);
 
       if (itemInCart) {
         itemInCart.qty++;
       } else {
-        cart.push({ itemId: id, qty: 1 });
+        cart.push({ itemId: itemIdString, qty: 1 });
       }
 
       localStorage.setItem('cart', JSON.stringify(cart));
@@ -464,7 +516,7 @@
       }
 
       cart.forEach(cartItem => {
-        const menuItem = cartItem.isWok ? cartItem.details : menuItems.find(item => item.id == cartItem.itemId);
+        const menuItem = cartItem.isWok ? cartItem.details : menuItems.find(item => String(item.id) === cartItem.itemId);
         if (menuItem) {
           const li = document.createElement('li');
           li.className = 'flex items-center justify-between';
@@ -499,26 +551,27 @@
       // Add event listeners for quantity buttons
       // Add event listeners for quantity buttons
       panierList.querySelectorAll('.btn-qty-increase').forEach(btn => {
-        btn.addEventListener('click', e => updateQuantity(e.target.dataset.id, 1));
+        btn.addEventListener('click', e => updateQuantity(String(e.target.dataset.id), 1));
       });
 
       panierList.querySelectorAll('.btn-qty-decrease').forEach(btn => {
-        btn.addEventListener('click', e => updateQuantity(e.target.dataset.id, -1));
+        btn.addEventListener('click', e => updateQuantity(String(e.target.dataset.id), -1));
       });
 
       panierList.querySelectorAll('.btn-remove-item').forEach(btn => {
-        btn.addEventListener('click', e => removeFromCart(e.target.dataset.id));
+        btn.addEventListener('click', e => removeFromCart(String(e.target.dataset.id)));
       });
     }
 
     function updateQuantity(id, change) {
       const cart = JSON.parse(localStorage.getItem('cart') || '[]');
-      const itemInCart = cart.find(item => item.itemId === id);
+      const itemIdString = String(id);
+      const itemInCart = cart.find(item => item.itemId === itemIdString);
 
       if (itemInCart) {
         itemInCart.qty += change;
         if (itemInCart.qty <= 0) {
-          removeFromCart(id);
+          removeFromCart(itemIdString);
         } else {
           localStorage.setItem('cart', JSON.stringify(cart));
           renderPanier();
@@ -530,7 +583,8 @@
 
     function removeFromCart(id) {
       let cart = JSON.parse(localStorage.getItem('cart') || '[]');
-      cart = cart.filter(item => item.itemId !== id);
+      const itemIdString = String(id);
+      cart = cart.filter(item => item.itemId !== itemIdString);
       localStorage.setItem('cart', JSON.stringify(cart));
       renderPanier();
       updateCartBadge();
@@ -584,7 +638,7 @@
 
     window.addWokToCart = function(wokItem) {
       const cart = JSON.parse(localStorage.getItem('cart') || '[]');
-      cart.push({ itemId: wokItem.id, qty: 1, isWok: true, details: wokItem });
+      cart.push({ itemId: String(wokItem.id), qty: 1, isWok: true, details: wokItem });
       localStorage.setItem('cart', JSON.stringify(cart));
       updateCartBadge();
       updateItemBadges();

@@ -85,7 +85,7 @@
 
       if (order) {
         document.getElementById('order-id').textContent = order.id.slice(4);
-        document.getElementById('delivery-slot').textContent = order.deliverySlot;
+        document.getElementById('delivery-slot').textContent = order.deliverySlot || "Le restaurant est en train de confirmer votre créneau de livraison. Veuillez patienter.";
         document.getElementById('order-total').textContent = order.total.toFixed(2);
 
         const config = statusConfig[order.status] || {};
@@ -99,7 +99,19 @@
         if (order.items && order.items.length > 0) {
           order.items.forEach(item => {
             const li = document.createElement('li');
-            li.textContent = `${item.name} (${item.quantity})`;
+            if (item.isWok && item.details) {
+                li.innerHTML = `
+                    ${item.name} (${item.quantity})
+                    <ul class="list-disc list-inside pl-4 text-sm">
+                        <li><strong>Base:</strong> ${item.details.base}</li>
+                        <li><strong>Pulpes:</strong> ${item.details.pulpes.join(', ') || 'Aucune'}</li>
+                        <li><strong>Favoris:</strong> ${item.details.favoris.join(', ') || 'Aucun'}</li>
+                        <li><strong>Sauce:</strong> ${item.details.sauce}</li>
+                        <li><strong>Toppings:</strong> ${item.details.toppings.join(', ') || 'Aucun'}</li>
+                    </ul>`;
+            } else {
+                li.textContent = `${item.name} (${item.quantity})`;
+            }
             itemsList.appendChild(li);
           });
         } else {
