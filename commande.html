@@ -153,6 +153,44 @@
       </section>
 
       <!-- Étape 3 : Affichage du menu pour la commande -->
+
+      <!-- Wok à composer -->
+      <section id="wok-composer" class="hidden mt-12">
+        <h2 class="text-3xl font-extrabold text-primary text-center mb-8">Wok à composer</h2>
+        <div class="bg-white p-8 rounded-lg shadow-md">
+          <!-- Choix de la base -->
+          <div class="mb-6">
+            <h3 class="text-xl font-semibold mb-2">1. Choix de la base</h3>
+            <div id="wok-base" class="grid md:grid-cols-2 gap-4"></div>
+          </div>
+          <!-- Choix de la pulpe -->
+          <div class="mb-6">
+            <h3 class="text-xl font-semibold mb-2">2. Choix de la pulpe</h3>
+            <div id="wok-pulpe" class="grid md:grid-cols-2 gap-4"></div>
+          </div>
+          <!-- Choix des favoris -->
+          <div class="mb-6">
+            <h3 class="text-xl font-semibold mb-2">3. Choix des favoris</h3>
+            <div id="wok-favoris" class="grid md:grid-cols-3 gap-4"></div>
+          </div>
+          <!-- Choix de la sauce -->
+          <div class="mb-6">
+            <h3 class="text-xl font-semibold mb-2">4. Choix de la sauce</h3>
+            <div id="wok-sauce" class="grid md:grid-cols-2 gap-4"></div>
+          </div>
+          <!-- Toppings -->
+          <div class="mb-6">
+            <h3 class="text-xl font-semibold mb-2">5. Toppings (+0.60€)</h3>
+            <div id="wok-toppings" class="grid md:grid-cols-2 gap-4"></div>
+          </div>
+
+          <div class="text-right font-bold text-xl mb-6">
+            Total Wok: <span id="wok-total">0.00</span>€
+          </div>
+          <button id="btn-add-wok" class="w-full px-6 py-3 bg-accent text-white font-bold rounded-lg shadow-md hover:shadow-lg transition">Ajouter le Wok au panier</button>
+        </div>
+      </section>
+
       <section id="order-menu" class="hidden mt-12">
         <h2 class="text-3xl font-extrabold text-primary text-center mb-8">Notre Menu</h2>
         <ul id="order-menu-list" class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -192,6 +230,7 @@
   <!-- Script minimal : gestion d’affichage -->
   <script type="module">
     import { menuItems } from './data/menu.js';
+    import { initWokComposer } from './js/wok.js';
 
     const btnEmporter  = document.getElementById('btn-emporter');
     const btnLivraison = document.getElementById('btn-livraison');
@@ -204,6 +243,7 @@
     const stepChoix = document.getElementById('step-choix');
     const orderMenuSection = document.getElementById('order-menu');
     const orderMenuList = document.getElementById('order-menu-list');
+    const wokComposerSection = document.getElementById('wok-composer');
     const cartFloat = document.getElementById('cart-float');
     const panierSection = document.getElementById('panier-section');
     const btnClosePanier = document.getElementById('btn-close-panier');
@@ -253,8 +293,15 @@
 
         // Update command details with cart content
         command.items = cart.map(item => {
-          const menuItem = menuItems.find(m => m.id === item.itemId);
-          return { id: item.itemId, name: menuItem.nom, quantity: item.qty, price: menuItem.prix };
+          const menuItem = item.isWok ? item.details : menuItems.find(m => m.id == item.itemId);
+          return { 
+            id: item.itemId, 
+            name: menuItem.nom, 
+            quantity: item.qty, 
+            price: menuItem.prix, 
+            isWok: item.isWok || false,
+            details: item.isWok ? menuItem.details : null
+          };
         });
         command.total = total;
         command.status = 'submitted'; // Ensure status is submitted
@@ -312,6 +359,7 @@
       msgRefused.classList.add('hidden');
       msgOrderReady.classList.add('hidden');
       orderMenuSection.classList.add('hidden');
+      wokComposerSection.classList.add('hidden');
       cartFloat.classList.add('hidden'); // Hide cart float
     }
 
@@ -323,6 +371,7 @@
       msgRefused.classList.add('hidden');
       msgOrderReady.classList.add('hidden');
       orderMenuSection.classList.add('hidden');
+      wokComposerSection.classList.add('hidden');
     }
 
     function showRefusedMessage() {
@@ -333,12 +382,14 @@
       msgRefused.classList.remove('hidden');
       msgOrderReady.classList.add('hidden');
       orderMenuSection.classList.add('hidden');
+      wokComposerSection.classList.add('hidden');
     }
 
     function showOrderUI() {
       stepChoix.classList.add('hidden');
       secLivraison.classList.add('hidden');
       orderMenuSection.classList.remove('hidden');
+      wokComposerSection.classList.remove('hidden');
       cartFloat.classList.remove('hidden');
 
       orderMenuList.innerHTML = ''; // Clear existing items
@@ -361,6 +412,7 @@
         btn.addEventListener('click', e => addToCart(+e.target.dataset.id));
       });
 
+      initWokComposer();
       updateCartBadge();
       updateItemBadges();
     }
@@ -412,7 +464,7 @@
       }
 
       cart.forEach(cartItem => {
-        const menuItem = menuItems.find(item => item.id === cartItem.itemId);
+        const menuItem = cartItem.isWok ? cartItem.details : menuItems.find(item => item.id == cartItem.itemId);
         if (menuItem) {
           const li = document.createElement('li');
           li.className = 'flex items-center justify-between';
@@ -420,6 +472,15 @@
             <div>
               <p class="font-medium">${menuItem.nom}</p>
               <p class="text-sm text-gray-600">${menuItem.prix.toFixed(2)}€</p>
+              ${cartItem.isWok ? `
+                <div class="text-xs text-gray-500 pl-4">
+                  <p><strong>Base:</strong> ${menuItem.details.base}</p>
+                  <p><strong>Pulpes:</strong> ${menuItem.details.pulpes.join(', ') || 'Aucune'}</p>
+                  <p><strong>Favoris:</strong> ${menuItem.details.favoris.join(', ') || 'Aucun'}</p>
+                  <p><strong>Sauce:</strong> ${menuItem.details.sauce}</p>
+                  <p><strong>Toppings:</strong> ${menuItem.details.toppings.join(', ') || 'Aucun'}</p>
+                </div>
+              ` : ''}
             </div>
             <div class="flex items-center gap-2">
               <button data-id="${cartItem.itemId}" class="btn-qty-decrease px-2 py-1 bg-gray-200 rounded">-</button>
@@ -436,16 +497,17 @@
       panierTotal.textContent = total.toFixed(2);
 
       // Add event listeners for quantity buttons
+      // Add event listeners for quantity buttons
       panierList.querySelectorAll('.btn-qty-increase').forEach(btn => {
-        btn.addEventListener('click', e => updateQuantity(+e.target.dataset.id, 1));
+        btn.addEventListener('click', e => updateQuantity(e.target.dataset.id, 1));
       });
 
       panierList.querySelectorAll('.btn-qty-decrease').forEach(btn => {
-        btn.addEventListener('click', e => updateQuantity(+e.target.dataset.id, -1));
+        btn.addEventListener('click', e => updateQuantity(e.target.dataset.id, -1));
       });
 
       panierList.querySelectorAll('.btn-remove-item').forEach(btn => {
-        btn.addEventListener('click', e => removeFromCart(+e.target.dataset.id));
+        btn.addEventListener('click', e => removeFromCart(e.target.dataset.id));
       });
     }
 
@@ -518,6 +580,14 @@
       } else { // pending
         showPendingMessage();
       }
+    }
+
+    window.addWokToCart = function(wokItem) {
+      const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+      cart.push({ itemId: wokItem.id, qty: 1, isWok: true, details: wokItem });
+      localStorage.setItem('cart', JSON.stringify(cart));
+      updateCartBadge();
+      updateItemBadges();
     }
 
     window.handleSubmit = function(e) {

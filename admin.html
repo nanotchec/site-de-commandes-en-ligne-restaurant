@@ -172,21 +172,39 @@
         const order = commandes.find(c => c.id === orderId);
         if (!order) return;
 
-        // If the drawer is already open for this order, close it
         if (!drawer.classList.contains('translate-x-full') && drawerTitle.textContent.includes(order.id.slice(4))) {
             closeDrawer();
             return;
         }
 
         drawerTitle.textContent = `Commande #${order.id.slice(4)}`;
+        
+        const itemsHtml = order.items.map(item => {
+            if (item.isWok && item.details) {
+                return `
+                    <li class="mb-2">
+                        <strong>${item.name} (${item.quantity})</strong>
+                        <ul class="list-disc list-inside pl-4 text-sm">
+                            <li><strong>Base:</strong> ${item.details.base}</li>
+                            <li><strong>Pulpes:</strong> ${item.details.pulpes.join(', ') || 'Aucune'}</li>
+                            <li><strong>Favoris:</strong> ${item.details.favoris.join(', ') || 'Aucun'}</li>
+                            <li><strong>Sauce:</strong> ${item.details.sauce}</li>
+                            <li><strong>Toppings:</strong> ${item.details.toppings.join(', ') || 'Aucun'}</li>
+                        </ul>
+                    </li>`;
+            } else {
+                return `<li>- ${item.name} (${item.quantity})</li>`;
+            }
+        }).join('');
+
         let contentHtml = `
             <p><strong>Client:</strong> ${order.customer.name}</p>
             <p><strong>Adresse:</strong> ${order.customer.address}</p>
             <p><strong>Téléphone:</strong> ${order.customer.phone}</p>
-            <p><strong>Créneau:</strong> ${order.deliverySlot}</p>
+            <p><strong>Créneau:</strong> ${order.deliverySlot || 'Non défini'}</p>
             <p><strong>Total:</strong> ${order.total.toFixed(2)}€</p>
             <h4 class="font-semibold mt-4">Articles:</h4>
-            <ul>${order.items.length > 0 ? order.items.map(i => `<li>- ${i.name} (${i.quantity})</li>`).join('') : '<li>Aucun article détaillé.</li>'}</ul>
+            <ul>${itemsHtml}</ul>
         `;
         drawerContent.innerHTML = contentHtml;
         drawer.classList.remove('translate-x-full');
