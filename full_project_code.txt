@@ -1,0 +1,1381 @@
+--- .gitignore ---
+.DS_Store
+
+
+--- README.md ---
+
+Voici le README.md complet à copier-coller, tout au format Markdown, sans coupure ni oubli :
+
+# Site de commandes en ligne – Restaurant Thaï Garden
+
+Projet web pour le restaurant Thaï Garden à Mauguio.
+- Menu interactif moderne, responsive, sans PDF.
+- Base pour la future prise de commandes et paiement en ligne.
+- Design UX/UI inspiré des meilleurs sites de restauration.
+
+---
+
+## 🚀 Présentation
+
+Ce dépôt propose le site vitrine du restaurant Thaï Garden, développé en HTML/CSS/Tailwind.  
+**Objectif MVP :** permettre aux clients de consulter le menu de façon agréable, depuis mobile ou ordinateur.  
+Ce projet sert de fondation à une future application de commande en ligne avec notifications, paiement, etc.
+
+---
+
+## 📝 Cahier des charges
+
+Le cahier des charges complet du projet (objectifs, parcours utilisateur, évolutions prévues…) est disponible ici :  
+👉 [Cahier Des Charges Thai Garden.pdf](./Cahier%20Des%20Charges%20Thai%20Garden.pdf)
+
+---
+
+## ✨ Fonctionnalités principales
+
+- Menu interactif (HTML, images, pas de PDF)
+- Header sticky (collé en haut au scroll)
+- Titres de section sticky (reliés à la section courante)
+- Cartes plats et entrées modernes avec survol animé
+- Section contact et horaires
+- Carte Google Maps intégrée
+- Dégradés et effets de fond
+- Design responsive (mobile, tablette, desktop)
+- Code optimisé pour évolution vers une appli de commande
+
+---
+
+## 🛣️ Roadmap / Évolutions prévues
+
+- [ ] Formulaire de demande de créneau (livraison / retrait)
+- [ ] Dashboard Manel (gestion des demandes en back-office)
+- [ ] Paiement en ligne (Stripe, Lydia, PayPal)
+- [ ] Suivi de commande, historique, compte client
+- [ ] Notifications (SMS/email)
+- [ ] Hébergement sur Vercel/Netlify
+
+---
+
+## 🛠 Stack technique
+
+- Frontend : HTML5, CSS3, JavaScript, Tailwind CSS  
+- Typographie : Playfair Display & Noto Sans (Google Fonts)
+- Backend (à venir) : Supabase (PostgreSQL)
+- Notifications (à venir) : Twilio, EmailJS, Web Push  
+- Déploiement : Vercel 
+
+---
+
+## 📦 Installation et lancement
+
+1. **Cloner ce dépôt**
+   ```bash
+   git clone https://github.com/nanotchec/site-de-commandes-en-ligne-restaurant.git
+   cd site-de-commandes-en-ligne-restaurant
+
+2.	**Lancer un serveur local (optionnel, mais conseillé)**
+Installer serve si besoin :
+
+npm install -g serve
+serve .
+
+ou :
+
+python3 -m http.server 8000
+
+Le site sera accessible sur http://localhost:8000.
+
+3.	**Ouvrir dans un navigateur :**
+Double-cliquer sur index.html fonctionne aussi si tu n’utilises pas de serveur local.
+
+⸻
+
+🤝 Contribution
+	1.	Forkez ce dépôt
+	2.	Créez une branche (feature/ma-fonctionnalité)
+	3.	Commitez vos changements
+	4.	Ouvrez une Pull Request
+
+⸻
+
+⚖️ Licence
+
+Ce projet est distribué sous licence Creative Commons Attribution – NonCommercial 4.0 International (CC BY-NC 4.0).
+
+Vous êtes libres de :
+	•	Partager : copier et redistribuer le matériel sur tous supports
+	•	Adapter : remixer, transformer, créer à partir du matériel
+
+À condition de :
+	•	Attribution : créditer l’auteur original (Thaï Garden)
+	•	NonCommercial : interdit toute utilisation commerciale ou intégration dans un commerce
+
+Voir le texte complet de la licence ici : [LICENSE](LICENSE)
+https://creativecommons.org/licenses/by-nc/4.0/legalcode
+# site-de-commandes-en-ligne-restaurant
+
+
+--- admin.html ---
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Thaï Garden – Dashboard admin</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind + couleurs -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: { primary: '#704B24', accent: '#ED8B00' },
+          fontFamily: {
+            sans: ['Noto Sans', 'sans-serif'],
+            serif: ['Playfair Display', 'serif']
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    body { font-family: 'Noto Sans', sans-serif; }
+    h1,h2 { font-family: 'Playfair Display', serif; }
+  </style>
+</head>
+<body class="min-h-screen bg-gradient-to-b from-gray-50 to-white text-gray-800">
+
+  <!-- Header -->
+  <header class="fixed top-0 w-full bg-white/70 backdrop-blur-sm shadow z-50">
+    <!-- Top bar -->
+    <div class="max-w-5xl mx-auto flex items-center justify-between py-4 px-6">
+      <span class="text-2xl font-bold text-primary">Dashboard Thaï Garden</span>
+      <a href="index.html" class="text-accent font-semibold hover:underline">← Retour au site</a>
+    </div>
+    <!-- Secondary navigation -->
+    <nav class="border-t border-gray-200">
+        <div class="max-w-5xl mx-auto flex gap-4 px-6">
+             <button id="tab-demandes" class="flex items-center gap-2 py-3 px-4 border-b-2 border-accent font-semibold">
+                Demandes <span id="badge-demandes" class="ml-1 bg-red-500 text-white rounded-full px-2 text-sm hidden">0</span>
+            </button>
+            <button id="tab-commandes" class="flex items-center gap-2 py-3 px-4 text-gray-600 hover:text-primary">
+                Commandes <span id="badge-commandes" class="ml-1 bg-red-500 text-white rounded-full px-2 text-sm hidden">0</span>
+            </button>
+             <button id="tab-historique" class="flex items-center gap-2 py-3 px-4 text-gray-600 hover:text-primary">
+                Historique
+            </button>
+        </div>
+    </nav>
+  </header>
+
+  <main class="pt-32 pb-12 max-w-5xl mx-auto px-4">
+
+    <div id="view-demandes">
+        <!-- Demandes en attente -->
+        <h1 class="text-4xl font-extrabold text-primary text-center mb-10">Demandes en attente</h1>
+        <div id="pending-container" class="space-y-4"></div>
+    </div>
+
+    <div id="view-commandes" class="hidden">
+        <h1 class="text-4xl font-extrabold text-primary text-center mb-10">Commandes</h1>
+        <table class="w-full text-left border-collapse">
+            <thead>
+              <tr class="border-b">
+                <th class="p-4">Client</th>
+                <th class="p-4">Adresse</th>
+                <th class="p-4">Créneau</th>
+                <th class="p-4">Contenu</th>
+                <th class="p-4">Total</th>
+                <th class="p-4">Statut</th>
+                <th class="p-4">Action</th>
+              </tr>
+            </thead>
+            <tbody id="commandes-body">
+              <!-- Les lignes de commande seront injectées ici par le JS -->
+            </tbody>
+        </table>
+    </div>
+
+    <div id="view-historique" class="hidden">
+        <h1 class="text-4xl font-extrabold text-primary text-center mb-10">Historique des demandes</h1>
+        <div id="history-container" class="space-y-4"></div>
+    </div>
+
+  </main>
+
+
+
+
+
+  <template id="request-template">
+    <div class="bg-white p-4 rounded-lg shadow-md flex items-center justify-between">
+      <div>
+        <p class="text-lg font-semibold req-name"></p>
+        <p class="text-gray-600 req-mode"></p>
+        <p class="text-gray-600 req-phone"></p>
+        <p class="text-gray-600 req-adresse"></p>
+      </div>
+      <div class="flex gap-2">
+        <button class="px-4 py-2 bg-red-500 text-white rounded btn-refuse">Refuser</button>
+        <button class="px-4 py-2 bg-green-500 text-white rounded btn-accept">Accepter</button>
+      </div>
+    </div>
+  </template>
+
+  
+
+  <!-- Order Detail Drawer -->
+  <div id="order-drawer" class="fixed inset-y-0 right-0 w-96 bg-white shadow-lg transform translate-x-full transition-transform z-[60]" role="dialog" aria-modal="true">
+    <header class="flex justify-between items-center p-4 border-b">
+      <h3 id="drawer-title" class="text-xl font-semibold"></h3>
+      <button id="drawer-close" class="text-gray-600 hover:text-gray-800" aria-label="Fermer le panneau de détails">✖️</button>
+    </header>
+    <div id="drawer-content" class="p-4 overflow-y-auto h-[calc(100%-64px)]"></div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="fixed bottom-4 right-4 p-4 bg-gray-800 text-white rounded-lg shadow-lg opacity-0 transition-opacity duration-300 z-[70]" role="alert"></div>
+
+</body>
+
+  <script>
+    /* === Simu base locale : tableau localStorage 'demandes' === */
+    function loadDemandes() {
+      return JSON.parse(localStorage.getItem('demandes') || '[]');
+    }
+    function saveDemandes(data) {
+      localStorage.setItem('demandes', JSON.stringify(data));
+    }
+
+    function loadCommandes() {
+        return JSON.parse(localStorage.getItem('commandes') || '[]');
+    }
+
+    function saveCommandes(data) {
+        localStorage.setItem('commandes', JSON.stringify(data));
+    }
+
+    const commandesBody = document.getElementById('commandes-body');
+
+    const pendingEl   = document.getElementById('pending-container');
+    const historyEl   = document.getElementById('history-container');
+    const tpl         = document.getElementById('request-template');
+    let currentId     = null; // id de la demande en cours
+
+    const tabDemandes = document.getElementById('tab-demandes');
+    const tabCommandes = document.getElementById('tab-commandes');
+    const tabHistorique = document.getElementById('tab-historique');
+    const viewDemandes = document.getElementById('view-demandes');
+    const viewCommandes = document.getElementById('view-commandes');
+    const viewHistorique = document.getElementById('view-historique');
+
+    const badgeDemandes = document.getElementById('badge-demandes');
+    const badgeCommandes = document.getElementById('badge-commandes');
+
+    const drawer = document.getElementById('order-drawer');
+    const drawerTitle = document.getElementById('drawer-title');
+    const drawerContent = document.getElementById('drawer-content');
+    const drawerClose = document.getElementById('drawer-close');
+    const toast = document.getElementById('toast');
+
+    drawerClose.onclick = () => closeDrawer();
+
+    function openDetailsDrawer(orderId) {
+        const commandes = loadCommandes();
+        const order = commandes.find(c => c.id === orderId);
+        if (!order) return;
+
+        if (!drawer.classList.contains('translate-x-full') && drawerTitle.textContent.includes(order.id.slice(4))) {
+            closeDrawer();
+            return;
+        }
+
+        drawerTitle.textContent = `Commande #${order.id.slice(4)}`;
+        
+        const itemsHtml = order.items.map(item => {
+            if (item.isWok && item.details) {
+                return `
+                    <li class="mb-2">
+                        <strong>${item.name} (${item.quantity})</strong>
+                        <ul class="list-disc list-inside pl-4 text-sm">
+                            <li><strong>Base:</strong> ${item.details.base}</li>
+                            <li><strong>Pulpes:</strong> ${item.details.pulpes.join(', ') || 'Aucune'}</li>
+                            <li><strong>Favoris:</strong> ${item.details.favoris.join(', ') || 'Aucun'}</li>
+                            <li><strong>Sauce:</strong> ${item.details.sauce}</li>
+                            <li><strong>Toppings:</strong> ${item.details.toppings.join(', ') || 'Aucun'}</li>
+                        </ul>
+                    </li>`;
+            } else {
+                return `<li>- ${item.name} (${item.quantity})</li>`;
+            }
+        }).join('');
+
+        let contentHtml = `
+            <p><strong>Client:</strong> ${order.customer.name}</p>
+            <p><strong>Adresse:</strong> ${order.customer.address}</p>
+            <p><strong>Téléphone:</strong> ${order.customer.phone}</p>
+            <p><strong>Créneau:</strong> ${order.deliverySlot || 'Non défini'}</p>
+            <p><strong>Total:</strong> ${order.total.toFixed(2)}€</p>
+            <h4 class="font-semibold mt-4">Articles:</h4>
+            <ul>${itemsHtml}</ul>
+        `;
+        drawerContent.innerHTML = contentHtml;
+        drawer.classList.remove('translate-x-full');
+    }
+
+    function closeDrawer() {
+      drawer.classList.add('translate-x-full');
+      showToast('Détails de la commande fermés.');
+    }
+
+    // Close drawer when clicking outside
+    document.addEventListener('click', (event) => {
+      const isClickInsideDrawer = drawer.contains(event.target);
+      const isDetailButton = event.target.classList.contains('text-accent'); // Assuming 'text-accent' is unique to detail buttons
+      if (!isClickInsideDrawer && !isDetailButton && !drawer.classList.contains('translate-x-full')) {
+        closeDrawer();
+      }
+    });
+
+    function showToast(msg) {
+      toast.textContent = msg;
+      toast.classList.remove('hidden');
+      // Force reflow to ensure transition plays
+      toast.offsetWidth;
+      toast.classList.add('opacity-100');
+
+      setTimeout(() => {
+        toast.classList.remove('opacity-100');
+        // Wait for fade-out transition to complete before hiding
+        toast.addEventListener('transitionend', () => {
+          toast.classList.add('hidden');
+        }, { once: true });
+      }, 4000); // Display for 4 seconds
+    }
+
+    function setActiveTab(activeTab) {
+        const tabs = [tabDemandes, tabCommandes, tabHistorique];
+        const views = [viewDemandes, viewCommandes, viewHistorique];
+
+        tabs.forEach((tab, index) => {
+            const view = views[index];
+            if (tab === activeTab) {
+                view.classList.remove('hidden');
+                tab.classList.add('border-b-2', 'border-accent', 'font-semibold');
+                tab.classList.remove('text-gray-600', 'hover:text-primary');
+            } else {
+                view.classList.add('hidden');
+                tab.classList.remove('border-b-2', 'border-accent', 'font-semibold');
+                tab.classList.add('text-gray-600', 'hover:text-primary');
+            }
+        });
+    }
+
+    tabDemandes.addEventListener('click', () => setActiveTab(tabDemandes));
+    tabCommandes.addEventListener('click', () => setActiveTab(tabCommandes));
+    tabHistorique.addEventListener('click', () => setActiveTab(tabHistorique));
+
+    /* Rendu initial */
+    render();
+    setActiveTab(tabDemandes);
+
+    /* Re-render si localStorage change */
+    window.addEventListener('storage', () => {
+      render();
+    });
+
+    function render() {
+      const demandes = loadDemandes();
+      renderDemandes(demandes);
+
+      const commandes = loadCommandes();
+      renderCommandes(commandes);
+
+      updateBadges(demandes, commandes);
+    }
+
+    function updateOrderStatus(orderId, newStatus) {
+        const commandes = loadCommandes();
+        const order = commandes.find(o => o.id === orderId);
+        if (order) {
+            order.status = newStatus;
+            saveCommandes(commandes);
+            render();
+            showToast(`Commande marquée comme ${statusConfig[newStatus].text}.`);
+        }
+    }
+
+    function updateDeliverySlot(orderId, newSlot) {
+        const commandes = loadCommandes();
+        const order = commandes.find(o => o.id === orderId);
+        if (order) {
+            order.deliverySlot = newSlot;
+            saveCommandes(commandes);
+            render();
+            showToast(`Créneau de livraison mis à jour pour la commande #${order.id.slice(4)}.`);
+        }
+    }
+
+    function renderDemandes(data) {
+      pendingEl.innerHTML = '';
+      historyEl.innerHTML = '';
+
+      data.forEach(req => {
+        const node = tpl.content.cloneNode(true);
+        node.querySelector('.req-name').textContent  = req.nom;
+        node.querySelector('.req-mode').textContent  = req.mode;
+        node.querySelector('.req-phone').textContent = req.tel;
+        node.querySelector('.req-adresse').textContent = req.adresse;
+
+        if (req.statut === 'pending') {
+          node.querySelector('.btn-refuse').onclick  = () => { updateStatut(req.id, 'refused'); showToast('Demande refusée.'); };
+          node.querySelector('.btn-accept').onclick  = () => { updateStatut(req.id, 'accepted'); showToast('Demande acceptée.'); };
+          pendingEl.appendChild(node);
+        } else {
+          // Transformation pour l’historique
+          node.querySelector('.btn-refuse').remove();
+          const btn = node.querySelector('.btn-accept');
+          btn.className =
+            'px-4 py-2 rounded text-white ' +
+            (req.statut === 'accepted' ? 'bg-green-600' : 'bg-red-600');
+          btn.textContent =
+            req.statut === 'accepted' ? 'Accepté' : 'Refusé';
+          historyEl.appendChild(node);
+        }
+      });
+    }
+
+    function renderCommandes(commandes) {
+        commandesBody.innerHTML = '';
+        const statusConfig = {
+            submitted: { icon: '⏳', color: 'bg-accent/10', text: 'En attente' },
+            preparing: { icon: '<span class="text-accent-dark">🍳</span>', color: 'bg-yellow-100', text: 'En préparation' },
+            ready: { icon: '<span class="text-green-600">✅</span>', color: 'bg-green-100', text: 'Prête' },
+            delivered: { icon: '<span class="text-gray-500">🚚</span>', color: 'bg-gray-100', text: 'Livrée' }
+        };
+
+        commandes.forEach(order => {
+            const config = statusConfig[order.status] || {};
+            const tr = document.createElement('tr');
+            tr.className = `border-b ${config.color || ''}`;
+            tr.innerHTML = `
+                <td class="p-4">${order.customer.name}</td>
+                <td class="p-4">${order.customer.address}</td>
+                <td class="p-4">
+                    <input type="time" class="border rounded px-2 py-1" value="${order.deliverySlot || ''}" onchange="updateDeliverySlot('${order.id}', this.value)">
+                </td>
+                <td class="p-4">${order.items.length} article(s)</td>
+                <td class="p-4">${order.total.toFixed(2)}€</td>
+                <td class="p-4">
+                    ${config.icon || ''} 
+                    <select class="border rounded px-2 py-1" onchange="updateOrderStatus('${order.id}', this.value)">
+                        <option value="submitted" ${order.status === 'submitted' ? 'selected' : ''}>${statusConfig.submitted.text}</option>
+                        <option value="preparing" ${order.status === 'preparing' ? 'selected' : ''}>${statusConfig.preparing.text}</option>
+                        <option value="ready" ${order.status === 'ready' ? 'selected' : ''}>${statusConfig.ready.text}</option>
+                        <option value="delivered" ${order.status === 'delivered' ? 'selected' : ''}>${statusConfig.delivered.text}</option>
+                    </select>
+                </td>
+                <td class="p-4"><button class="text-accent underline" onclick="openDetailsDrawer('${order.id}')">Détail</button></td>
+            `;
+            commandesBody.appendChild(tr);
+        });
+    }
+
+    function updateStatut(id, statut) {
+      const data = loadDemandes();
+      const item = data.find(r => r.id === id);
+      if (item) {
+        item.statut = statut;
+        saveDemandes(data);
+        render();
+      }
+    }
+  </script>
+</body>
+</html>
+
+--- commande.html ---
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Thaï Garden – Demande de disponibilité</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind CDN + couleurs -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#704B24',
+            accent:  '#ED8B00'
+          },
+          fontFamily: {
+            sans: ['Noto Sans', 'sans-serif'],
+            serif: ['Playfair Display', 'serif']
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    body { font-family: 'Noto Sans', sans-serif; }
+    h1, h2 { font-family: 'Playfair Display', serif; }
+  </style>
+</head>
+<body class="flex flex-col min-h-screen bg-gradient-to-b from-gray-50 to-white text-gray-800">
+
+  <!-- Header minimal -->
+  <header class="fixed top-0 w-full bg-white/70 backdrop-blur-sm shadow-md z-50">
+    <nav class="max-w-5xl mx-auto flex items-center justify-between py-4 px-6">
+      <a href="index.html" class="text-2xl font-bold text-primary">Thaï Garden</a>
+      <a href="menu.html" class="text-accent font-semibold hover:underline">Retour menu</a>
+    </nav>
+  </header>
+
+  <!-- Contenu principal -->
+  <main class="flex-1 pt-24 pb-12 max-w-3xl mx-auto px-4">
+
+    <h1 class="text-4xl font-extrabold text-primary text-center mb-10">Commander</h1>
+
+    <!-- Étape 1 : Choix emporter / livraison -->
+    <section id="step-choix" class="text-center space-y-6">
+      <p class="text-lg">Choisissez votre mode de récupération :</p>
+      <div class="flex flex-col sm:flex-row justify-center gap-6">
+        <button
+          id="btn-emporter"
+          class="px-8 py-4 bg-primary text-white rounded-lg shadow hover:shadow-lg transition"
+        >
+          Emporter
+        </button>
+        <button
+          id="btn-livraison"
+          class="px-8 py-4 bg-accent text-white rounded-lg shadow hover:shadow-lg transition"
+        >
+          Livraison
+        </button>
+      </div>
+    </section>
+
+    <!-- Étape 2 : Message pour « Emporter » -->
+    <section
+      id="section-emporter"
+      class="hidden mt-12 text-center bg-white/70 backdrop-blur-sm p-8 rounded-lg shadow-md"
+    >
+      <h2 class="text-2xl font-semibold mb-4">Retrait sur place (Emporter)</h2>
+      <p>Merci de passer directement au restaurant pour récupérer votre commande.<br/>
+         Adresse : GR François Mitterrand, 34130 Mauguio</p>
+      <a href="tel:+33987117057" class="inline-block mt-6 px-6 py-3 border-2 border-primary text-primary font-medium rounded-lg hover:bg-primary hover:text-white transition">
+        Appeler le restaurant
+      </a>
+    </section>
+
+    <!-- Étape 2 : Formulaire « Demande de disponibilité » pour livraison -->
+    <section id="section-livraison" class="mt-12 bg-white/70 backdrop-blur-sm p-8 rounded-lg shadow-md">
+        <h2 class="text-2xl font-semibold mb-6 text-center">Demande de disponibilité – Livraison</h2>
+      
+        <p class="mb-6 text-center text-gray-700">
+          Envoyez votre demande de disponibilité au restaurant.
+          Nous reviendrons vers vous dans <strong>quelques minutes</strong> pour confirmer votre créneau de livraison.
+          Ensuite, vous pourrez finaliser votre commande en ligne.
+          En attendant, découvrez notre
+          <a href="menu.html" class="text-accent underline">menu complet</a>.
+        </p>
+      
+        <form id="form-disponibilite" class="space-y-6" onsubmit="return handleSubmit(event)">
+          <!-- Nom -->
+          <div class="flex flex-col gap-2">
+            <label for="nom" class="font-medium">Nom</label>
+            <input
+              required id="nom" type="text"
+              placeholder="Votre nom complet"
+              class="border rounded px-3 py-2 focus:ring-2 focus:ring-accent"
+            />
+          </div>
+      
+          <!-- Téléphone -->
+          <div class="flex flex-col gap-1">
+            <label for="tel" class="font-medium">Téléphone</label>
+            <input
+              required id="tel" type="tel"
+              placeholder="+33 6 12 34 56 78"
+              class="border rounded px-3 py-2 focus:ring-2 focus:ring-accent"
+            />
+            <p class="text-sm text-gray-500">Format international, ex : +33 6 12 34 56 78</p>
+          </div>
+      
+          <!-- Adresse -->
+          <div class="flex flex-col gap-2">
+            <label for="adresse" class="font-medium">Adresse de livraison</label>
+            <input
+              required id="adresse" type="text"
+              placeholder="Votre adresse de livraison"
+              class="border rounded px-3 py-2 focus:ring-2 focus:ring-accent"
+            />
+          </div>
+      
+          <!-- Bouton d’envoi -->
+          <button
+            type="submit"
+            class="w-full px-6 py-3 bg-accent text-white font-bold rounded-lg shadow-md hover:shadow-lg transition"
+          >
+            Envoyer ma demande de disponibilité
+          </button>
+        </form>
+      
+        <!-- Message de confirmation -->
+        <div id="msg-ok" class="hidden mt-6 text-center text-green-700 font-medium">
+          Merci ! Votre demande de disponibilité a été envoyée.
+          Nous vous recontacterons bientôt pour confirmer votre créneau.
+        </div>
+
+        <!-- Message de refus -->
+        <div id="msg-refused" class="hidden mt-6 text-center text-red-700 font-medium">
+          Désolé, le restaurant n'est pas en mesure de prendre votre commande pour le moment. Veuillez réessayer plus tard.
+          <button id="btn-new-demand" class="mt-4 px-6 py-3 bg-accent text-white font-bold rounded-lg shadow-md hover:shadow-lg transition">Faire une nouvelle demande</button>
+        </div>
+
+        <!-- Message pour commander -->
+        <div id="msg-order-ready" class="hidden mt-6 text-center text-blue-700 font-medium">
+          Votre demande de disponibilité a été acceptée ! Vous pouvez maintenant passer votre commande.
+          <a href="menu.html" class="text-accent underline">Accéder au menu</a>.
+        </div>
+      </section>
+
+      <!-- Étape 3 : Affichage du menu pour la commande -->
+
+      <!-- Wok à composer -->
+      <section id="wok-composer" class="hidden mt-12">
+        <h2 class="text-3xl font-extrabold text-primary text-center mb-8">Wok à composer</h2>
+        <div class="bg-white p-8 rounded-lg shadow-md">
+          <!-- Choix de la base -->
+          <div class="mb-6">
+            <h3 class="text-xl font-semibold mb-2">1. Choix de la base</h3>
+            <div id="wok-base" class="grid md:grid-cols-2 gap-4"></div>
+          </div>
+          <!-- Choix de la pulpe -->
+          <div class="mb-6">
+            <h3 class="text-xl font-semibold mb-2">2. Choix de la pulpe</h3>
+            <div id="wok-pulpe" class="grid md:grid-cols-2 gap-4"></div>
+          </div>
+          <!-- Choix des favoris -->
+          <div class="mb-6">
+            <h3 class="text-xl font-semibold mb-2">3. Choix des favoris</h3>
+            <div id="wok-favoris" class="grid md:grid-cols-3 gap-4"></div>
+          </div>
+          <!-- Choix de la sauce -->
+          <div class="mb-6">
+            <h3 class="text-xl font-semibold mb-2">4. Choix de la sauce</h3>
+            <div id="wok-sauce" class="grid md:grid-cols-2 gap-4"></div>
+          </div>
+          <!-- Toppings -->
+          <div class="mb-6">
+            <h3 class="text-xl font-semibold mb-2">5. Toppings (+0.60€)</h3>
+            <div id="wok-toppings" class="grid md:grid-cols-2 gap-4"></div>
+          </div>
+
+          <div class="text-right font-bold text-xl mb-6">
+            Total Wok: <span id="wok-total">0.00</span>€
+          </div>
+          <button id="btn-add-wok" class="w-full px-6 py-3 bg-accent text-white font-bold rounded-lg shadow-md hover:shadow-lg transition">Ajouter le Wok au panier</button>
+        </div>
+      </section>
+
+      <section id="order-menu" class="hidden mt-12">
+        <h2 class="text-3xl font-extrabold text-primary text-center mb-8">Notre Menu</h2>
+
+        <div id="entrees-section" class="mb-8">
+          <h3 class="text-2xl font-bold text-primary mb-4">Entrées</h3>
+          <ul id="order-entrees-list" class="grid md:grid-cols-2 lg:grid-cols-3 gap-8"></ul>
+        </div>
+
+        <div id="plats-section" class="mb-8">
+          <h3 class="text-2xl font-bold text-primary mb-4">Plats</h3>
+          <ul id="order-plats-list" class="grid md:grid-cols-2 lg:grid-cols-3 gap-8"></ul>
+        </div>
+
+        <div id="desserts-section" class="mb-8">
+          <h3 class="text-2xl font-bold text-primary mb-4">Desserts</h3>
+          <ul id="order-desserts-list" class="grid md:grid-cols-2 lg:grid-cols-3 gap-8"></ul>
+        </div>
+
+        <div id="boissons-section" class="mb-8">
+          <h3 class="text-2xl font-bold text-primary mb-4">Boissons</h3>
+          <ul id="order-boissons-list" class="grid md:grid-cols-2 lg:grid-cols-3 gap-8"></ul>
+        </div>
+      </section>
+
+  </main>
+
+  <!-- Panier flottant -->
+  <div id="cart-float" class="fixed bottom-6 right-6 z-50 hidden">
+    <a href="#" class="relative block">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-accent" viewBox="0 0 20 20" fill="currentColor">
+        <path d="M3 1a1 1 0 000 2h1.22l.305 1.222a.997.997 0 00.922.778h9.446a1 1 0 00.922-.778L16.78 3H17a1 1 0 000-2H3zM6.07 7l1.22 4.891a1 1 0 00.922.609h4.576a1 1 0 00.922-.609L14.93 7H6.07z" />
+      </svg>
+      <span id="cart-count" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">0</span>
+    </a>
+  </div>
+
+  <!-- Modale Panier -->
+  <section id="panier-section" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+    <div class="bg-white rounded-lg shadow-xl p-8 max-w-2xl w-full">
+      <h2 class="text-3xl font-extrabold text-primary mb-6">Votre Panier</h2>
+      <ul id="panier-list" class="space-y-4 mb-6">
+        <!-- Les éléments du panier seront injectés ici -->
+      </ul>
+      <div class="text-right font-bold text-xl mb-6">
+        Total: <span id="panier-total">0.00</span>€
+      </div>
+      <div class="flex justify-between">
+        <button id="btn-close-panier" class="px-6 py-2 bg-gray-300 text-gray-800 rounded-lg hover:bg-gray-400 transition">Fermer</button>
+        <button id="btn-valider-commande" class="px-6 py-2 bg-accent text-white font-bold rounded-lg shadow-md hover:shadow-lg transition">Valider ma commande</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Script minimal : gestion d’affichage -->
+  <script type="module">
+    import { menuItems } from './data/menu.js';
+    import { initWokComposer } from './js/wok.js';
+
+    const btnEmporter  = document.getElementById('btn-emporter');
+    const btnLivraison = document.getElementById('btn-livraison');
+    const secEmporter  = document.getElementById('section-emporter');
+    const secLivraison = document.getElementById('section-livraison');
+    const formDisponibilite = document.getElementById('form-disponibilite');
+    const msgOk = document.getElementById('msg-ok');
+    const msgRefused = document.getElementById('msg-refused');
+    const msgOrderReady = document.getElementById('msg-order-ready');
+    const stepChoix = document.getElementById('step-choix');
+    const orderMenuSection = document.getElementById('order-menu');
+    const orderMenuList = document.getElementById('order-menu-list');
+    const wokComposerSection = document.getElementById('wok-composer');
+    const cartFloat = document.getElementById('cart-float');
+    const panierSection = document.getElementById('panier-section');
+    const btnClosePanier = document.getElementById('btn-close-panier');
+    const btnValiderCommande = document.getElementById('btn-valider-commande');
+    const panierList = document.getElementById('panier-list');
+    const panierTotal = document.getElementById('panier-total');
+    const btnNewDemand = document.getElementById('btn-new-demand');
+
+    btnNewDemand.addEventListener('click', () => {
+      showInitialChoice();
+    });
+
+    cartFloat.addEventListener('click', (e) => {
+      e.preventDefault();
+      renderPanier();
+      panierSection.classList.remove('hidden');
+    });
+
+    btnClosePanier.addEventListener('click', () => {
+      panierSection.classList.add('hidden');
+    });
+
+    btnValiderCommande.addEventListener('click', () => {
+      const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+      const total = parseFloat(panierTotal.textContent);
+
+      const demandes = loadDemandes();
+      const lastDemande = demandes.find(d => d.statut === 'accepted'); // Find the accepted demand
+
+      if (lastDemande) {
+        let commandes = loadCommandes();
+        let command = commandes.find(cmd => cmd.demandeId === lastDemande.id);
+
+        if (!command) {
+          // Create a new command if it doesn't exist for this accepted demand
+          command = {
+            id: `cmd-${Date.now()}`,
+            demandeId: lastDemande.id,
+            customer: { name: lastDemande.nom, address: lastDemande.adresse, phone: lastDemande.tel },
+            deliverySlot: '',
+            items: [],
+            total: 0,
+            status: 'submitted'
+          };
+          commandes.push(command);
+        }
+
+        // Update command details with cart content
+        command.items = cart.map(item => {
+          const menuItem = item.isWok ? item.details : menuItems.find(m => String(m.id) === item.itemId);
+          
+          if (!menuItem) {
+            console.error("Erreur: Article non trouvé dans menuItems pour l'ID:", item.itemId);
+            // Vous pouvez choisir de sauter cet article, ou de lancer une erreur, ou d'utiliser des valeurs par défaut
+            // Pour l'instant, nous allons retourner un objet avec des valeurs par défaut pour éviter le crash
+            return { 
+              id: item.itemId, 
+              name: "Article inconnu", 
+              quantity: item.qty, 
+              price: 0, 
+              isWok: item.isWok || false,
+              details: item.isWok ? item.details : null
+            };
+          }
+
+          return { 
+            id: item.itemId, 
+            name: menuItem.nom, 
+            quantity: item.qty, 
+            price: menuItem.prix, 
+            isWok: item.isWok || false,
+            details: item.isWok ? menuItem.details : null
+          };
+        });
+        command.total = total;
+        command.status = 'submitted'; // Ensure status is submitted
+
+        saveCommandes(commandes);
+
+        localStorage.removeItem('cart');
+        localStorage.setItem('currentOrderId', command.id); // Store order ID for tracking page
+        window.location.href = 'suivi.html'; // Redirect to tracking page
+      } else {
+        alert("Erreur: Aucune demande acceptée trouvée pour créer la commande.");
+      }
+    });
+
+    btnEmporter.addEventListener('click', () => {
+      secEmporter.classList.remove('hidden');
+      secLivraison.classList.add('hidden');
+      window.scrollTo({ top: secEmporter.offsetTop - 80, behavior: 'smooth' });
+    });
+
+    btnLivraison.addEventListener('click', () => {
+      secLivraison.classList.remove('hidden');
+      secEmporter.classList.add('hidden');
+      formDisponibilite.classList.remove('hidden'); // Ensure form is visible
+      msgOk.classList.add('hidden');
+      msgRefused.classList.add('hidden');
+      msgOrderReady.classList.add('hidden');
+      window.scrollTo({ top: secLivraison.offsetTop - 80, behavior: 'smooth' });
+    });
+
+    // Helpers pour le localStorage
+    function loadDemandes() {
+      const demandesJSON = localStorage.getItem('demandes');
+      return demandesJSON ? JSON.parse(demandesJSON) : [];
+    }
+
+    function saveDemandes(demandes) {
+      localStorage.setItem('demandes', JSON.stringify(demandes, null, 2)); // pretty print
+    }
+
+    function loadCommandes() {
+      const commandesJSON = localStorage.getItem('commandes');
+      return commandesJSON ? JSON.parse(commandesJSON) : [];
+    }
+
+    function saveCommandes(commandes) {
+      localStorage.setItem('commandes', JSON.stringify(commandes, null, 2));
+    }
+
+    function showInitialChoice() {
+      stepChoix.classList.remove('hidden');
+      secEmporter.classList.add('hidden');
+      secLivraison.classList.add('hidden');
+      msgOk.classList.add('hidden');
+      msgRefused.classList.add('hidden');
+      msgOrderReady.classList.add('hidden');
+      orderMenuSection.classList.add('hidden');
+      wokComposerSection.classList.add('hidden');
+      cartFloat.classList.add('hidden'); // Hide cart float
+    }
+
+    function showPendingMessage() {
+      stepChoix.classList.add('hidden');
+      formDisponibilite.classList.add('hidden');
+      secLivraison.classList.remove('hidden');
+      msgOk.classList.remove('hidden');
+      msgRefused.classList.add('hidden');
+      msgOrderReady.classList.add('hidden');
+      orderMenuSection.classList.add('hidden');
+      wokComposerSection.classList.add('hidden');
+    }
+
+    function showRefusedMessage() {
+      stepChoix.classList.add('hidden');
+      formDisponibilite.classList.add('hidden');
+      secLivraison.classList.remove('hidden');
+      msgOk.classList.add('hidden');
+      msgRefused.classList.remove('hidden');
+      msgOrderReady.classList.add('hidden');
+      orderMenuSection.classList.add('hidden');
+      wokComposerSection.classList.add('hidden');
+    }
+
+    function showOrderUI() {
+      stepChoix.classList.add('hidden');
+      secLivraison.classList.add('hidden');
+      orderMenuSection.classList.remove('hidden');
+      wokComposerSection.classList.remove('hidden');
+      cartFloat.classList.remove('hidden');
+
+      // Clear existing items in all category lists
+      document.getElementById('order-entrees-list').innerHTML = '';
+      document.getElementById('order-plats-list').innerHTML = '';
+      document.getElementById('order-desserts-list').innerHTML = '';
+      document.getElementById('order-boissons-list').innerHTML = '';
+
+      menuItems.forEach(item => {
+        const li = document.createElement('li');
+        li.className = 'bg-white p-4 rounded-lg shadow-md flex flex-col items-center text-center relative';
+        li.innerHTML = `
+          <img src="${item.img}" alt="${item.nom}" class="w-32 h-32 rounded-lg object-cover mb-4" />
+          <div class="flex-grow text-center">
+            <p class="font-medium text-lg">${item.nom}</p>
+          </div>
+          <span class="font-semibold text-accent">${item.prix.toFixed(2)}€</span>
+          <button data-id="${item.id}" class="mt-4 px-4 py-2 bg-accent text-white font-semibold rounded-full shadow hover:shadow-lg transition">+</button>
+          <span data-id="${item.id}" class="item-qty-badge absolute -top-2 -right-2 bg-blue-500 text-white text-xs font-bold rounded-full h-6 w-6 flex items-center justify-center hidden">0</span>
+        `;
+        
+        switch (item.categorie) {
+          case 'Entrées':
+            document.getElementById('order-entrees-list').appendChild(li);
+            break;
+          case 'Plats':
+            document.getElementById('order-plats-list').appendChild(li);
+            break;
+          case 'Desserts':
+            document.getElementById('order-desserts-list').appendChild(li);
+            break;
+          case 'Boissons':
+            document.getElementById('order-boissons-list').appendChild(li);
+            break;
+        }
+      });
+
+      document.querySelectorAll('#order-menu button').forEach(btn => {
+        btn.addEventListener('click', e => addToCart(+e.target.dataset.id));
+      });
+
+      initWokComposer();
+      updateCartBadge();
+      updateItemBadges();
+    }
+
+    function updateItemBadges() {
+      const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+      document.querySelectorAll('.item-qty-badge').forEach(badge => {
+        const itemId = badge.dataset.id;
+        const itemInCart = cart.find(item => item.itemId === itemId);
+        if (itemInCart && itemInCart.qty > 0) {
+          badge.textContent = itemInCart.qty;
+          badge.classList.remove('hidden');
+        } else {
+          badge.classList.add('hidden');
+        }
+      });
+    }
+
+    function addToCart(id) {
+      const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+      const itemIdString = String(id); // Ensure ID is a string
+      const itemInCart = cart.find(item => item.itemId === itemIdString);
+
+      if (itemInCart) {
+        itemInCart.qty++;
+      } else {
+        cart.push({ itemId: itemIdString, qty: 1 });
+      }
+
+      localStorage.setItem('cart', JSON.stringify(cart));
+      updateCartBadge();
+      updateItemBadges();
+    }
+
+    function updateCartBadge() {
+      const count = JSON.parse(localStorage.getItem('cart') || '[]')
+        .reduce((sum, it) => sum + it.qty, 0);
+      document.getElementById('cart-count').textContent = count;
+    }
+
+    function renderPanier() {
+      const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+      panierList.innerHTML = '';
+      let total = 0;
+
+      if (cart.length === 0) {
+        panierList.innerHTML = '<p>Votre panier est vide.</p>';
+        panierTotal.textContent = '0.00';
+        return;
+      }
+
+      cart.forEach(cartItem => {
+        const menuItem = cartItem.isWok ? cartItem.details : menuItems.find(item => String(item.id) === cartItem.itemId);
+        if (menuItem) {
+          const li = document.createElement('li');
+          li.className = 'flex items-center justify-between';
+          li.innerHTML = `
+            <div>
+              <p class="font-medium">${menuItem.nom}</p>
+              <p class="text-sm text-gray-600">${menuItem.prix.toFixed(2)}€</p>
+              ${cartItem.isWok ? `
+                <div class="text-xs text-gray-500 pl-4">
+                  <p><strong>Base:</strong> ${menuItem.details.base}</p>
+                  <p><strong>Pulpes:</strong> ${menuItem.details.pulpes.join(', ') || 'Aucune'}</p>
+                  <p><strong>Favoris:</strong> ${menuItem.details.favoris.join(', ') || 'Aucun'}</p>
+                  <p><strong>Sauce:</strong> ${menuItem.details.sauce}</p>
+                  <p><strong>Toppings:</strong> ${menuItem.details.toppings.join(', ') || 'Aucun'}</p>
+                </div>
+              ` : ''}
+            </div>
+            <div class="flex items-center gap-2">
+              <button data-id="${cartItem.itemId}" class="btn-qty-decrease px-2 py-1 bg-gray-200 rounded">-</button>
+              <span>${cartItem.qty}</span>
+              <button data-id="${cartItem.itemId}" class="btn-qty-increase px-2 py-1 bg-gray-200 rounded">+</button>
+              <button data-id="${cartItem.itemId}" class="btn-remove-item text-red-500 hover:text-red-700">Supprimer</button>
+            </div>
+          `;
+          panierList.appendChild(li);
+          total += menuItem.prix * cartItem.qty;
+        }
+      });
+
+      panierTotal.textContent = total.toFixed(2);
+
+      // Add event listeners for quantity buttons
+      // Add event listeners for quantity buttons
+      panierList.querySelectorAll('.btn-qty-increase').forEach(btn => {
+        btn.addEventListener('click', e => updateQuantity(String(e.target.dataset.id), 1));
+      });
+
+      panierList.querySelectorAll('.btn-qty-decrease').forEach(btn => {
+        btn.addEventListener('click', e => updateQuantity(String(e.target.dataset.id), -1));
+      });
+
+      panierList.querySelectorAll('.btn-remove-item').forEach(btn => {
+        btn.addEventListener('click', e => removeFromCart(String(e.target.dataset.id)));
+      });
+    }
+
+    function updateQuantity(id, change) {
+      const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+      const itemIdString = String(id);
+      const itemInCart = cart.find(item => item.itemId === itemIdString);
+
+      if (itemInCart) {
+        itemInCart.qty += change;
+        if (itemInCart.qty <= 0) {
+          removeFromCart(itemIdString);
+        } else {
+          localStorage.setItem('cart', JSON.stringify(cart));
+          renderPanier();
+          updateCartBadge();
+          updateItemBadges();
+        }
+      }
+    }
+
+    function removeFromCart(id) {
+      let cart = JSON.parse(localStorage.getItem('cart') || '[]');
+      const itemIdString = String(id);
+      cart = cart.filter(item => item.itemId !== itemIdString);
+      localStorage.setItem('cart', JSON.stringify(cart));
+      renderPanier();
+      updateCartBadge();
+      updateItemBadges();
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      checkDemandStatusAndDisplay();
+      updateItemBadges(); // Initial update on page load
+    });
+
+    window.addEventListener('storage', (e) => {
+      if (e.key === 'demandes') {
+        checkDemandStatusAndDisplay();
+      }
+    });
+
+    function checkDemandStatusAndDisplay() {
+      const mesDemandes = loadDemandes();
+      const commandes = loadCommandes();
+      const currentOrderId = localStorage.getItem('currentOrderId');
+      const currentOrder = commandes.find(cmd => cmd.id === currentOrderId);
+
+      // If there's an active order that's not delivered, redirect to suivi.html
+      if (currentOrder && currentOrder.status !== 'delivered') {
+        window.location.href = 'suivi.html';
+        return;
+      }
+
+      const lastDemande = mesDemandes[mesDemandes.length - 1]; 
+
+      if (!lastDemande) {
+        showInitialChoice();
+        return;
+      }
+
+      if (lastDemande.statut === 'accepted') {
+        const associatedCommand = commandes.find(cmd => cmd.demandeId === lastDemande.id);
+        if (associatedCommand && associatedCommand.status === 'delivered') {
+          showInitialChoice();
+        } else {
+          // If the demand is accepted but no active order is being tracked, show the order UI
+          showOrderUI();
+        }
+      } else if (lastDemande.statut === 'refused') {
+        showRefusedMessage();
+      } else { // pending
+        showPendingMessage();
+      }
+    }
+
+    window.addWokToCart = function(wokItem) {
+      const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+      cart.push({ itemId: String(wokItem.id), qty: 1, isWok: true, details: wokItem });
+      localStorage.setItem('cart', JSON.stringify(cart));
+      updateCartBadge();
+      updateItemBadges();
+    }
+
+    window.handleSubmit = function(e) {
+      e.preventDefault();
+
+      const nomInput = document.getElementById('nom');
+      const telInput = document.getElementById('tel');
+      const adresseInput = document.getElementById('adresse');
+
+      const nouvelles = loadDemandes();
+      nouvelles.push({
+        id: `req-${Date.now()}`,
+        nom: nomInput.value,
+        tel: telInput.value,
+        adresse: adresseInput.value,
+        mode: 'Livraison',
+        statut: 'pending'
+      });
+      saveDemandes(nouvelles);
+
+      showPendingMessage();
+      return false;
+    }
+  </script>
+</body>
+</html>
+
+--- js/main.js ---
+
+// Scroll fade-in animation avec translate Y
+window.addEventListener('DOMContentLoaded', function() {
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        // Une fois la section visible, on la fait apparaître et remonter
+        entry.target.classList.add('opacity-100', 'translate-y-0');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1 });
+
+  // Pour chaque section ciblée, on ajoute les classes initiales
+  document.querySelectorAll('.fade-in-section').forEach((section) => {
+    section.classList.add(
+      'opacity-0',       // invisible au départ
+      'translate-y-8',   // 2 rem vers le bas
+      'transition-all',  // transition sur toutes les propriétés
+      'duration-700'     // durée 700 ms
+    );
+    observer.observe(section);
+  });
+});
+
+--- js/wok.js ---
+
+
+export const wokOptions = {
+  bases: [
+    { nom: "Pâtes de riz", prix: 6.90 },
+    { nom: "Nouilles jaunes", prix: 6.90 },
+    { nom: "Udon", prix: 6.90 },
+    { nom: "Riz parfumé", prix: 6.90 },
+  ],
+  pulpes: [
+    { nom: "Oignons", prix: 0.40 },
+    { nom: "Ail", prix: 0.40 },
+    { nom: "Gingembre", prix: 0.40 },
+    { nom: "Piment", prix: 0.40 },
+  ],
+  favoris: [
+    { nom: "Poulet", prix: 2.00 },
+    { nom: "Poulet crousti", prix: 2.80 },
+    { nom: "Bœuf", prix: 2.50 },
+    { nom: "Crevettes", prix: 2.50 },
+    { nom: "Calamar", prix: 2.50 },
+    { nom: "Tofu", prix: 2.00 },
+    { nom: "Pak choï", prix: 1.40 },
+    { nom: "Poivrons", prix: 1.40 },
+    { nom: "Oignons doux", prix: 1.20 },
+    { nom: "Citronnelle", prix: 1.20 },
+    { nom: "Brocolis", prix: 1.40 },
+    { nom: "Basilic thaï", prix: 1.20 },
+    { nom: "Mini maïs", prix: 1.40 },
+    { nom: "Ananas", prix: 1.40 },
+    { nom: "Champignon noir", prix: 1.50 },
+    { nom: "Champignon de Paris", prix: 1.50 },
+    { nom: "Shitaké", prix: 1.50 },
+    { nom: "Bambou", prix: 1.40 },
+    { nom: "Noix de cajou", prix: 1.20 },
+  ],
+  sauces: [
+    { nom: "Pad Thaï" },
+    { nom: "Pad See Ew" },
+    { nom: "Curry Rouge" },
+    { nom: "Curry Jaune" },
+    { nom: "Aigre-douce" },
+  ],
+  toppings: [
+    { nom: "Coriandre fraîche" },
+    { nom: "Cacahuètes" },
+    { nom: "Oignons frits" },
+    { nom: "Crevettes séchées" },
+    { nom: "Ciboulette thaï" },
+    { nom: "Citron" },
+    { nom: "Graines de sesame" },
+  ],
+};
+
+let selectedWok = {
+  base: null,
+  pulpes: [],
+  favoris: [],
+  sauce: null,
+  toppings: [],
+  total: 0,
+};
+
+function renderWokOptions() {
+  const { bases, pulpes, favoris, sauces, toppings } = wokOptions;
+
+  const renderOptions = (containerId, items, type) => {
+    const container = document.getElementById(containerId);
+    container.innerHTML = '';
+    items.forEach(item => {
+      const div = document.createElement('div');
+      div.className = 'flex items-center gap-2';
+      const input = document.createElement('input');
+      input.type = type === 'radio' ? 'radio' : 'checkbox';
+      input.name = type === 'radio' ? containerId : item.nom;
+      input.value = item.nom;
+      input.dataset.prix = item.prix || (containerId === 'wok-toppings' ? 0.60 : 0);
+      input.dataset.category = containerId.replace('wok-', '');
+      input.addEventListener('change', updateWokSelection);
+
+      const label = document.createElement('label');
+      label.textContent = `${item.nom}${item.prix ? ` (+${item.prix.toFixed(2)}€)` : ''}`;
+      label.htmlFor = input.id = `${containerId}-${item.nom}`;
+
+      div.appendChild(input);
+      div.appendChild(label);
+      container.appendChild(div);
+    });
+  };
+
+  renderOptions('wok-base', bases, 'radio');
+  renderOptions('wok-pulpe', pulpes, 'checkbox');
+  renderOptions('wok-favoris', favoris, 'checkbox');
+  renderOptions('wok-sauce', sauces, 'radio');
+  renderOptions('wok-toppings', toppings, 'checkbox');
+}
+
+function updateWokSelection(event) {
+  const { value, checked, dataset, type } = event.target;
+  const prix = parseFloat(dataset.prix);
+  const category = dataset.category; // e.g., 'base', 'pulpe', 'favoris'
+
+  if (type === 'radio') {
+    selectedWok[category] = { nom: value, prix };
+  } else {
+    // For checkboxes, map the singular category to the plural property name in the selectedWok object
+    const listName = category === 'pulpe' ? 'pulpes' : category;
+    const list = selectedWok[listName];
+
+    if (!list) return; // Safety check
+
+    if (checked) {
+      list.push({ nom: value, prix });
+    } else {
+      const index = list.findIndex(item => item.nom === value);
+      if (index > -1) list.splice(index, 1);
+    }
+  }
+
+  calculateWokTotal();
+}
+
+function calculateWokTotal() {
+  let total = 0;
+  if (selectedWok.base) total += selectedWok.base.prix;
+  selectedWok.pulpes.forEach(p => total += p.prix);
+  selectedWok.favoris.forEach(f => total += f.prix);
+  selectedWok.toppings.forEach(t => total += 0.60);
+
+  selectedWok.total = total;
+  document.getElementById('wok-total').textContent = total.toFixed(2);
+}
+
+function resetWokForm() {
+  selectedWok = {
+    base: null,
+    pulpes: [],
+    favoris: [],
+    sauce: null,
+    toppings: [],
+    total: 0,
+  };
+
+  document.querySelectorAll('#wok-composer input').forEach(input => {
+    if (input.type === 'radio' || input.type === 'checkbox') {
+      input.checked = false;
+    }
+  });
+
+  calculateWokTotal();
+}
+
+document.getElementById('btn-add-wok').addEventListener('click', () => {
+  if (!selectedWok.base || !selectedWok.sauce) {
+    alert('Veuillez choisir une base et une sauce pour votre Wok.');
+    return;
+  }
+
+  const wokItem = {
+    id: `wok-${Date.now()}`,
+    nom: 'Wok Composé',
+    prix: selectedWok.total,
+    categorie: 'Wok',
+    details: {
+      base: selectedWok.base.nom,
+      pulpes: selectedWok.pulpes.map(p => p.nom),
+      favoris: selectedWok.favoris.map(f => f.nom),
+      sauce: selectedWok.sauce.nom,
+      toppings: selectedWok.toppings.map(t => t.nom),
+    }
+  };
+
+  window.addWokToCart(wokItem);
+  alert('Wok ajouté au panier !');
+  resetWokForm();
+});
+
+export function initWokComposer() {
+  renderWokOptions();
+}
