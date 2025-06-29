@@ -39,7 +39,7 @@
   <header class="fixed top-0 w-full bg-white/70 backdrop-blur-sm shadow-md z-50">
     <nav class="max-w-5xl mx-auto flex items-center justify-between py-4 px-6">
       <a href="index.html" class="text-2xl font-bold text-primary">Thaï Garden</a>
-      <a href="menu.html" class="text-accent font-semibold hover:underline">Retour menu</a>
+      <a href="index.html" class="text-accent font-semibold hover:underline">Retour accueil</a>
     </nav>
   </header>
 
@@ -47,7 +47,12 @@
   <main class="flex-1 pt-24 pb-12 max-w-3xl mx-auto px-4 text-center">
     <h1 class="text-4xl font-extrabold text-primary mb-10">Suivi de votre commande</h1>
 
-    <div id="order-details" class="bg-white/70 backdrop-blur-sm p-8 rounded-lg shadow-md space-y-4">
+    <div id="demand-status-message" class="bg-white/70 backdrop-blur-sm p-8 rounded-lg shadow-md space-y-4 mb-8 hidden">
+      <p class="text-lg font-semibold" id="demand-message-text"></p>
+      <button id="btn-new-demand-from-suivi" class="px-6 py-3 bg-accent text-white font-bold rounded-lg shadow-md hover:shadow-lg transition hidden">Faire une nouvelle demande</button>
+    </div>
+
+    <div id="order-details" class="bg-white/70 backdrop-blur-sm p-8 rounded-lg shadow-md space-y-4 hidden">
       <p class="text-lg"><strong>Numéro de commande :</strong> <span id="order-id"></span></p>
       <p class="text-lg"><strong>Statut actuel :</strong> <span id="order-status" class="font-semibold"></span></p>
       <p class="text-lg"><strong>Créneau de livraison :</strong> <span id="delivery-slot"></span></p>
@@ -61,20 +66,100 @@
     </main>
 
   <script>
-    function loadCommandes() {
-      const commandesJSON = localStorage.getItem('commandes');
-      return commandesJSON ? JSON.parse(commandesJSON) : [];
+    function loadDemandes() {
+      return JSON.parse(localStorage.getItem('demandes') || '[]');
     }
 
-    function renderOrderStatus() {
-      const currentOrderId = localStorage.getItem('currentOrderId');
-      if (!currentOrderId) {
-        document.getElementById('order-details').innerHTML = '<p class="text-red-500">Aucune commande en cours à suivre.</p>';
+    function saveDemandes(data) {
+      localStorage.setItem('demandes', JSON.stringify(data));
+    }
+
+    function loadCommandes() {
+      return JSON.parse(localStorage.getItem('commandes') || '[]');
+    }
+
+    const demandStatusMessageDiv = document.getElementById('demand-status-message');
+    const demandMessageText = document.getElementById('demand-message-text');
+    const btnNewDemandFromSuivi = document.getElementById('btn-new-demand-from-suivi');
+    const orderDetailsDiv = document.getElementById('order-details');
+
+    btnNewDemandFromSuivi.addEventListener('click', () => {
+      localStorage.removeItem('currentDemandId');
+      localStorage.removeItem('currentOrderId');
+      window.location.href = 'commande.html';
+    });
+
+    let retryCount = 0;
+    const MAX_RETRIES = 15;
+    const RETRY_DELAY_MS = 250; // 250ms delay
+
+    function renderStatus() {
+      const currentDemandId = localStorage.getItem('currentDemandId');
+      console.log('currentDemandId:', currentDemandId);
+      const demandes = loadDemandes();
+      console.log('demandes:', demandes);
+      const currentDemand = demandes.find(d => d.id === currentDemandId);
+      console.log('currentDemand:', currentDemand);
+
+      if (!currentDemand && retryCount < MAX_RETRIES) {
+        // If demand not found and retries left, try again after a short delay
+        retryCount++;
+        setTimeout(renderStatus, RETRY_DELAY_MS);
+        return; // Exit this call, wait for retry
+      }
+
+      if (!currentDemand) {
+        // If still not found after max retries
+        demandStatusMessageDiv.classList.remove('hidden');
+        demandMessageText.textContent = 'Aucune demande en cours ou trouvée.';
+        btnNewDemandFromSuivi.classList.remove('hidden');
+        orderDetailsDiv.classList.add('hidden');
         return;
       }
 
+      // Reset retry count if demand is found
+      retryCount = 0;
+
+      if (currentDemand.statut === 'pending') {
+        demandStatusMessageDiv.classList.remove('hidden');
+        demandMessageText.innerHTML = '⌛ En attente de validation du restaurant.<br><span class="text-sm text-gray-600">Cela ne prendra pas plus de quelques minutes. En cas de problème, contactez le restaurant au <a href="tel:+33987117057" class="text-accent hover:underline">+33 9 87 11 70 57</a>.</span>';
+        btnNewDemandFromSuivi.classList.add('hidden');
+        orderDetailsDiv.classList.add('hidden');
+      } else if (currentDemand.statut === 'refused') {
+        demandStatusMessageDiv.classList.remove('hidden');
+        demandMessageText.innerHTML = 'Votre demande a été refusée par le restaurant.<br><span class="text-sm text-gray-600">Le restaurant n\'est malheureusement pas en mesure de prendre votre commande pour le moment.</span>';
+        btnNewDemandFromSuivi.classList.remove('hidden');
+        orderDetailsDiv.classList.add('hidden');
+      } else if (currentDemand.statut === 'accepted') {
+        demandStatusMessageDiv.classList.add('hidden');
+        orderDetailsDiv.classList.remove('hidden');
+        renderOrderDetails(currentDemand.id);
+      }
+    }
+
+    let orderRetryCount = 0;
+    const ORDER_MAX_RETRIES = 15;
+    const ORDER_RETRY_DELAY_MS = 250; // Same as demand retries
+
+    function renderOrderDetails(demandId) {
       const commandes = loadCommandes();
-      const order = commandes.find(cmd => cmd.id === currentOrderId);
+      const order = commandes.find(cmd => cmd.demandeId === demandId);
+
+      if (!order && orderRetryCount < ORDER_MAX_RETRIES) {
+        // If order not found and retries left, try again after a short delay
+        orderRetryCount++;
+        setTimeout(() => renderOrderDetails(demandId), ORDER_RETRY_DELAY_MS);
+        return; // Exit this call, wait for retry
+      }
+
+      if (!order) {
+        // If still not found after max retries
+        orderDetailsDiv.innerHTML = '<p class="text-red-700 bg-red-100 p-4 rounded-lg font-bold">Erreur : Commande associée introuvable. Veuillez contacter le support.</p>';
+        return;
+      }
+
+      // Reset retry count if order is found
+      orderRetryCount = 0;
 
       const statusConfig = {
           submitted: { icon: '⏳', color: 'text-yellow-500', text: 'En attente' },
@@ -83,60 +168,45 @@
           delivered: { icon: '<span class="text-gray-500">🚚</span>', color: 'text-gray-500', text: 'Livrée' }
       };
 
-      if (order) {
-        document.getElementById('order-id').textContent = order.id.slice(4);
-        document.getElementById('delivery-slot').textContent = order.deliverySlot || "Le restaurant est en train de confirmer votre créneau de livraison. Veuillez patienter.";
-        document.getElementById('order-total').textContent = order.total.toFixed(2);
+      document.getElementById('order-id').textContent = order.id.slice(4);
+      document.getElementById('delivery-slot').textContent = order.deliverySlot || "En attente de confirmation du créneau.";
+      document.getElementById('order-total').textContent = order.total.toFixed(2);
 
-        const config = statusConfig[order.status] || {};
-        const statusElement = document.getElementById('order-status');
-        statusElement.innerHTML = `${config.icon || ''} ${config.text || order.status}`;
-        statusElement.className = 'font-semibold'; // Reset classes
-        statusElement.classList.add(config.color || '');
+      const config = statusConfig[order.status] || {};
+      const statusElement = document.getElementById('order-status');
+      statusElement.innerHTML = `${config.icon || ''} ${config.text || order.status}`;
+      statusElement.className = 'font-semibold'; // Reset classes
+      statusElement.classList.add(config.color || '');
 
-        const itemsList = document.getElementById('items-list');
-        itemsList.innerHTML = '';
-        if (order.items && order.items.length > 0) {
-          order.items.forEach(item => {
-            const li = document.createElement('li');
-            if (item.isWok && item.details) {
-                li.innerHTML = `
-                    ${item.name} (${item.quantity})
-                    <ul class="list-disc list-inside pl-4 text-sm">
-                        <li><strong>Base:</strong> ${item.details.base}</li>
-                        <li><strong>Pulpes:</strong> ${item.details.pulpes.join(', ') || 'Aucune'}</li>
-                        <li><strong>Favoris:</strong> ${item.details.favoris.join(', ') || 'Aucun'}</li>
-                        <li><strong>Sauce:</strong> ${item.details.sauce}</li>
-                        <li><strong>Toppings:</strong> ${item.details.toppings.join(', ') || 'Aucun'}</li>
-                    </ul>`;
-            } else {
-                li.textContent = `${item.name} (${item.quantity})`;
-            }
-            itemsList.appendChild(li);
-          });
-        } else {
-          itemsList.innerHTML = '<li>Aucun article détaillé.</li>';
-        }
-
+      const itemsList = document.getElementById('items-list');
+      itemsList.innerHTML = '';
+      if (order.items && order.items.length > 0) {
+        order.items.forEach(item => {
+          const li = document.createElement('li');
+          if (item.isWok && item.details) {
+              li.innerHTML = `
+                  ${item.name} (${item.quantity})
+                  <ul class="list-disc list-inside pl-4 text-sm">
+                      <li><strong>Base:</strong> ${item.details.base}</li>
+                      <li><strong>Pulpes:</strong> ${item.details.pulpes.join(', ') || 'Aucune'}</li>
+                      <li><strong>Favoris:</strong> ${item.details.favoris.join(', ') || 'Aucun'}</li>
+                      <li><strong>Sauce:</strong> ${item.details.sauce}</li>
+                      <li><strong>Toppings:</strong> ${item.details.toppings.join(', ') || 'Aucun'}</li>
+                  </ul>`;
+          } else {
+              li.textContent = `${item.name} (${item.quantity})`;
+          }
+          itemsList.appendChild(li);
+        });
       } else {
-        document.getElementById('order-details').innerHTML = '<p class="text-red-500">Commande introuvable.</p>';
+        itemsList.innerHTML = '<li>Aucun article détaillé.</li>';
       }
     }
 
-    function getStatusText(status) {
-      const statusMap = {
-        submitted: 'En attente',
-        preparing: 'En préparation',
-        ready: 'Prête',
-        delivered: 'Livrée'
-      };
-      return statusMap[status] || status;
-    }
-
-    document.addEventListener('DOMContentLoaded', renderOrderStatus);
+    document.addEventListener('DOMContentLoaded', renderStatus);
     window.addEventListener('storage', (e) => {
-      if (e.key === 'commandes') {
-        renderOrderStatus();
+      if (e.key === 'demandes' || e.key === 'commandes') {
+        renderStatus();
       }
     });
   </script>

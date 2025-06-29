@@ -48,108 +48,17 @@
 
     <h1 class="text-4xl font-extrabold text-primary text-center mb-10">Commander</h1>
 
-    <!-- Étape 1 : Choix emporter / livraison -->
-    <section id="step-choix" class="text-center space-y-6">
-      <p class="text-lg">Choisissez votre mode de récupération :</p>
-      <div class="flex flex-col sm:flex-row justify-center gap-6">
-        <button
-          id="btn-emporter"
-          class="px-8 py-4 bg-primary text-white rounded-lg shadow hover:shadow-lg transition"
-        >
-          Emporter
-        </button>
-        <button
-          id="btn-livraison"
-          class="px-8 py-4 bg-accent text-white rounded-lg shadow hover:shadow-lg transition"
-        >
-          Livraison
-        </button>
-      </div>
-    </section>
-
-    <!-- Étape 2 : Message pour « Emporter » -->
-    <section
-      id="section-emporter"
-      class="hidden mt-12 text-center bg-white/70 backdrop-blur-sm p-8 rounded-lg shadow-md"
-    >
-      <h2 class="text-2xl font-semibold mb-4">Retrait sur place (Emporter)</h2>
-      <p>Merci de passer directement au restaurant pour récupérer votre commande.<br/>
-         Adresse : GR François Mitterrand, 34130 Mauguio</p>
-      <a href="tel:+33987117057" class="inline-block mt-6 px-6 py-3 border-2 border-primary text-primary font-medium rounded-lg hover:bg-primary hover:text-white transition">
-        Appeler le restaurant
-      </a>
-    </section>
+    
 
     <!-- Étape 2 : Formulaire « Demande de disponibilité » pour livraison -->
-    <section id="section-livraison" class="mt-12 bg-white/70 backdrop-blur-sm p-8 rounded-lg shadow-md">
-        <h2 class="text-2xl font-semibold mb-6 text-center">Demande de disponibilité – Livraison</h2>
+    <section id="section-livraison" class="hidden mt-12 bg-white/70 backdrop-blur-sm p-8 rounded-lg shadow-md">
+        <h2 class="text-2xl font-semibold mb-6 text-center">Vos coordonnées</h2>
       
         <p class="mb-6 text-center text-gray-700">
-          Envoyez votre demande de disponibilité au restaurant.
-          Nous reviendrons vers vous dans <strong>quelques minutes</strong> pour confirmer votre créneau de livraison.
-          Ensuite, vous pourrez finaliser votre commande en ligne.
-          En attendant, découvrez notre
-          <a href="menu.html" class="text-accent underline">menu complet</a>.
+          Veuillez renseigner vos coordonnées pour valider votre commande.
         </p>
       
-        <form id="form-disponibilite" class="space-y-6" onsubmit="return handleSubmit(event)">
-          <!-- Nom -->
-          <div class="flex flex-col gap-2">
-            <label for="nom" class="font-medium">Nom</label>
-            <input
-              required id="nom" type="text"
-              placeholder="Votre nom complet"
-              class="border rounded px-3 py-2 focus:ring-2 focus:ring-accent"
-            />
-          </div>
-      
-          <!-- Téléphone -->
-          <div class="flex flex-col gap-1">
-            <label for="tel" class="font-medium">Téléphone</label>
-            <input
-              required id="tel" type="tel"
-              placeholder="+33 6 12 34 56 78"
-              class="border rounded px-3 py-2 focus:ring-2 focus:ring-accent"
-            />
-            <p class="text-sm text-gray-500">Format international, ex : +33 6 12 34 56 78</p>
-          </div>
-      
-          <!-- Adresse -->
-          <div class="flex flex-col gap-2">
-            <label for="adresse" class="font-medium">Adresse de livraison</label>
-            <input
-              required id="adresse" type="text"
-              placeholder="Votre adresse de livraison"
-              class="border rounded px-3 py-2 focus:ring-2 focus:ring-accent"
-            />
-          </div>
-      
-          <!-- Bouton d’envoi -->
-          <button
-            type="submit"
-            class="w-full px-6 py-3 bg-accent text-white font-bold rounded-lg shadow-md hover:shadow-lg transition"
-          >
-            Envoyer ma demande de disponibilité
-          </button>
-        </form>
-      
-        <!-- Message de confirmation -->
-        <div id="msg-ok" class="hidden mt-6 text-center text-green-700 font-medium">
-          Merci ! Votre demande de disponibilité a été envoyée.
-          Nous vous recontacterons bientôt pour confirmer votre créneau.
-        </div>
-
-        <!-- Message de refus -->
-        <div id="msg-refused" class="hidden mt-6 text-center text-red-700 font-medium">
-          Désolé, le restaurant n'est pas en mesure de prendre votre commande pour le moment. Veuillez réessayer plus tard.
-          <button id="btn-new-demand" class="mt-4 px-6 py-3 bg-accent text-white font-bold rounded-lg shadow-md hover:shadow-lg transition">Faire une nouvelle demande</button>
-        </div>
-
-        <!-- Message pour commander -->
-        <div id="msg-order-ready" class="hidden mt-6 text-center text-blue-700 font-medium">
-          Votre demande de disponibilité a été acceptée ! Vous pouvez maintenant passer votre commande.
-          <a href="menu.html" class="text-accent underline">Accéder au menu</a>.
-        </div>
+        
       </section>
 
       <!-- Étape 3 : Affichage du menu pour la commande -->
@@ -191,7 +100,7 @@
         </div>
       </section>
 
-      <section id="order-menu" class="hidden mt-12">
+      <section id="order-menu" class="mt-12">
         <h2 class="text-3xl font-extrabold text-primary text-center mb-8">Notre Menu</h2>
 
         <div id="entrees-section" class="mb-8">
@@ -229,9 +138,9 @@
 
   <!-- Modale Panier -->
   <section id="panier-section" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-    <div class="bg-white rounded-lg shadow-xl p-8 max-w-2xl w-full">
+    <div class="bg-white rounded-lg shadow-xl p-8 max-w-2xl w-full flex flex-col max-h-[90vh]">
       <h2 class="text-3xl font-extrabold text-primary mb-6">Votre Panier</h2>
-      <ul id="panier-list" class="space-y-4 mb-6">
+      <ul id="panier-list" class="space-y-4 mb-6 overflow-y-auto flex-grow">
         <!-- Les éléments du panier seront injectés ici -->
       </ul>
       <div class="text-right font-bold text-xl mb-6">
@@ -241,6 +150,33 @@
         <button id="btn-close-panier" class="px-6 py-2 bg-gray-300 text-gray-800 rounded-lg hover:bg-gray-400 transition">Fermer</button>
         <button id="btn-valider-commande" class="px-6 py-2 bg-accent text-white font-bold rounded-lg shadow-md hover:shadow-lg transition">Valider ma commande</button>
       </div>
+      
+    </div>
+  </section>
+
+  <!-- Modale Coordonnées Client -->
+  <section id="coords-modal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+    <div class="bg-white rounded-lg shadow-xl p-8 max-w-md w-full">
+      <h2 class="text-3xl font-extrabold text-primary mb-6 text-center">Vos coordonnées</h2>
+      <form id="form-coords" class="space-y-6">
+        <div class="flex flex-col gap-2">
+          <label for="nom-coords" class="font-medium">Nom</label>
+          <input required id="nom-coords" type="text" placeholder="Votre nom complet" class="border rounded px-3 py-2 focus:ring-2 focus:ring-accent" />
+        </div>
+        <div class="flex flex-col gap-1">
+          <label for="tel-coords" class="font-medium">Téléphone</label>
+          <input required id="tel-coords" type="tel" placeholder="+33 6 12 34 56 78" class="border rounded px-3 py-2 focus:ring-2 focus:ring-accent" />
+          <p class="text-sm text-gray-500">Format international, ex : +33 6 12 34 56 78</p>
+        </div>
+        <div class="flex flex-col gap-2">
+          <label for="adresse-coords" class="font-medium">Adresse de livraison</label>
+          <input required id="adresse-coords" type="text" placeholder="Votre adresse de livraison" class="border rounded px-3 py-2 focus:ring-2 focus:ring-accent" />
+        </div>
+        <div class="flex justify-between">
+          <button type="button" id="btn-cancel-coords" class="px-6 py-2 bg-gray-300 text-gray-800 rounded-lg hover:bg-gray-400 transition">Annuler</button>
+          <button type="submit" class="px-6 py-2 bg-accent text-white font-bold rounded-lg shadow-md hover:shadow-lg transition">Confirmer la commande</button>
+        </div>
+      </form>
     </div>
   </section>
 
@@ -249,17 +185,11 @@
     import { menuItems } from './data/menu.js';
     import { initWokComposer } from './js/wok.js';
 
-    const btnEmporter  = document.getElementById('btn-emporter');
-    const btnLivraison = document.getElementById('btn-livraison');
-    const secEmporter  = document.getElementById('section-emporter');
-    const secLivraison = document.getElementById('section-livraison');
     const formDisponibilite = document.getElementById('form-disponibilite');
     const msgOk = document.getElementById('msg-ok');
     const msgRefused = document.getElementById('msg-refused');
     const msgOrderReady = document.getElementById('msg-order-ready');
-    const stepChoix = document.getElementById('step-choix');
     const orderMenuSection = document.getElementById('order-menu');
-    const orderMenuList = document.getElementById('order-menu-list');
     const wokComposerSection = document.getElementById('wok-composer');
     const cartFloat = document.getElementById('cart-float');
     const panierSection = document.getElementById('panier-section');
@@ -267,11 +197,12 @@
     const btnValiderCommande = document.getElementById('btn-valider-commande');
     const panierList = document.getElementById('panier-list');
     const panierTotal = document.getElementById('panier-total');
-    const btnNewDemand = document.getElementById('btn-new-demand');
-
-    btnNewDemand.addEventListener('click', () => {
-      showInitialChoice();
-    });
+    const coordsModal = document.getElementById('coords-modal');
+    const formCoords = document.getElementById('form-coords');
+    const btnCancelCoords = document.getElementById('btn-cancel-coords');
+    const nomCoordsInput = document.getElementById('nom-coords');
+    const telCoordsInput = document.getElementById('tel-coords');
+    const adresseCoordsInput = document.getElementById('adresse-coords');
 
     cartFloat.addEventListener('click', (e) => {
       e.preventDefault();
@@ -285,47 +216,34 @@
 
     btnValiderCommande.addEventListener('click', () => {
       const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+      if (cart.length === 0) {
+        alert('Votre panier est vide. Veuillez ajouter des articles avant de valider.');
+        return;
+      }
+      panierSection.classList.add('hidden');
+      coordsModal.classList.remove('hidden');
+    });
+
+    btnCancelCoords.addEventListener('click', () => {
+      coordsModal.classList.add('hidden');
+      panierSection.classList.remove('hidden'); // Return to cart view
+    });
+
+    formCoords.addEventListener('submit', (e) => {
+      e.preventDefault();
+
+      const cart = JSON.parse(localStorage.getItem('cart') || '[]');
       const total = parseFloat(panierTotal.textContent);
 
-      const demandes = loadDemandes();
-      const lastDemande = demandes.find(d => d.statut === 'accepted'); // Find the accepted demand
-
-      if (lastDemande) {
-        let commandes = loadCommandes();
-        let command = commandes.find(cmd => cmd.demandeId === lastDemande.id);
-
-        if (!command) {
-          // Create a new command if it doesn't exist for this accepted demand
-          command = {
-            id: `cmd-${Date.now()}`,
-            demandeId: lastDemande.id,
-            customer: { name: lastDemande.nom, address: lastDemande.adresse, phone: lastDemande.tel },
-            deliverySlot: '',
-            items: [],
-            total: 0,
-            status: 'submitted'
-          };
-          commandes.push(command);
-        }
-
-        // Update command details with cart content
-        command.items = cart.map(item => {
+      const nouvelleDemande = {
+        id: `req-${Date.now()}`,
+        nom: nomCoordsInput.value,
+        tel: telCoordsInput.value,
+        adresse: adresseCoordsInput.value,
+        mode: 'Livraison', // Always delivery for now
+        statut: 'pending',
+        items: cart.map(item => {
           const menuItem = item.isWok ? item.details : menuItems.find(m => String(m.id) === item.itemId);
-          
-          if (!menuItem) {
-            console.error("Erreur: Article non trouvé dans menuItems pour l'ID:", item.itemId);
-            // Vous pouvez choisir de sauter cet article, ou de lancer une erreur, ou d'utiliser des valeurs par défaut
-            // Pour l'instant, nous allons retourner un objet avec des valeurs par défaut pour éviter le crash
-            return { 
-              id: item.itemId, 
-              name: "Article inconnu", 
-              quantity: item.qty, 
-              price: 0, 
-              isWok: item.isWok || false,
-              details: item.isWok ? item.details : null
-            };
-          }
-
           return { 
             id: item.itemId, 
             name: menuItem.nom, 
@@ -334,34 +252,17 @@
             isWok: item.isWok || false,
             details: item.isWok ? menuItem.details : null
           };
-        });
-        command.total = total;
-        command.status = 'submitted'; // Ensure status is submitted
+        }),
+        total: total
+      };
 
-        saveCommandes(commandes);
+      const demandes = loadDemandes();
+      demandes.push(nouvelleDemande);
+      saveDemandes(demandes);
 
-        localStorage.removeItem('cart');
-        localStorage.setItem('currentOrderId', command.id); // Store order ID for tracking page
-        window.location.href = 'suivi.html'; // Redirect to tracking page
-      } else {
-        alert("Erreur: Aucune demande acceptée trouvée pour créer la commande.");
-      }
-    });
-
-    btnEmporter.addEventListener('click', () => {
-      secEmporter.classList.remove('hidden');
-      secLivraison.classList.add('hidden');
-      window.scrollTo({ top: secEmporter.offsetTop - 80, behavior: 'smooth' });
-    });
-
-    btnLivraison.addEventListener('click', () => {
-      secLivraison.classList.remove('hidden');
-      secEmporter.classList.add('hidden');
-      formDisponibilite.classList.remove('hidden'); // Ensure form is visible
-      msgOk.classList.add('hidden');
-      msgRefused.classList.add('hidden');
-      msgOrderReady.classList.add('hidden');
-      window.scrollTo({ top: secLivraison.offsetTop - 80, behavior: 'smooth' });
+      localStorage.removeItem('cart');
+      localStorage.setItem('currentDemandId', nouvelleDemande.id); // Store demand ID for tracking page
+      window.location.href = 'suivi.html'; // Redirect to tracking page
     });
 
     // Helpers pour le localStorage
@@ -383,43 +284,7 @@
       localStorage.setItem('commandes', JSON.stringify(commandes, null, 2));
     }
 
-    function showInitialChoice() {
-      stepChoix.classList.remove('hidden');
-      secEmporter.classList.add('hidden');
-      secLivraison.classList.add('hidden');
-      msgOk.classList.add('hidden');
-      msgRefused.classList.add('hidden');
-      msgOrderReady.classList.add('hidden');
-      orderMenuSection.classList.add('hidden');
-      wokComposerSection.classList.add('hidden');
-      cartFloat.classList.add('hidden'); // Hide cart float
-    }
-
-    function showPendingMessage() {
-      stepChoix.classList.add('hidden');
-      formDisponibilite.classList.add('hidden');
-      secLivraison.classList.remove('hidden');
-      msgOk.classList.remove('hidden');
-      msgRefused.classList.add('hidden');
-      msgOrderReady.classList.add('hidden');
-      orderMenuSection.classList.add('hidden');
-      wokComposerSection.classList.add('hidden');
-    }
-
-    function showRefusedMessage() {
-      stepChoix.classList.add('hidden');
-      formDisponibilite.classList.add('hidden');
-      secLivraison.classList.remove('hidden');
-      msgOk.classList.add('hidden');
-      msgRefused.classList.remove('hidden');
-      msgOrderReady.classList.add('hidden');
-      orderMenuSection.classList.add('hidden');
-      wokComposerSection.classList.add('hidden');
-    }
-
     function showOrderUI() {
-      stepChoix.classList.add('hidden');
-      secLivraison.classList.add('hidden');
       orderMenuSection.classList.remove('hidden');
       wokComposerSection.classList.remove('hidden');
       cartFloat.classList.remove('hidden');
@@ -549,7 +414,6 @@
       panierTotal.textContent = total.toFixed(2);
 
       // Add event listeners for quantity buttons
-      // Add event listeners for quantity buttons
       panierList.querySelectorAll('.btn-qty-increase').forEach(btn => {
         btn.addEventListener('click', e => updateQuantity(String(e.target.dataset.id), 1));
       });
@@ -592,78 +456,37 @@
     }
 
     document.addEventListener('DOMContentLoaded', () => {
-      checkDemandStatusAndDisplay();
+      // Check for existing active demand/order and redirect to suivi.html
+      const currentDemandId = localStorage.getItem('currentDemandId');
+      if (currentDemandId) {
+        const demandes = loadDemandes();
+        const currentDemand = demandes.find(d => d.id === currentDemandId);
+
+        if (currentDemand) {
+          if (currentDemand.statut === 'pending') {
+            window.location.href = 'suivi.html';
+            return;
+          } else if (currentDemand.statut === 'accepted') {
+            const commandes = loadCommandes();
+            const associatedCommand = commandes.find(cmd => cmd.demandeId === currentDemand.id);
+            if (associatedCommand && associatedCommand.status !== 'delivered') {
+              window.location.href = 'suivi.html';
+              return;
+            }
+          }
+        }
+      }
+
+      showOrderUI(); // Always show order UI on this page if no active order
       updateItemBadges(); // Initial update on page load
     });
 
-    window.addEventListener('storage', (e) => {
-      if (e.key === 'demandes') {
-        checkDemandStatusAndDisplay();
-      }
-    });
-
-    function checkDemandStatusAndDisplay() {
-      const mesDemandes = loadDemandes();
-      const commandes = loadCommandes();
-      const currentOrderId = localStorage.getItem('currentOrderId');
-      const currentOrder = commandes.find(cmd => cmd.id === currentOrderId);
-
-      // If there's an active order that's not delivered, redirect to suivi.html
-      if (currentOrder && currentOrder.status !== 'delivered') {
-        window.location.href = 'suivi.html';
-        return;
-      }
-
-      const lastDemande = mesDemandes[mesDemandes.length - 1]; 
-
-      if (!lastDemande) {
-        showInitialChoice();
-        return;
-      }
-
-      if (lastDemande.statut === 'accepted') {
-        const associatedCommand = commandes.find(cmd => cmd.demandeId === lastDemande.id);
-        if (associatedCommand && associatedCommand.status === 'delivered') {
-          showInitialChoice();
-        } else {
-          // If the demand is accepted but no active order is being tracked, show the order UI
-          showOrderUI();
-        }
-      } else if (lastDemande.statut === 'refused') {
-        showRefusedMessage();
-      } else { // pending
-        showPendingMessage();
-      }
-    }
-
     window.addWokToCart = function(wokItem) {
       const cart = JSON.parse(localStorage.getItem('cart') || '[]');
-      cart.push({ itemId: String(wokItem.id), qty: 1, isWok: true, details: wokItem });
+      cart.push({ itemId: `wok-${Date.now()}`, qty: 1, isWok: true, details: wokItem });
       localStorage.setItem('cart', JSON.stringify(cart));
       updateCartBadge();
       updateItemBadges();
-    }
-
-    window.handleSubmit = function(e) {
-      e.preventDefault();
-
-      const nomInput = document.getElementById('nom');
-      const telInput = document.getElementById('tel');
-      const adresseInput = document.getElementById('adresse');
-
-      const nouvelles = loadDemandes();
-      nouvelles.push({
-        id: `req-${Date.now()}`,
-        nom: nomInput.value,
-        tel: telInput.value,
-        adresse: adresseInput.value,
-        mode: 'Livraison',
-        statut: 'pending'
-      });
-      saveDemandes(nouvelles);
-
-      showPendingMessage();
-      return false;
     }
   </script>
 </body>

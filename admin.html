@@ -95,14 +95,15 @@
 
 
   <template id="request-template">
-    <div class="bg-white p-4 rounded-lg shadow-md flex items-center justify-between">
+    <div class="bg-white p-4 rounded-lg shadow-md flex flex-col">
       <div>
         <p class="text-lg font-semibold req-name"></p>
         <p class="text-gray-600 req-mode"></p>
         <p class="text-gray-600 req-phone"></p>
         <p class="text-gray-600 req-adresse"></p>
       </div>
-      <div class="flex gap-2">
+      <div class="request-details mt-4"></div>
+      <div class="flex gap-2 mt-4 self-end">
         <button class="px-4 py-2 bg-red-500 text-white rounded btn-refuse">Refuser</button>
         <button class="px-4 py-2 bg-green-500 text-white rounded btn-accept">Accepter</button>
       </div>
@@ -122,6 +123,18 @@
 
   <!-- Toast Notification -->
   <div id="toast" class="fixed bottom-4 right-4 p-4 bg-gray-800 text-white rounded-lg shadow-lg opacity-0 transition-opacity duration-300 z-[70]" role="alert"></div>
+
+  <!-- Delivery Slot Modal -->
+  <div id="delivery-slot-modal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-[80]">
+    <div class="bg-white p-8 rounded-lg shadow-xl max-w-sm w-full text-center">
+      <h3 class="text-2xl font-semibold text-primary mb-6">Saisir le créneau de livraison</h3>
+      <input type="time" id="delivery-slot-input" class="border rounded px-3 py-2 text-lg w-full mb-6">
+      <div class="flex justify-center gap-4">
+        <button id="btn-confirm-slot" class="px-6 py-3 bg-accent text-white font-bold rounded-lg shadow-md hover:shadow-lg transition">Confirmer</button>
+        <button id="btn-later-slot" class="px-6 py-3 bg-gray-300 text-gray-800 rounded-lg hover:bg-gray-400 transition">Plus tard</button>
+      </div>
+    </div>
+  </div>
 
 </body>
 
@@ -164,8 +177,48 @@
     const drawerContent = document.getElementById('drawer-content');
     const drawerClose = document.getElementById('drawer-close');
     const toast = document.getElementById('toast');
+    const deliverySlotModal = document.getElementById('delivery-slot-modal');
+    const deliverySlotInput = document.getElementById('delivery-slot-input');
+    const btnConfirmSlot = document.getElementById('btn-confirm-slot');
+    const btnLaterSlot = document.getElementById('btn-later-slot');
 
     drawerClose.onclick = () => closeDrawer();
+
+    let currentDemandeToAccept = null; // Store the demand object temporarily
+
+    btnConfirmSlot.addEventListener('click', () => {
+      const slot = deliverySlotInput.value;
+      if (currentDemandeToAccept) {
+        createCommandFromDemand(currentDemandeToAccept, slot);
+        deliverySlotModal.classList.add('hidden');
+        currentDemandeToAccept = null;
+      }
+    });
+
+    btnLaterSlot.addEventListener('click', () => {
+      if (currentDemandeToAccept) {
+        createCommandFromDemand(currentDemandeToAccept, ''); // Empty slot
+        deliverySlotModal.classList.add('hidden');
+        currentDemandeToAccept = null;
+      }
+    });
+
+    function createCommandFromDemand(demande, deliverySlot) {
+      const commandes = loadCommandes();
+      const newCommand = {
+        id: `cmd-${Date.now()}`,
+        demandeId: demande.id,
+        customer: { name: demande.nom, address: demande.adresse, phone: demande.tel },
+        deliverySlot: deliverySlot,
+        items: demande.items,
+        total: demande.total,
+        status: 'submitted'
+      };
+      commandes.push(newCommand);
+      saveCommandes(commandes);
+      showToast('Demande acceptée et commande créée.');
+      render();
+    }
 
     function openDetailsDrawer(orderId) {
         const commandes = loadCommandes();
@@ -327,9 +380,36 @@
         node.querySelector('.req-phone').textContent = req.tel;
         node.querySelector('.req-adresse').textContent = req.adresse;
 
+        // Display items and total for the demand
+        const itemsHtml = req.items.map(item => {
+            if (item.isWok && item.details) {
+                return `
+                    <li class="mb-1 text-sm">
+                        <strong>${item.name} (${item.quantity})</strong>
+                        <ul class="list-disc list-inside pl-4 text-xs">
+                            <li>Base: ${item.details.base}</li>
+                            <li>Pulpes: ${item.details.pulpes.join(', ') || 'Aucune'}</li>
+                            <li>Favoris: ${item.details.favoris.join(', ') || 'Aucun'}</li>
+                            <li>Sauce: ${item.details.sauce}</li>
+                            <li>Toppings: ${item.details.toppings.join(', ') || 'Aucun'}</li>
+                        </ul>
+                    </li>`;
+            } else {
+                return `<li class="text-sm">- ${item.name} (${item.quantity})</li>`;
+            }
+        }).join('');
+
+        const detailsDiv = document.createElement('div');
+        detailsDiv.innerHTML = `
+            <h4 class="font-semibold mt-2">Articles:</h4>
+            <ul class="list-none">${itemsHtml}</ul>
+            <p class="font-bold mt-2">Total: ${req.total.toFixed(2)}€</p>
+        `;
+        node.querySelector('.request-details').appendChild(detailsDiv);
+
         if (req.statut === 'pending') {
-          node.querySelector('.btn-refuse').onclick  = () => { updateStatut(req.id, 'refused'); showToast('Demande refusée.'); };
-          node.querySelector('.btn-accept').onclick  = () => { updateStatut(req.id, 'accepted'); showToast('Demande acceptée.'); };
+          node.querySelector('.btn-refuse').onclick  = () => { updateStatut(req.id, 'refused'); };
+          node.querySelector('.btn-accept').onclick  = () => { updateStatut(req.id, 'accepted'); };
           pendingEl.appendChild(node);
         } else {
           // Transformation pour l’historique
@@ -339,7 +419,7 @@
             'px-4 py-2 rounded text-white ' +
             (req.statut === 'accepted' ? 'bg-green-600' : 'bg-red-600');
           btn.textContent =
-            req.statut === 'accepted' ? 'Accepté' : 'Refusé';
+            req.statut === 'accepted' ? 'Acceptée' : 'Refusée';
           historyEl.appendChild(node);
         }
       });
@@ -382,12 +462,22 @@
     }
 
     function updateStatut(id, statut) {
-      const data = loadDemandes();
-      const item = data.find(r => r.id === id);
-      if (item) {
-        item.statut = statut;
-        saveDemandes(data);
-        render();
+      const demandes = loadDemandes();
+      const demandeIndex = demandes.findIndex(r => r.id === id);
+      if (demandeIndex > -1) {
+        const demande = demandes[demandeIndex];
+        demande.statut = statut;
+
+        if (statut === 'accepted') {
+          saveDemandes(demandes); // Save the updated status to localStorage
+          currentDemandeToAccept = demande;
+          deliverySlotInput.value = ''; // Clear previous value
+          deliverySlotModal.classList.remove('hidden');
+        } else if (statut === 'refused') {
+          showToast('Demande refusée.');
+          saveDemandes(demandes); // Save changes for refused demand
+          render();
+        }
       }
     }
   </script>
