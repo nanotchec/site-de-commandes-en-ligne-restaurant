@@ -2,7 +2,9 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/responsive.css">
   <title>Thaï Garden – Menu</title>
 
   <!-- Google Fonts -->
@@ -39,15 +41,24 @@
   <header class="fixed top-0 w-full bg-white/70 backdrop-blur-sm shadow-md z-50">
     <nav class="max-w-5xl mx-auto flex items-center justify-between py-4 px-6">
       <a href="index.html" class="text-2xl font-bold text-primary">Thaï Garden</a>
-      <ul class="flex gap-8 font-medium">
-        <li><a href="index.html" class="hover:text-accent transition">Accueil</a></li>
-        <li><a href="commande.html" class="hover:text-accent transition">Menu</a></li>
-        <li><a href="index.html#contact" class="hover:text-accent transition">Contact</a></li>
-      </ul>
-      <a href="commande.html" class="ml-6 px-4 py-2 bg-accent text-white font-semibold rounded-full shadow hover:shadow-lg transition">
+      <div class="hidden md:flex gap-8 font-medium">
+        <a href="index.html" class="hover:text-accent transition">Accueil</a>
+        <a href="commande.html" class="hover:text-accent transition">Menu</a>
+        <a href="index.html#contact" class="hover:text-accent transition">Contact</a>
+      </div>
+      <a href="commande.html" class="hidden md:block ml-6 px-4 py-2 bg-accent text-white font-semibold rounded-full shadow hover:shadow-lg transition">
         Commander
       </a>
+      <button id="burger-btn" class="md:hidden">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+      </button>
     </nav>
+    <div id="mobile-menu" class="hidden md:hidden">
+      <a href="index.html" class="block py-2 px-4 text-sm hover:bg-gray-200">Accueil</a>
+      <a href="commande.html" class="block py-2 px-4 text-sm hover:bg-gray-200">Menu</a>
+      <a href="index.html#contact" class="block py-2 px-4 text-sm hover:bg-gray-200">Contact</a>
+      <a href="commande.html" class="block py-2 px-4 text-sm hover:bg-gray-200">Commander</a>
+    </div>
   </header>
 
   <!-- Hero for Menu -->
@@ -65,7 +76,7 @@
     <section class="py-12 bg-gradient-to-r from-white via-gray-50 to-gray-100 fade-in-section">
       <div class="max-w-5xl mx-auto px-6">
         <h2 class="sticky top-16 z-30 mx-auto inline-block text-3xl font-extrabold text-primary text-center px-4 py-2 mb-4">Entrées</h2>
-        <ul class="grid md:grid-cols-2 gap-8">
+        <ul class="grid grid-cols-1 md:grid-cols-2 gap-8">
           <li class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition transform hover:scale-105 flex items-center gap-4">
             <img src="assets/images/nems-poulet.jpg" alt="Nems poulet x4" class="w-20 h-20 rounded-lg object-cover" />
             <div class="flex-1"><p class="font-medium text-lg">Nems poulet x4</p></div>
@@ -175,7 +186,7 @@
         <!-- Choix de la base -->
         <div class="mb-6">
           <h3 class="text-xl font-semibold mb-2">1. Choix de la base</h3>
-          <ul class="grid md:grid-cols-2 gap-4">
+          <ul class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <li class="flex justify-between"><span>Pâtes de riz</span><span>6.90€</span></li>
             <li class="flex justify-between"><span>Nouilles jaunes</span><span>6.90€</span></li>
             <li class="flex justify-between"><span>Udon</span><span>6.90€</span></li>
@@ -185,7 +196,7 @@
         <!-- Choix de la pulpe -->
         <div class="mb-6">
           <h3 class="text-xl font-semibold mb-2">2. Choix de la pulpe</h3>
-          <ul class="grid md:grid-cols-2 gap-4">
+          <ul class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <li class="flex justify-between"><span>Oignons</span><span>+0.40€</span></li>
             <li class="flex justify-between"><span>Ail</span><span>+0.40€</span></li>
             <li class="flex justify-between"><span>Gingembre</span><span>+0.40€</span></li>
@@ -195,7 +206,7 @@
         <!-- Choix des favoris -->
         <div class="mb-6">
           <h3 class="text-xl font-semibold mb-2">3. Choix des favoris</h3>
-          <ul class="grid md:grid-cols-3 gap-4">
+          <ul class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
             <li class="flex justify-between"><span>Poulet</span><span>+2.00€</span></li>
             <li class="flex justify-between"><span>Poulet crousti</span><span>+2.80€</span></li>
             <li class="flex justify-between"><span>Bœuf</span><span>+2.50€</span></li>
@@ -224,7 +235,7 @@
     <section class="py-12 bg-gradient-to-b from-gray-100 via-white to-gray-50 fade-in-section">
       <div class="max-w-5xl mx-auto px-4">
         <h2 class="sticky top-16 z-30 mx-auto inline-block text-3xl font-extrabold text-primary text-center px-4 py-2 mb-4">Desserts</h2>
-        <ul class="grid md:grid-cols-2 gap-8 mb-8">
+        <ul class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
           <li class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition transform hover:scale-105 flex justify-between">
             <span>Coupelle mangue</span><span>5.00€</span>
           </li>
@@ -239,7 +250,7 @@
           </li>
         </ul>
         <h2 class="sticky top-16 z-30 mx-auto inline-block text-3xl font-extrabold text-primary text-center px-4 py-2 mb-4">Boissons</h2>
-        <ul class="grid md:grid-cols-2 gap-8">
+        <ul class="grid grid-cols-1 md:grid-cols-2 gap-8">
           <li class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition transform hover:scale-105 flex justify-between">
             <span>Soft</span><span>2.00€</span>
           </li>
@@ -300,6 +311,7 @@
   </footer>
 
   <script src="js/main.js"></script>
+  <script src="js/responsive.js"></script>
   <a href="commande.html" class="fixed bottom-6 right-6 z-50 bg-accent text-white p-4 rounded-full shadow-lg hover:shadow-xl transition">
     Commander
   </a>

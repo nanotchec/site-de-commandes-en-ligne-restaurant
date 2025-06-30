@@ -2,7 +2,9 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/responsive.css">
   <title>Thaï Garden – Demande de disponibilité</title>
 
   <!-- Google Fonts -->
@@ -39,8 +41,24 @@
   <header class="fixed top-0 w-full bg-white/70 backdrop-blur-sm shadow-md z-50">
     <nav class="max-w-5xl mx-auto flex items-center justify-between py-4 px-6">
       <a href="index.html" class="text-2xl font-bold text-primary">Thaï Garden</a>
-      <a href="menu.html" class="text-accent font-semibold hover:underline">Retour menu</a>
+      <div class="hidden md:flex gap-8 font-medium">
+        <a href="index.html" class="hover:text-accent transition">Accueil</a>
+        <a href="commande.html" class="hover:text-accent transition">Menu</a>
+        <a href="index.html#contact" class="hover:text-accent transition">Contact</a>
+      </div>
+      <a href="commande.html" class="hidden md:block ml-6 px-4 py-2 bg-accent text-white font-semibold rounded-full shadow hover:shadow-lg transition">
+        Commander
+      </a>
+      <button id="burger-btn" class="md:hidden">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+      </button>
     </nav>
+    <div id="mobile-menu" class="hidden md:hidden">
+      <a href="index.html" class="block py-2 px-4 text-sm hover:bg-gray-200">Accueil</a>
+      <a href="commande.html" class="block py-2 px-4 text-sm hover:bg-gray-200">Menu</a>
+      <a href="index.html#contact" class="block py-2 px-4 text-sm hover:bg-gray-200">Contact</a>
+      <a href="commande.html" class="block py-2 px-4 text-sm hover:bg-gray-200">Commander</a>
+    </div>
   </header>
 
   <!-- Contenu principal -->
@@ -105,22 +123,22 @@
 
         <div id="entrees-section" class="mb-8">
           <h3 class="text-2xl font-bold text-primary mb-4">Entrées</h3>
-          <ul id="order-entrees-list" class="grid md:grid-cols-2 lg:grid-cols-3 gap-8"></ul>
+          <ul id="order-entrees-list" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8"></ul>
         </div>
 
         <div id="plats-section" class="mb-8">
           <h3 class="text-2xl font-bold text-primary mb-4">Plats</h3>
-          <ul id="order-plats-list" class="grid md:grid-cols-2 lg:grid-cols-3 gap-8"></ul>
+          <ul id="order-plats-list" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8"></ul>
         </div>
 
         <div id="desserts-section" class="mb-8">
           <h3 class="text-2xl font-bold text-primary mb-4">Desserts</h3>
-          <ul id="order-desserts-list" class="grid md:grid-cols-2 lg:grid-cols-3 gap-8"></ul>
+          <ul id="order-desserts-list" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8"></ul>
         </div>
 
         <div id="boissons-section" class="mb-8">
           <h3 class="text-2xl font-bold text-primary mb-4">Boissons</h3>
-          <ul id="order-boissons-list" class="grid md:grid-cols-2 lg:grid-cols-3 gap-8"></ul>
+          <ul id="order-boissons-list" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8"></ul>
         </div>
       </section>
 
@@ -489,5 +507,6 @@
       updateItemBadges();
     }
   </script>
+  <script src="js/responsive.js"></script>
 </body>
 </html>
