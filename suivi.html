@@ -127,7 +127,7 @@
         orderDetailsDiv.classList.add('hidden');
       } else if (currentDemand.statut === 'refused') {
         demandStatusMessageDiv.classList.remove('hidden');
-        demandMessageText.innerHTML = 'Votre demande a été refusée par le restaurant.<br><span class="text-sm text-gray-600">Le restaurant n\'est malheureusement pas en mesure de prendre votre commande pour le moment.</span>';
+        demandMessageText.innerHTML = `Votre demande a été refusée par le restaurant.<br><span class="text-sm text-gray-600">Le restaurant n'est malheureusement pas en mesure de prendre votre commande pour le moment. ${currentDemand.refusalReason ? `<br>Motif: ${currentDemand.refusalReason}` : ''}</span>`;
         btnNewDemandFromSuivi.classList.remove('hidden');
         orderDetailsDiv.classList.add('hidden');
       } else if (currentDemand.statut === 'accepted') {

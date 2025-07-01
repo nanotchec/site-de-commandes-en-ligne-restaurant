@@ -28,6 +28,17 @@
   <style>
     body { font-family: 'Noto Sans', sans-serif; }
     h1,h2 { font-family: 'Playfair Display', serif; }
+    /* Style for the toggle switch */
+    .dot {
+      transform: translateX(0);
+      transition: transform 0.3s ease-in-out;
+    }
+    input:checked + .block {
+      background-color: #4CAF50; /* Green for open */
+    }
+    input:checked + .block + .dot {
+      transform: translateX(20px);
+    }
   </style>
 </head>
 <body class="min-h-screen bg-gradient-to-b from-gray-50 to-white text-gray-800">
@@ -37,6 +48,17 @@
     <!-- Top bar -->
     <div class="max-w-5xl mx-auto flex items-center justify-between py-4 px-6">
       <span class="text-2xl font-bold text-primary">Dashboard Thaï Garden</span>
+      <div class="flex items-center space-x-2">
+        <span class="text-gray-700 font-medium">Restaurant:</span>
+        <label for="toggle-restaurant-status" class="flex items-center cursor-pointer">
+          <div class="relative">
+            <input type="checkbox" id="toggle-restaurant-status" class="sr-only">
+            <div class="block bg-gray-600 w-14 h-8 rounded-full"></div>
+            <div class="dot absolute left-1 top-1 bg-white w-6 h-6 rounded-full transition"></div>
+          </div>
+          <div id="restaurant-status-text" class="ml-3 text-gray-700 font-semibold">Fermé</div>
+        </label>
+      </div>
       <a href="index.html" class="text-accent font-semibold hover:underline">← Retour au site</a>
     </div>
     <!-- Secondary navigation -->
@@ -136,6 +158,21 @@
     </div>
   </div>
 
+  <!-- Refusal Reason Modal -->
+  <div id="refusal-reason-modal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-[80]">
+    <div class="bg-white p-8 rounded-lg shadow-xl max-w-md w-full">
+      <h3 class="text-2xl font-semibold text-primary mb-6 text-center">Motif de refus</h3>
+      <div id="refusal-reasons-list" class="space-y-3 mb-6">
+        <!-- Reasons will be injected here -->
+      </div>
+      <textarea id="other-reason-input" class="hidden w-full border rounded px-3 py-2 mb-6" rows="3" placeholder="Précisez le motif..."></textarea>
+      <div class="flex justify-center gap-4">
+        <button id="btn-confirm-refusal" class="px-6 py-3 bg-red-500 text-white font-bold rounded-lg shadow-md hover:shadow-lg transition">Confirmer le refus</button>
+        <button id="btn-cancel-refusal" class="px-6 py-3 bg-gray-300 text-gray-800 rounded-lg hover:bg-gray-400 transition">Annuler</button>
+      </div>
+    </div>
+  </div>
+
 </body>
 
   <script>
@@ -154,6 +191,14 @@
     function saveCommandes(data) {
         localStorage.setItem('commandes', JSON.stringify(data));
     }
+
+    const refusalReasons = [
+      "Restaurant complet pour ce créneau.",
+      "Zone de livraison non desservie.",
+      "Problème technique, veuillez réessayer plus tard.",
+      "Informations incomplètes ou incorrectes.",
+      "Autre (préciser)"
+    ];
 
     const commandesBody = document.getElementById('commandes-body');
 
@@ -181,10 +226,45 @@
     const deliverySlotInput = document.getElementById('delivery-slot-input');
     const btnConfirmSlot = document.getElementById('btn-confirm-slot');
     const btnLaterSlot = document.getElementById('btn-later-slot');
+    const refusalReasonModal = document.getElementById('refusal-reason-modal');
+    const refusalReasonsList = document.getElementById('refusal-reasons-list');
+    const otherReasonInput = document.getElementById('other-reason-input');
+    const btnConfirmRefusal = document.getElementById('btn-confirm-refusal');
+    const btnCancelRefusal = document.getElementById('btn-cancel-refusal');
+
+    // Restaurant status toggle
+    const toggleRestaurantStatus = document.getElementById('toggle-restaurant-status');
+    const restaurantStatusText = document.getElementById('restaurant-status-text');
+
+    function getRestaurantStatus() {
+      const status = localStorage.getItem('restaurantOuvert');
+      return status === null ? true : JSON.parse(status); // Default to true if not set
+    }
+
+    function setRestaurantStatus(isOpen) {
+      localStorage.setItem('restaurantOuvert', JSON.stringify(isOpen));
+      updateRestaurantStatusDisplay(isOpen);
+    }
+
+    function updateRestaurantStatusDisplay(isOpen) {
+      toggleRestaurantStatus.checked = isOpen;
+      restaurantStatusText.textContent = isOpen ? 'Ouvert' : 'Fermé';
+      restaurantStatusText.classList.toggle('text-green-600', isOpen);
+      restaurantStatusText.classList.toggle('text-red-600', !isOpen);
+    }
+
+    // Initialize status on load
+    updateRestaurantStatusDisplay(getRestaurantStatus());
+
+    toggleRestaurantStatus.addEventListener('change', (event) => {
+      setRestaurantStatus(event.target.checked);
+      showToast(`Restaurant ${event.target.checked ? 'ouvert' : 'fermé'}.`);
+    });
 
     drawerClose.onclick = () => closeDrawer();
 
     let currentDemandeToAccept = null; // Store the demand object temporarily
+    let currentDemandeToRefuse = null; // Store the demand object temporarily
 
     btnConfirmSlot.addEventListener('click', () => {
       const slot = deliverySlotInput.value;
@@ -202,6 +282,71 @@
         currentDemandeToAccept = null;
       }
     });
+
+    btnConfirmRefusal.addEventListener('click', () => {
+      let selectedReason = '';
+      const selectedRadio = refusalReasonsList.querySelector('input[name="refusal-reason"]:checked');
+      if (selectedRadio) {
+        selectedReason = selectedRadio.value;
+        if (selectedReason === 'Autre (préciser)') {
+          selectedReason = otherReasonInput.value.trim();
+        }
+      }
+
+      if (currentDemandeToRefuse && selectedReason) {
+        updateStatut(currentDemandeToRefuse.id, 'refused', selectedReason);
+        refusalReasonModal.classList.add('hidden');
+        currentDemandeToRefuse = null;
+        otherReasonInput.classList.add('hidden');
+        otherReasonInput.value = '';
+      } else {
+        showToast('Veuillez sélectionner un motif de refus ou préciser "Autre".');
+      }
+    });
+
+    btnCancelRefusal.addEventListener('click', () => {
+      refusalReasonModal.classList.add('hidden');
+      currentDemandeToRefuse = null;
+      otherReasonInput.classList.add('hidden');
+      otherReasonInput.value = '';
+    });
+
+    function promptForRefusalReason(demandeId) {
+      const demandes = loadDemandes();
+      currentDemandeToRefuse = demandes.find(d => d.id === demandeId);
+      if (!currentDemandeToRefuse) return;
+
+      refusalReasonsList.innerHTML = '';
+      refusalReasons.forEach((reason, index) => {
+        const div = document.createElement('div');
+        div.className = 'flex items-center';
+        const input = document.createElement('input');
+        input.type = 'radio';
+        input.name = 'refusal-reason';
+        input.id = `reason-${index}`;
+        input.value = reason;
+        input.className = 'mr-2';
+        input.addEventListener('change', () => {
+          if (reason === 'Autre (préciser)') {
+            otherReasonInput.classList.remove('hidden');
+            otherReasonInput.focus();
+          } else {
+            otherReasonInput.classList.add('hidden');
+            otherReasonInput.value = '';
+          }
+        });
+
+        const label = document.createElement('label');
+        label.htmlFor = `reason-${index}`;
+        label.textContent = reason;
+
+        div.appendChild(input);
+        div.appendChild(label);
+        refusalReasonsList.appendChild(div);
+      });
+
+      refusalReasonModal.classList.remove('hidden');
+    }
 
     function createCommandFromDemand(demande, deliverySlot) {
       const commandes = loadCommandes();
@@ -408,7 +553,7 @@
         node.querySelector('.request-details').appendChild(detailsDiv);
 
         if (req.statut === 'pending') {
-          node.querySelector('.btn-refuse').onclick  = () => { updateStatut(req.id, 'refused'); };
+          node.querySelector('.btn-refuse').onclick  = () => { promptForRefusalReason(req.id); };
           node.querySelector('.btn-accept').onclick  = () => { updateStatut(req.id, 'accepted'); };
           pendingEl.appendChild(node);
         } else {
@@ -420,6 +565,12 @@
             (req.statut === 'accepted' ? 'bg-green-600' : 'bg-red-600');
           btn.textContent =
             req.statut === 'accepted' ? 'Acceptée' : 'Refusée';
+          if (req.statut === 'refused' && req.refusalReason) {
+            const reasonP = document.createElement('p');
+            reasonP.className = 'text-sm text-red-500 mt-2';
+            reasonP.textContent = `Motif: ${req.refusalReason}`;
+            node.querySelector('.request-details').appendChild(reasonP);
+          }
           historyEl.appendChild(node);
         }
       });
@@ -461,12 +612,15 @@
         });
     }
 
-    function updateStatut(id, statut) {
+    function updateStatut(id, statut, refusalReason = null) {
       const demandes = loadDemandes();
       const demandeIndex = demandes.findIndex(r => r.id === id);
       if (demandeIndex > -1) {
         const demande = demandes[demandeIndex];
         demande.statut = statut;
+        if (statut === 'refused') {
+          demande.refusalReason = refusalReason;
+        }
 
         if (statut === 'accepted') {
           saveDemandes(demandes); // Save the updated status to localStorage

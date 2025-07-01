@@ -84,12 +84,24 @@
       <a href="index.html#contact" class="block py-2 px-4 text-sm hover:bg-gray-200">Contact</a>
       <a href="commande.html" class="block py-2 px-4 text-sm hover:bg-gray-200">Commander</a>
     </div>
+    <!-- Restaurant Closed Banner for Mobile -->
+    <div id="restaurant-closed-banner-mobile" class="hidden bg-red-600 text-white text-center py-2 text-sm font-semibold">
+      Le restaurant est actuellement fermé.
+    </div>
   </header>
 
   <!-- Contenu principal -->
   <main class="flex-1 pt-24 pb-12 max-w-3xl mx-auto px-4">
 
     <h1 class="text-4xl font-extrabold text-primary text-center mb-10">Commander</h1>
+
+    <!-- Message de refus (initiallement caché) -->
+    <section id="msg-refused" class="hidden bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-8" role="alert">
+      <strong class="font-bold">Demande refusée !</strong>
+      <span class="block sm:inline" id="refusal-reason-display"></span>
+      <p class="mt-4">Nous sommes désolés, votre demande n'a pas pu être acceptée pour le moment.</p>
+      <button id="btn-new-demand" class="mt-4 px-6 py-3 bg-accent text-white font-bold rounded-lg shadow-md hover:shadow-lg transition">Faire une nouvelle demande</button>
+    </section>
 
     
 
@@ -221,6 +233,10 @@
   <section id="panier-section" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50">
     <div class="bg-white rounded-lg shadow-xl p-8 max-w-2xl w-full flex flex-col max-h-[90vh]">
       <h2 class="text-3xl font-extrabold text-primary mb-6">Votre Panier</h2>
+      <div id="restaurant-closed-message-cart" class="hidden bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4">
+        <strong class="font-bold">Restaurant fermé !</strong>
+        <span class="block sm:inline">Le restaurant est actuellement fermé. Vous pouvez remplir votre panier et commander plus tard.</span>
+      </div>
       <ul id="panier-list" class="space-y-4 mb-6 overflow-y-auto flex-grow">
         <!-- Les éléments du panier seront injectés ici -->
       </ul>
@@ -269,6 +285,8 @@
     const formDisponibilite = document.getElementById('form-disponibilite');
     const msgOk = document.getElementById('msg-ok');
     const msgRefused = document.getElementById('msg-refused');
+    const refusalReasonDisplay = document.getElementById('refusal-reason-display');
+    const btnNewDemand = document.getElementById('btn-new-demand');
     const msgOrderReady = document.getElementById('msg-order-ready');
     const orderMenuSection = document.getElementById('order-menu');
     const wokComposerSection = document.getElementById('wok-composer');
@@ -285,6 +303,65 @@
     const telCoordsInput = document.getElementById('tel-coords');
     const adresseCoordsInput = document.getElementById('adresse-coords');
     const btnViewCartMobile = document.getElementById('btn-view-cart-mobile');
+    const restaurantClosedBannerMobile = document.getElementById('restaurant-closed-banner-mobile');
+    const restaurantClosedMessageCart = document.getElementById('restaurant-closed-message-cart');
+    const btnConfirmOrder = document.querySelector('#coords-modal button[type="submit"]');
+
+    // Helpers for restaurant status
+    function getRestaurantStatus() {
+      const status = localStorage.getItem('restaurantOuvert');
+      return status === null ? true : JSON.parse(status); // Default to true if not set
+    }
+
+    function updateRestaurantStatusUI() {
+      const isOpen = getRestaurantStatus();
+
+      // Update mobile banner
+      if (restaurantClosedBannerMobile) {
+        restaurantClosedBannerMobile.classList.toggle('hidden', isOpen);
+      }
+
+      // Update cart modal message
+      if (restaurantClosedMessageCart) {
+        restaurantClosedMessageCart.classList.toggle('hidden', isOpen);
+      }
+
+      // Disable/enable order button
+      if (btnConfirmOrder) {
+        btnConfirmOrder.disabled = !isOpen;
+        if (!isOpen) {
+          btnConfirmOrder.textContent = 'Restaurant fermé';
+          btnConfirmOrder.classList.remove('bg-accent', 'hover:shadow-lg');
+          btnConfirmOrder.classList.add('bg-gray-400', 'cursor-not-allowed');
+        } else {
+          btnConfirmOrder.textContent = 'Confirmer la commande';
+          btnConfirmOrder.classList.add('bg-accent', 'hover:shadow-lg');
+          btnConfirmOrder.classList.remove('bg-gray-400', 'cursor-not-allowed');
+        }
+      }
+
+      // Adjust sticky category nav position
+      const headerElement = document.querySelector('header');
+      const categoryNav = document.getElementById('category-nav');
+
+      if (headerElement && categoryNav) {
+        const headerHeight = headerElement.offsetHeight;
+        categoryNav.style.top = `${headerHeight}px`;
+      }
+    }
+
+    // Initial update on load
+    updateRestaurantStatusUI();
+
+    // Reactive update every 10 seconds
+    setInterval(updateRestaurantStatusUI, 10000);
+
+    // Listen for storage changes from other tabs/windows
+    window.addEventListener('storage', (e) => {
+      if (e.key === 'restaurantOuvert') {
+        updateRestaurantStatusUI();
+      }
+    });
 
     // Scroll doux pour la nav des catégories
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
@@ -329,6 +406,11 @@
 
     formCoords.addEventListener('submit', (e) => {
       e.preventDefault();
+
+      if (!getRestaurantStatus()) {
+        alert('Le restaurant est actuellement fermé. Vous ne pouvez pas passer commande.');
+        return;
+      }
 
       const cart = JSON.parse(localStorage.getItem('cart') || '[]');
       const total = parseFloat(panierTotal.textContent);
@@ -664,6 +746,22 @@
               window.location.href = 'suivi.html';
               return;
             }
+          } else if (currentDemand.statut === 'refused') {
+            msgRefused.classList.remove('hidden');
+            if (currentDemand.refusalReason) {
+              refusalReasonDisplay.textContent = ` Motif: ${currentDemand.refusalReason}`;
+            }
+            orderMenuSection.classList.add('hidden');
+            wokComposerSection.classList.add('hidden');
+            cartFloat.classList.add('hidden');
+            mobileCartButton.classList.add('hidden'); // Hide mobile cart button as well
+            
+            btnNewDemand.addEventListener('click', () => {
+              localStorage.removeItem('currentDemandId');
+              localStorage.removeItem('cart');
+              window.location.href = 'commande.html'; // Reload to start a new order
+            });
+            return;
           }
         }
       }
