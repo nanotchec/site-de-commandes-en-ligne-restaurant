@@ -33,6 +33,31 @@
   <style>
     body { font-family: 'Noto Sans', sans-serif; }
     h1, h2 { font-family: 'Playfair Display', serif; }
+
+    /* Custom Scrollbar for Panier List */
+    #panier-list::-webkit-scrollbar {
+      width: 8px; /* Largeur de la barre de défilement */
+    }
+
+    #panier-list::-webkit-scrollbar-track {
+      background: #f1f1f1; /* Couleur de fond de la piste */
+      border-radius: 10px;
+    }
+
+    #panier-list::-webkit-scrollbar-thumb {
+      background: #888; /* Couleur du "pouce" de la barre de défilement */
+      border-radius: 10px;
+    }
+
+    #panier-list::-webkit-scrollbar-thumb:hover {
+      background: #555; /* Couleur du "pouce" au survol */
+    }
+
+    /* Pour Firefox */
+    #panier-list {
+      scrollbar-width: thin; /* "thin" ou "auto" */
+      scrollbar-color: #888 #f1f1f1; /* couleur du pouce et couleur de la piste */
+    }
   </style>
 </head>
 <body class="flex flex-col min-h-screen bg-gradient-to-b from-gray-50 to-white text-gray-800">
@@ -506,16 +531,32 @@
           return sum + (menuItem.prix * cartItem.qty);
       }, 0);
 
-      // Badge pour desktop
+      const cartFloat = document.getElementById('cart-float'); // Bouton panier desktop
+      const mobileCartButton = document.getElementById('mobile-cart-button'); // Bouton panier mobile
+
+      // Mettre à jour le badge du panier desktop
       document.getElementById('cart-count').textContent = count;
 
-      // Bouton pour mobile
-      const mobileCartButton = document.getElementById('mobile-cart-button');
-      if (count > 0) {
-        document.getElementById('mobile-cart-total').textContent = `${total.toFixed(2)}€`;
-        mobileCartButton.classList.remove('hidden');
+      // Déterminer si nous sommes sur un écran mobile (moins de 768px, breakpoint `md` de Tailwind)
+      const isMobileScreen = window.innerWidth < 768;
+
+      if (isMobileScreen) {
+        // Sur les écrans mobiles
+        cartFloat.classList.add('hidden'); // S'assurer que le panier desktop est masqué
+        if (count > 0) {
+          document.getElementById('mobile-cart-total').textContent = `${total.toFixed(2)}€`;
+          mobileCartButton.classList.remove('hidden'); // Afficher le panier mobile s'il y a des articles
+        } else {
+          mobileCartButton.classList.add('hidden'); // Masquer le panier mobile s'il n'y a pas d'articles
+        }
       } else {
-        mobileCartButton.classList.add('hidden');
+        // Sur les écrans desktop
+        mobileCartButton.classList.add('hidden'); // S'assurer que le panier mobile est masqué
+        if (count > 0) {
+          cartFloat.classList.remove('hidden'); // Afficher le panier desktop s'il y a des articles
+        } else {
+          cartFloat.classList.add('hidden'); // Masquer le panier desktop s'il n'y a pas d'articles
+        }
       }
     }
 
@@ -534,7 +575,7 @@
         const menuItem = cartItem.isWok ? cartItem.details : menuItems.find(item => String(item.id) === cartItem.itemId);
         if (menuItem) {
           const li = document.createElement('li');
-          li.className = 'flex items-center justify-between';
+          li.className = 'flex items-center justify-between pr-4'; // Ajout de pr-4 ici
           li.innerHTML = `
             <div>
               <p class="font-medium">${menuItem.nom}</p>
