@@ -82,76 +82,114 @@
       <!-- Étape 3 : Affichage du menu pour la commande -->
 
       <!-- Wok à composer -->
-      <section id="wok-composer" class="hidden mt-12">
-        <h2 class="text-3xl font-extrabold text-primary text-center mb-8">Wok à composer</h2>
-        <div class="bg-white p-8 rounded-lg shadow-md">
-          <!-- Choix de la base -->
-          <div class="mb-6">
-            <h3 class="text-xl font-semibold mb-2">1. Choix de la base</h3>
-            <div id="wok-base" class="grid md:grid-cols-2 gap-4"></div>
-          </div>
-          <!-- Choix de la pulpe -->
-          <div class="mb-6">
-            <h3 class="text-xl font-semibold mb-2">2. Choix de la pulpe</h3>
-            <div id="wok-pulpe" class="grid md:grid-cols-2 gap-4"></div>
-          </div>
-          <!-- Choix des favoris -->
-          <div class="mb-6">
-            <h3 class="text-xl font-semibold mb-2">3. Choix des favoris</h3>
-            <div id="wok-favoris" class="grid md:grid-cols-3 gap-4"></div>
-          </div>
-          <!-- Choix de la sauce -->
-          <div class="mb-6">
-            <h3 class="text-xl font-semibold mb-2">4. Choix de la sauce</h3>
-            <div id="wok-sauce" class="grid md:grid-cols-2 gap-4"></div>
-          </div>
-          <!-- Toppings -->
-          <div class="mb-6">
-            <h3 class="text-xl font-semibold mb-2">5. Toppings (+0.60€)</h3>
-            <div id="wok-toppings" class="grid md:grid-cols-2 gap-4"></div>
+      <section id="wok-composer" class="mb-8 pt-8 -mt-8">
+        <h2 class="text-2xl font-bold text-primary mb-4">Wok à composer</h2>
+        <div class="bg-white p-4 md:p-8 rounded-lg shadow-md">
+
+          <!-- Onglets pour Mobile -->
+          <div class="md:hidden border-b border-gray-200 mb-4">
+            <nav class="-mb-px flex space-x-4 overflow-x-auto" aria-label="Tabs">
+              <button class="wok-tab whitespace-nowrap py-3 px-2 border-b-2 font-medium text-sm border-accent text-accent">Base</button>
+              <button class="wok-tab whitespace-nowrap py-3 px-2 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300">Pulpe</button>
+              <button class="wok-tab whitespace-nowrap py-3 px-2 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300">Favoris</button>
+              <button class="wok-tab whitespace-nowrap py-3 px-2 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300">Sauce</button>
+              <button class="wok-tab whitespace-nowrap py-3 px-2 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300">Toppings</button>
+            </nav>
           </div>
 
-          <div class="text-right font-bold text-xl mb-6">
+          <!-- Contenu des étapes -->
+          <div id="wok-steps-content">
+            <!-- Étape 1: Base -->
+            <div class="wok-step-pane md:mb-6">
+              <h3 class="hidden md:block text-xl font-semibold mb-2">1. Choix de la base</h3>
+              <div id="wok-base" class="grid md:grid-cols-2 gap-4"></div>
+            </div>
+
+            <!-- Étape 2: Pulpe -->
+            <div class="wok-step-pane hidden md:mb-6">
+              <h3 class="hidden md:block text-xl font-semibold mb-2">2. Choix de la pulpe</h3>
+              <div id="wok-pulpe" class="grid md:grid-cols-2 gap-4"></div>
+            </div>
+
+            <!-- Étape 3: Favoris -->
+            <div class="wok-step-pane hidden md:mb-6">
+              <h3 class="hidden md:block text-xl font-semibold mb-2">3. Choix des favoris</h3>
+              <div id="wok-favoris" class="grid md:grid-cols-3 gap-4"></div>
+            </div>
+
+            <!-- Étape 4: Sauce -->
+            <div class="wok-step-pane hidden md:mb-6">
+              <h3 class="hidden md:block text-xl font-semibold mb-2">4. Choix de la sauce</h3>
+              <div id="wok-sauce" class="grid md:grid-cols-2 gap-4"></div>
+            </div>
+
+            <!-- Étape 5: Toppings -->
+            <div class="wok-step-pane hidden md:mb-6">
+              <h3 class="hidden md:block text-xl font-semibold mb-2">5. Toppings (+0.60€)</h3>
+              <div id="wok-toppings" class="grid md:grid-cols-2 gap-4"></div>
+            </div>
+          </div>
+
+          <div class="text-right font-bold text-xl mt-6">
             Total Wok: <span id="wok-total">0.00</span>€
           </div>
           <button id="btn-add-wok" class="w-full px-6 py-3 bg-accent text-white font-bold rounded-lg shadow-md hover:shadow-lg transition">Ajouter le Wok au panier</button>
         </div>
       </section>
 
-      <section id="order-menu" class="mt-12">
-        <h2 class="text-3xl font-extrabold text-primary text-center mb-8">Notre Menu</h2>
+      <section id="order-menu" class="mt-8 md:mt-12">
+        <!-- Sticky Nav pour mobile -->
+        <div id="category-nav" class="md:hidden sticky top-16 bg-white/90 backdrop-blur-sm z-40 overflow-x-auto">
+          <div class="flex items-center space-x-4 border-b px-4">
+            <a href="#wok-composer" class="category-link whitespace-nowrap py-3 px-2 text-sm font-medium text-gray-600">Wok</a>
+            <a href="#entrees-section" class="category-link whitespace-nowrap py-3 px-2 text-sm font-medium text-gray-600">Entrées</a>
+            <a href="#plats-section" class="category-link whitespace-nowrap py-3 px-2 text-sm font-medium text-gray-600">Plats</a>
+            <a href="#desserts-section" class="category-link whitespace-nowrap py-3 px-2 text-sm font-medium text-gray-600">Desserts</a>
+            <a href="#boissons-section" class="category-link whitespace-nowrap py-3 px-2 text-sm font-medium text-gray-600">Boissons</a>
+          </div>
+        </div>
 
-        <div id="entrees-section" class="mb-8">
+        <h2 class="hidden md:block text-3xl font-extrabold text-primary text-center mb-8">Notre Menu</h2>
+
+        <div id="entrees-section" class="mb-8 pt-8 -mt-8">
           <h3 class="text-2xl font-bold text-primary mb-4">Entrées</h3>
-          <ul id="order-entrees-list" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8"></ul>
+          <ul id="order-entrees-list" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-8"></ul>
         </div>
 
-        <div id="plats-section" class="mb-8">
+        <div id="plats-section" class="mb-8 pt-8 -mt-8">
           <h3 class="text-2xl font-bold text-primary mb-4">Plats</h3>
-          <ul id="order-plats-list" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8"></ul>
+          <ul id="order-plats-list" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-8"></ul>
         </div>
 
-        <div id="desserts-section" class="mb-8">
+        <div id="desserts-section" class="mb-8 pt-8 -mt-8">
           <h3 class="text-2xl font-bold text-primary mb-4">Desserts</h3>
-          <ul id="order-desserts-list" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8"></ul>
+          <ul id="order-desserts-list" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-8"></ul>
         </div>
 
-        <div id="boissons-section" class="mb-8">
+        <div id="boissons-section" class="mb-8 pt-8 -mt-8">
           <h3 class="text-2xl font-bold text-primary mb-4">Boissons</h3>
-          <ul id="order-boissons-list" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8"></ul>
+          <ul id="order-boissons-list" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-8"></ul>
         </div>
       </section>
 
   </main>
 
   <!-- Panier flottant -->
-  <div id="cart-float" class="fixed bottom-6 right-6 z-50 hidden">
+  <div id="cart-float" class="fixed bottom-6 right-6 z-50 hidden md:block">
     <a href="#" class="relative block">
       <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-accent" viewBox="0 0 20 20" fill="currentColor">
         <path d="M3 1a1 1 0 000 2h1.22l.305 1.222a.997.997 0 00.922.778h9.446a1 1 0 00.922-.778L16.78 3H17a1 1 0 000-2H3zM6.07 7l1.22 4.891a1 1 0 00.922.609h4.576a1 1 0 00.922-.609L14.93 7H6.07z" />
       </svg>
       <span id="cart-count" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">0</span>
     </a>
+  </div>
+
+  <!-- Bouton panier flottant pour mobile -->
+  <div id="mobile-cart-button" class="md:hidden fixed bottom-0 left-0 right-0 p-4 bg-white/90 backdrop-blur-sm z-40 border-t border-gray-200 hidden">
+    <button id="btn-view-cart-mobile" class="w-full px-6 py-3 bg-accent text-white font-bold rounded-lg shadow-md flex justify-between items-center">
+      <span>Voir le panier</span>
+      <span id="mobile-cart-total">0.00€</span>
+    </button>
   </div>
 
   <!-- Modale Panier -->
@@ -221,8 +259,25 @@
     const nomCoordsInput = document.getElementById('nom-coords');
     const telCoordsInput = document.getElementById('tel-coords');
     const adresseCoordsInput = document.getElementById('adresse-coords');
+    const btnViewCartMobile = document.getElementById('btn-view-cart-mobile');
+
+    // Scroll doux pour la nav des catégories
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            document.querySelector(this.getAttribute('href')).scrollIntoView({
+                behavior: 'smooth'
+            });
+        });
+    });
 
     cartFloat.addEventListener('click', (e) => {
+      e.preventDefault();
+      renderPanier();
+      panierSection.classList.remove('hidden');
+    });
+
+    btnViewCartMobile.addEventListener('click', (e) => {
       e.preventDefault();
       renderPanier();
       panierSection.classList.remove('hidden');
@@ -315,15 +370,19 @@
 
       menuItems.forEach(item => {
         const li = document.createElement('li');
-        li.className = 'bg-white p-4 rounded-lg shadow-md flex flex-col items-center text-center relative';
+        // Vue mobile : liste, Vue desktop : grille
+        li.className = 'bg-white p-4 rounded-lg shadow-md flex md:flex-col items-center text-center relative md:p-4';
         li.innerHTML = `
-          <img src="${item.img}" alt="${item.nom}" class="w-32 h-32 rounded-lg object-cover mb-4" />
-          <div class="flex-grow text-center">
+          <img src="${item.img}" alt="${item.nom}" class="w-24 h-24 md:w-32 md:h-32 rounded-lg object-cover mr-4 md:mr-0 md:mb-4" />
+          <div class="flex-grow text-left md:text-center">
             <p class="font-medium text-lg">${item.nom}</p>
+            <span class="font-semibold text-accent md:hidden">${item.prix.toFixed(2)}€</span>
           </div>
-          <span class="font-semibold text-accent">${item.prix.toFixed(2)}€</span>
-          <button data-id="${item.id}" class="mt-4 px-4 py-2 bg-accent text-white font-semibold rounded-full shadow hover:shadow-lg transition">+</button>
-          <span data-id="${item.id}" class="item-qty-badge absolute -top-2 -right-2 bg-blue-500 text-white text-xs font-bold rounded-full h-6 w-6 flex items-center justify-center hidden">0</span>
+          <div class="flex flex-col items-center">
+             <span class="font-semibold text-accent hidden md:block mb-2">${item.prix.toFixed(2)}€</span>
+            <button data-id="${item.id}" class="mt-2 px-4 py-2 bg-accent text-white font-semibold rounded-full shadow hover:shadow-lg transition">+</button>
+          </div>
+          <span data-id="${item.id}" class="item-qty-badge absolute top-0 right-0 bg-blue-500 text-white text-xs font-bold rounded-full h-6 w-6 flex items-center justify-center hidden">0</span>
         `;
         
         switch (item.categorie) {
@@ -349,6 +408,64 @@
       initWokComposer();
       updateCartBadge();
       updateItemBadges();
+      setupCategoryObserver(); // Pour la nav sticky
+      setupWokTabs(); // Pour le formulaire Wok
+    }
+
+    function setupWokTabs() {
+      const tabs = document.querySelectorAll('.wok-tab');
+      const panes = document.querySelectorAll('.wok-step-pane');
+
+      tabs.forEach((tab, index) => {
+        tab.addEventListener('click', () => {
+          // Masquer tous les contenus
+          panes.forEach(pane => pane.classList.add('hidden'));
+          // Afficher le contenu correspondant
+          panes[index].classList.remove('hidden');
+
+          // Gérer le style des onglets
+          tabs.forEach(t => {
+            t.classList.remove('border-accent', 'text-accent');
+            t.classList.add('border-transparent', 'text-gray-500', 'hover:text-gray-700', 'hover:border-gray-300');
+          });
+          tab.classList.add('border-accent', 'text-accent');
+          tab.classList.remove('border-transparent', 'text-gray-500', 'hover:text-gray-700', 'hover:border-gray-300');
+        });
+      });
+
+      // Gérer l'affichage desktop (tout est visible)
+      const handleDesktopView = () => {
+        if (window.innerWidth >= 768) { // 768px est le point de rupture `md` de Tailwind
+          panes.forEach(pane => pane.classList.remove('hidden'));
+        } else {
+          // Sur mobile, s'assurer que seul le premier onglet est visible au départ
+          panes.forEach((pane, index) => {
+            if (index !== 0) pane.classList.add('hidden');
+          });
+        }
+      };
+
+      // Appeler la fonction au chargement et au redimensionnement
+      handleDesktopView();
+      window.addEventListener('resize', handleDesktopView);
+    }
+
+    function setupCategoryObserver() {
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          const id = entry.target.getAttribute('id');
+          const link = document.querySelector(`.category-link[href="#${id}"]`);
+          
+          if (entry.isIntersecting) {
+            document.querySelectorAll('.category-link').forEach(l => l.classList.remove('text-accent', 'border-accent', 'border-b-2'));
+            link.classList.add('text-accent', 'border-accent', 'border-b-2');
+          } 
+        });
+      }, { rootMargin: "-50% 0px -50% 0px", threshold: 0 });
+
+      document.querySelectorAll('div[id$="-section"], section[id$="-composer"]').forEach(section => {
+        observer.observe(section);
+      });
     }
 
     function updateItemBadges() {
@@ -382,9 +499,24 @@
     }
 
     function updateCartBadge() {
-      const count = JSON.parse(localStorage.getItem('cart') || '[]')
-        .reduce((sum, it) => sum + it.qty, 0);
+      const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+      const count = cart.reduce((sum, it) => sum + it.qty, 0);
+      const total = cart.reduce((sum, cartItem) => {
+          const menuItem = cartItem.isWok ? cartItem.details : menuItems.find(item => String(item.id) === cartItem.itemId);
+          return sum + (menuItem.prix * cartItem.qty);
+      }, 0);
+
+      // Badge pour desktop
       document.getElementById('cart-count').textContent = count;
+
+      // Bouton pour mobile
+      const mobileCartButton = document.getElementById('mobile-cart-button');
+      if (count > 0) {
+        document.getElementById('mobile-cart-total').textContent = `${total.toFixed(2)}€`;
+        mobileCartButton.classList.remove('hidden');
+      } else {
+        mobileCartButton.classList.add('hidden');
+      }
     }
 
     function renderPanier() {

@@ -41,13 +41,13 @@ export const wokOptions = {
     { nom: "Aigre-douce" },
   ],
   toppings: [
-    { nom: "Coriandre fraîche" },
-    { nom: "Cacahuètes" },
-    { nom: "Oignons frits" },
-    { nom: "Crevettes séchées" },
-    { nom: "Ciboulette thaï" },
-    { nom: "Citron" },
-    { nom: "Graines de sesame" },
+    { nom: "Coriandre fraîche", prix: 0.60 },
+    { nom: "Cacahuètes", prix: 0.60 },
+    { nom: "Oignons frits", prix: 0.60 },
+    { nom: "Crevettes séchées", prix: 0.60 },
+    { nom: "Ciboulette thaï", prix: 0.60 },
+    { nom: "Citron", prix: 0.60 },
+    { nom: "Graines de sesame", prix: 0.60 },
   ],
 };
 
@@ -73,7 +73,7 @@ function renderWokOptions() {
       input.type = type === 'radio' ? 'radio' : 'checkbox';
       input.name = type === 'radio' ? containerId : item.nom;
       input.value = item.nom;
-      input.dataset.prix = item.prix || (containerId === 'wok-toppings' ? 0.60 : 0);
+      input.dataset.prix = item.prix || 0;
       input.dataset.category = containerId.replace('wok-', '');
       input.addEventListener('change', updateWokSelection);
 
@@ -124,7 +124,7 @@ function calculateWokTotal() {
   if (selectedWok.base) total += selectedWok.base.prix;
   selectedWok.pulpes.forEach(p => total += p.prix);
   selectedWok.favoris.forEach(f => total += f.prix);
-  selectedWok.toppings.forEach(t => total += 0.60);
+  selectedWok.toppings.forEach(t => total += t.prix);
 
   selectedWok.total = total;
   document.getElementById('wok-total').textContent = total.toFixed(2);
