@@ -87,7 +87,9 @@
 
     <div id="view-commandes" class="hidden">
         <h1 class="text-4xl font-extrabold text-primary text-center mb-10 px-4">Commandes</h1>
-        <div class="overflow-x-auto px-0 md:px-4">
+        <!-- Liste mobile (cartes) -->
+        <div id="commandes-cards" class="space-y-4 md:hidden"></div>
+        <div class="overflow-x-auto px-0 md:px-4 hidden md:block">
           <table class="w-full text-left border-collapse text-xs sm:text-sm">
               <thead>
                 <tr class="border-b">
@@ -137,7 +139,7 @@
   
 
   <!-- Order Detail Drawer -->
-  <div id="order-drawer" class="fixed inset-y-0 right-0 w-96 bg-white shadow-lg transform translate-x-full transition-transform z-[60]" role="dialog" aria-modal="true">
+  <div id="order-drawer" class="fixed inset-y-0 right-0 w-full md:w-96 bg-white shadow-lg transform translate-x-full transition-transform z-[60]" role="dialog" aria-modal="true">
     <header class="flex justify-between items-center p-4 border-b">
       <h3 id="drawer-title" class="text-xl font-semibold"></h3>
       <button id="drawer-close" class="text-gray-600 hover:text-gray-800" aria-label="Fermer le panneau de détails">✖️</button>
@@ -580,6 +582,8 @@
 
     function renderCommandes(commandes) {
         commandesBody.innerHTML = '';
+        const commandesCards = document.getElementById('commandes-cards');
+        commandesCards.innerHTML = '';
         const statusConfig = {
             submitted: { icon: '⏳', color: 'bg-accent/10', text: 'En attente' },
             preparing: { icon: '<span class="text-accent-dark">🍳</span>', color: 'bg-yellow-100', text: 'En préparation' },
@@ -611,6 +615,42 @@
                 <td class="p-4"><button class="text-accent underline" onclick="openDetailsDrawer('${order.id}')">Détail</button></td>
             `;
             commandesBody.appendChild(tr);
+
+            // ----- vue carte mobile -----
+            const card = document.createElement('div');
+            card.className = `${config.color || ''} p-4 rounded-lg shadow-md flex flex-col gap-2 md:hidden`;
+            card.innerHTML = `
+    <div class="flex justify-between items-center mb-2">
+      <p class="font-semibold text-base">${order.customer.name}</p>
+      <span class="text-sm font-medium">${order.total.toFixed(2)}€</span>
+    </div>
+    <div class="flex flex-col gap-2">
+      <div class="flex items-center gap-2">
+        <input
+          type="time"
+          class="border rounded px-2 py-1 text-xs w-24"
+          value="${order.deliverySlot || ''}"
+          onchange="updateDeliverySlot('${order.id}', this.value)"
+        />
+        <span class="text-lg">${config.icon}</span>
+        <select
+          class="border rounded px-1 py-1 text-sm w-auto"
+          onchange="updateOrderStatus('${order.id}', this.value)"
+        >
+          <option value="submitted" ${order.status === 'submitted' ? 'selected' : ''}>En attente</option>
+          <option value="preparing" ${order.status === 'preparing' ? 'selected' : ''}>En préparation</option>
+          <option value="ready" ${order.status === 'ready' ? 'selected' : ''}>Prête</option>
+          <option value="delivered" ${order.status === 'delivered' ? 'selected' : ''}>Livrée</option>
+        </select>
+      </div>
+      <button
+        class="text-accent underline self-end mt-1"
+        onclick="openDetailsDrawer('${order.id}')"
+      >
+        Détail
+      </button>
+    </div>`;
+            commandesCards.appendChild(card);
         });
     }
 
