@@ -1,4 +1,5 @@
 --- .gitignore ---
+
 .DS_Store
 
 
@@ -146,6 +147,17 @@ https://creativecommons.org/licenses/by-nc/4.0/legalcode
   <style>
     body { font-family: 'Noto Sans', sans-serif; }
     h1,h2 { font-family: 'Playfair Display', serif; }
+    /* Style for the toggle switch */
+    .dot {
+      transform: translateX(0);
+      transition: transform 0.3s ease-in-out;
+    }
+    input:checked + .block {
+      background-color: #4CAF50; /* Green for open */
+    }
+    input:checked + .block + .dot {
+      transform: translateX(20px);
+    }
   </style>
 </head>
 <body class="min-h-screen bg-gradient-to-b from-gray-50 to-white text-gray-800">
@@ -153,55 +165,70 @@ https://creativecommons.org/licenses/by-nc/4.0/legalcode
   <!-- Header -->
   <header class="fixed top-0 w-full bg-white/70 backdrop-blur-sm shadow z-50">
     <!-- Top bar -->
-    <div class="max-w-5xl mx-auto flex items-center justify-between py-4 px-6">
+    <div class="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 py-4 px-6">
       <span class="text-2xl font-bold text-primary">Dashboard Thaï Garden</span>
-      <a href="index.html" class="text-accent font-semibold hover:underline">← Retour au site</a>
+      <div class="flex items-center space-x-2">
+        <span class="text-gray-700 font-medium">Restaurant:</span>
+        <label for="toggle-restaurant-status" class="flex items-center cursor-pointer">
+          <div class="relative">
+            <input type="checkbox" id="toggle-restaurant-status" class="sr-only">
+            <div class="block bg-gray-600 w-14 h-8 rounded-full"></div>
+            <div class="dot absolute left-1 top-1 bg-white w-6 h-6 rounded-full transition"></div>
+          </div>
+          <div id="restaurant-status-text" class="ml-3 text-gray-700 font-semibold">Fermé</div>
+        </label>
+      </div>
+      <a href="index.html" class="text-accent font-semibold hover:underline hidden sm:inline-block">← Retour au site</a>
     </div>
     <!-- Secondary navigation -->
-    <nav class="border-t border-gray-200">
-        <div class="max-w-5xl mx-auto flex gap-4 px-6">
-             <button id="tab-demandes" class="flex items-center gap-2 py-3 px-4 border-b-2 border-accent font-semibold">
+    <nav class="border-t border-gray-200 overflow-x-auto">
+        <div class="max-w-5xl mx-auto flex flex-nowrap sm:flex-wrap gap-4 px-6">
+             <button id="tab-demandes" class="flex items-center gap-2 py-3 px-4 border-b-2 border-accent font-semibold flex-shrink-0">
                 Demandes <span id="badge-demandes" class="ml-1 bg-red-500 text-white rounded-full px-2 text-sm hidden">0</span>
             </button>
-            <button id="tab-commandes" class="flex items-center gap-2 py-3 px-4 text-gray-600 hover:text-primary">
+            <button id="tab-commandes" class="flex items-center gap-2 py-3 px-4 text-gray-600 hover:text-primary flex-shrink-0">
                 Commandes <span id="badge-commandes" class="ml-1 bg-red-500 text-white rounded-full px-2 text-sm hidden">0</span>
             </button>
-             <button id="tab-historique" class="flex items-center gap-2 py-3 px-4 text-gray-600 hover:text-primary">
+             <button id="tab-historique" class="flex items-center gap-2 py-3 px-4 text-gray-600 hover:text-primary flex-shrink-0">
                 Historique
             </button>
         </div>
     </nav>
   </header>
 
-  <main class="pt-32 pb-12 max-w-5xl mx-auto px-4">
+  <main class="pt-44 sm:pt-32 pb-12 max-w-5xl mx-auto">
 
-    <div id="view-demandes">
+    <div id="view-demandes" class="px-4">
         <!-- Demandes en attente -->
         <h1 class="text-4xl font-extrabold text-primary text-center mb-10">Demandes en attente</h1>
         <div id="pending-container" class="space-y-4"></div>
     </div>
 
     <div id="view-commandes" class="hidden">
-        <h1 class="text-4xl font-extrabold text-primary text-center mb-10">Commandes</h1>
-        <table class="w-full text-left border-collapse">
-            <thead>
-              <tr class="border-b">
-                <th class="p-4">Client</th>
-                <th class="p-4">Adresse</th>
-                <th class="p-4">Créneau</th>
-                <th class="p-4">Contenu</th>
-                <th class="p-4">Total</th>
-                <th class="p-4">Statut</th>
-                <th class="p-4">Action</th>
-              </tr>
-            </thead>
-            <tbody id="commandes-body">
-              <!-- Les lignes de commande seront injectées ici par le JS -->
-            </tbody>
-        </table>
+        <h1 class="text-4xl font-extrabold text-primary text-center mb-10 px-4">Commandes</h1>
+        <!-- Liste mobile (cartes) -->
+        <div id="commandes-cards" class="space-y-4 md:hidden"></div>
+        <div class="overflow-x-auto px-0 md:px-4 hidden md:block">
+          <table class="w-full text-left border-collapse text-xs sm:text-sm">
+              <thead>
+                <tr class="border-b">
+                  <th class="p-4">Client</th>
+                  <th class="hidden md:table-cell p-4">Adresse</th>
+                  <th class="p-4">Créneau</th>
+                  <th class="p-4">Contenu</th>
+                  <th class="p-4">Total</th>
+                  <th class="p-4">Statut</th>
+                  <th class="p-4">Action</th>
+                </tr>
+              </thead>
+              <tbody id="commandes-body">
+                <!-- Les lignes de commande seront injectées ici par le JS -->
+              </tbody>
+          </table>
+        </div>
     </div>
 
-    <div id="view-historique" class="hidden">
+    <div id="view-historique" class="px-4 hidden">
         <h1 class="text-4xl font-extrabold text-primary text-center mb-10">Historique des demandes</h1>
         <div id="history-container" class="space-y-4"></div>
     </div>
@@ -213,14 +240,15 @@ https://creativecommons.org/licenses/by-nc/4.0/legalcode
 
 
   <template id="request-template">
-    <div class="bg-white p-4 rounded-lg shadow-md flex items-center justify-between">
+    <div class="bg-white p-4 rounded-lg shadow-md flex flex-col">
       <div>
         <p class="text-lg font-semibold req-name"></p>
         <p class="text-gray-600 req-mode"></p>
         <p class="text-gray-600 req-phone"></p>
         <p class="text-gray-600 req-adresse"></p>
       </div>
-      <div class="flex gap-2">
+      <div class="request-details mt-4"></div>
+      <div class="flex gap-2 mt-4 self-end">
         <button class="px-4 py-2 bg-red-500 text-white rounded btn-refuse">Refuser</button>
         <button class="px-4 py-2 bg-green-500 text-white rounded btn-accept">Accepter</button>
       </div>
@@ -230,7 +258,7 @@ https://creativecommons.org/licenses/by-nc/4.0/legalcode
   
 
   <!-- Order Detail Drawer -->
-  <div id="order-drawer" class="fixed inset-y-0 right-0 w-96 bg-white shadow-lg transform translate-x-full transition-transform z-[60]" role="dialog" aria-modal="true">
+  <div id="order-drawer" class="fixed inset-y-0 right-0 w-full md:w-96 bg-white shadow-lg transform translate-x-full transition-transform z-[60]" role="dialog" aria-modal="true">
     <header class="flex justify-between items-center p-4 border-b">
       <h3 id="drawer-title" class="text-xl font-semibold"></h3>
       <button id="drawer-close" class="text-gray-600 hover:text-gray-800" aria-label="Fermer le panneau de détails">✖️</button>
@@ -240,6 +268,33 @@ https://creativecommons.org/licenses/by-nc/4.0/legalcode
 
   <!-- Toast Notification -->
   <div id="toast" class="fixed bottom-4 right-4 p-4 bg-gray-800 text-white rounded-lg shadow-lg opacity-0 transition-opacity duration-300 z-[70]" role="alert"></div>
+
+  <!-- Delivery Slot Modal -->
+  <div id="delivery-slot-modal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-[80]">
+    <div class="bg-white p-8 rounded-lg shadow-xl max-w-sm w-full text-center">
+      <h3 class="text-2xl font-semibold text-primary mb-6">Saisir le créneau de livraison</h3>
+      <input type="time" id="delivery-slot-input" class="border rounded px-3 py-2 text-lg w-full mb-6">
+      <div class="flex justify-center gap-4">
+        <button id="btn-confirm-slot" class="px-6 py-3 bg-accent text-white font-bold rounded-lg shadow-md hover:shadow-lg transition">Confirmer</button>
+        <button id="btn-later-slot" class="px-6 py-3 bg-gray-300 text-gray-800 rounded-lg hover:bg-gray-400 transition">Plus tard</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Refusal Reason Modal -->
+  <div id="refusal-reason-modal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-[80]">
+    <div class="bg-white p-8 rounded-lg shadow-xl max-w-md w-full">
+      <h3 class="text-2xl font-semibold text-primary mb-6 text-center">Motif de refus</h3>
+      <div id="refusal-reasons-list" class="space-y-3 mb-6">
+        <!-- Reasons will be injected here -->
+      </div>
+      <textarea id="other-reason-input" class="hidden w-full border rounded px-3 py-2 mb-6" rows="3" placeholder="Précisez le motif..."></textarea>
+      <div class="flex justify-center gap-4">
+        <button id="btn-confirm-refusal" class="px-6 py-3 bg-red-500 text-white font-bold rounded-lg shadow-md hover:shadow-lg transition">Confirmer le refus</button>
+        <button id="btn-cancel-refusal" class="px-6 py-3 bg-gray-300 text-gray-800 rounded-lg hover:bg-gray-400 transition">Annuler</button>
+      </div>
+    </div>
+  </div>
 
 </body>
 
@@ -259,6 +314,14 @@ https://creativecommons.org/licenses/by-nc/4.0/legalcode
     function saveCommandes(data) {
         localStorage.setItem('commandes', JSON.stringify(data));
     }
+
+    const refusalReasons = [
+      "Restaurant complet pour ce créneau.",
+      "Zone de livraison non desservie.",
+      "Problème technique, veuillez réessayer plus tard.",
+      "Informations incomplètes ou incorrectes.",
+      "Autre (préciser)"
+    ];
 
     const commandesBody = document.getElementById('commandes-body');
 
@@ -282,8 +345,148 @@ https://creativecommons.org/licenses/by-nc/4.0/legalcode
     const drawerContent = document.getElementById('drawer-content');
     const drawerClose = document.getElementById('drawer-close');
     const toast = document.getElementById('toast');
+    const deliverySlotModal = document.getElementById('delivery-slot-modal');
+    const deliverySlotInput = document.getElementById('delivery-slot-input');
+    const btnConfirmSlot = document.getElementById('btn-confirm-slot');
+    const btnLaterSlot = document.getElementById('btn-later-slot');
+    const refusalReasonModal = document.getElementById('refusal-reason-modal');
+    const refusalReasonsList = document.getElementById('refusal-reasons-list');
+    const otherReasonInput = document.getElementById('other-reason-input');
+    const btnConfirmRefusal = document.getElementById('btn-confirm-refusal');
+    const btnCancelRefusal = document.getElementById('btn-cancel-refusal');
+
+    // Restaurant status toggle
+    const toggleRestaurantStatus = document.getElementById('toggle-restaurant-status');
+    const restaurantStatusText = document.getElementById('restaurant-status-text');
+
+    function getRestaurantStatus() {
+      const status = localStorage.getItem('restaurantOuvert');
+      return status === null ? true : JSON.parse(status); // Default to true if not set
+    }
+
+    function setRestaurantStatus(isOpen) {
+      localStorage.setItem('restaurantOuvert', JSON.stringify(isOpen));
+      updateRestaurantStatusDisplay(isOpen);
+    }
+
+    function updateRestaurantStatusDisplay(isOpen) {
+      toggleRestaurantStatus.checked = isOpen;
+      restaurantStatusText.textContent = isOpen ? 'Ouvert' : 'Fermé';
+      restaurantStatusText.classList.toggle('text-green-600', isOpen);
+      restaurantStatusText.classList.toggle('text-red-600', !isOpen);
+    }
+
+    // Initialize status on load
+    updateRestaurantStatusDisplay(getRestaurantStatus());
+
+    toggleRestaurantStatus.addEventListener('change', (event) => {
+      setRestaurantStatus(event.target.checked);
+      showToast(`Restaurant ${event.target.checked ? 'ouvert' : 'fermé'}.`);
+    });
 
     drawerClose.onclick = () => closeDrawer();
+
+    let currentDemandeToAccept = null; // Store the demand object temporarily
+    let currentDemandeToRefuse = null; // Store the demand object temporarily
+
+    btnConfirmSlot.addEventListener('click', () => {
+      const slot = deliverySlotInput.value;
+      if (currentDemandeToAccept) {
+        createCommandFromDemand(currentDemandeToAccept, slot);
+        deliverySlotModal.classList.add('hidden');
+        currentDemandeToAccept = null;
+      }
+    });
+
+    btnLaterSlot.addEventListener('click', () => {
+      if (currentDemandeToAccept) {
+        createCommandFromDemand(currentDemandeToAccept, ''); // Empty slot
+        deliverySlotModal.classList.add('hidden');
+        currentDemandeToAccept = null;
+      }
+    });
+
+    btnConfirmRefusal.addEventListener('click', () => {
+      let selectedReason = '';
+      const selectedRadio = refusalReasonsList.querySelector('input[name="refusal-reason"]:checked');
+      if (selectedRadio) {
+        selectedReason = selectedRadio.value;
+        if (selectedReason === 'Autre (préciser)') {
+          selectedReason = otherReasonInput.value.trim();
+        }
+      }
+
+      if (currentDemandeToRefuse && selectedReason) {
+        updateStatut(currentDemandeToRefuse.id, 'refused', selectedReason);
+        refusalReasonModal.classList.add('hidden');
+        currentDemandeToRefuse = null;
+        otherReasonInput.classList.add('hidden');
+        otherReasonInput.value = '';
+      } else {
+        showToast('Veuillez sélectionner un motif de refus ou préciser "Autre".');
+      }
+    });
+
+    btnCancelRefusal.addEventListener('click', () => {
+      refusalReasonModal.classList.add('hidden');
+      currentDemandeToRefuse = null;
+      otherReasonInput.classList.add('hidden');
+      otherReasonInput.value = '';
+    });
+
+    function promptForRefusalReason(demandeId) {
+      const demandes = loadDemandes();
+      currentDemandeToRefuse = demandes.find(d => d.id === demandeId);
+      if (!currentDemandeToRefuse) return;
+
+      refusalReasonsList.innerHTML = '';
+      refusalReasons.forEach((reason, index) => {
+        const div = document.createElement('div');
+        div.className = 'flex items-center';
+        const input = document.createElement('input');
+        input.type = 'radio';
+        input.name = 'refusal-reason';
+        input.id = `reason-${index}`;
+        input.value = reason;
+        input.className = 'mr-2';
+        input.addEventListener('change', () => {
+          if (reason === 'Autre (préciser)') {
+            otherReasonInput.classList.remove('hidden');
+            otherReasonInput.focus();
+          } else {
+            otherReasonInput.classList.add('hidden');
+            otherReasonInput.value = '';
+          }
+        });
+
+        const label = document.createElement('label');
+        label.htmlFor = `reason-${index}`;
+        label.textContent = reason;
+
+        div.appendChild(input);
+        div.appendChild(label);
+        refusalReasonsList.appendChild(div);
+      });
+
+      refusalReasonModal.classList.remove('hidden');
+    }
+
+    function createCommandFromDemand(demande, deliverySlot) {
+      const commandes = loadCommandes();
+      const newCommand = {
+        id: `cmd-${Date.now()}`,
+        demandeId: demande.id,
+        customer: { name: demande.nom, address: demande.adresse, phone: demande.tel },
+        deliverySlot: deliverySlot,
+        items: demande.items,
+        total: demande.total,
+        status: 'submitted'
+      };
+      commandes.push(newCommand);
+      saveCommandes(commandes);
+      showToast('Demande acceptée et commande créée.');
+      render();
+    }
 
     function openDetailsDrawer(orderId) {
         const commandes = loadCommandes();
@@ -399,6 +602,19 @@ https://creativecommons.org/licenses/by-nc/4.0/legalcode
       updateBadges(demandes, commandes);
     }
 
+    function updateBadges(demandes, commandes) {
+        const badgeDemandes = document.getElementById('badge-demandes');
+        const badgeCommandes = document.getElementById('badge-commandes');
+
+        const pendingDemandes = demandes.filter(d => d.statut === 'pending').length;
+        badgeDemandes.textContent = pendingDemandes;
+        badgeDemandes.classList.toggle('hidden', pendingDemandes === 0);
+
+        const activeCommandes = commandes.filter(c => c.status !== 'delivered').length;
+        badgeCommandes.textContent = activeCommandes;
+        badgeCommandes.classList.toggle('hidden', activeCommandes === 0);
+    }
+
     function updateOrderStatus(orderId, newStatus) {
         const commandes = loadCommandes();
         const order = commandes.find(o => o.id === orderId);
@@ -432,9 +648,36 @@ https://creativecommons.org/licenses/by-nc/4.0/legalcode
         node.querySelector('.req-phone').textContent = req.tel;
         node.querySelector('.req-adresse').textContent = req.adresse;
 
+        // Display items and total for the demand
+        const itemsHtml = req.items.map(item => {
+            if (item.isWok && item.details) {
+                return `
+                    <li class="mb-1 text-sm">
+                        <strong>${item.name} (${item.quantity})</strong>
+                        <ul class="list-disc list-inside pl-4 text-xs">
+                            <li>Base: ${item.details.base}</li>
+                            <li>Pulpes: ${item.details.pulpes.join(', ') || 'Aucune'}</li>
+                            <li>Favoris: ${item.details.favoris.join(', ') || 'Aucun'}</li>
+                            <li>Sauce: ${item.details.sauce}</li>
+                            <li>Toppings: ${item.details.toppings.join(', ') || 'Aucun'}</li>
+                        </ul>
+                    </li>`;
+            } else {
+                return `<li class="text-sm">- ${item.name} (${item.quantity})</li>`;
+            }
+        }).join('');
+
+        const detailsDiv = document.createElement('div');
+        detailsDiv.innerHTML = `
+            <h4 class="font-semibold mt-2">Articles:</h4>
+            <ul class="list-none">${itemsHtml}</ul>
+            <p class="font-bold mt-2">Total: ${req.total.toFixed(2)}€</p>
+        `;
+        node.querySelector('.request-details').appendChild(detailsDiv);
+
         if (req.statut === 'pending') {
-          node.querySelector('.btn-refuse').onclick  = () => { updateStatut(req.id, 'refused'); showToast('Demande refusée.'); };
-          node.querySelector('.btn-accept').onclick  = () => { updateStatut(req.id, 'accepted'); showToast('Demande acceptée.'); };
+          node.querySelector('.btn-refuse').onclick  = () => { promptForRefusalReason(req.id); };
+          node.querySelector('.btn-accept').onclick  = () => { updateStatut(req.id, 'accepted'); };
           pendingEl.appendChild(node);
         } else {
           // Transformation pour l’historique
@@ -444,7 +687,13 @@ https://creativecommons.org/licenses/by-nc/4.0/legalcode
             'px-4 py-2 rounded text-white ' +
             (req.statut === 'accepted' ? 'bg-green-600' : 'bg-red-600');
           btn.textContent =
-            req.statut === 'accepted' ? 'Accepté' : 'Refusé';
+            req.statut === 'accepted' ? 'Acceptée' : 'Refusée';
+          if (req.statut === 'refused' && req.refusalReason) {
+            const reasonP = document.createElement('p');
+            reasonP.className = 'text-sm text-red-500 mt-2';
+            reasonP.textContent = `Motif: ${req.refusalReason}`;
+            node.querySelector('.request-details').appendChild(reasonP);
+          }
           historyEl.appendChild(node);
         }
       });
@@ -452,6 +701,8 @@ https://creativecommons.org/licenses/by-nc/4.0/legalcode
 
     function renderCommandes(commandes) {
         commandesBody.innerHTML = '';
+        const commandesCards = document.getElementById('commandes-cards');
+        commandesCards.innerHTML = '';
         const statusConfig = {
             submitted: { icon: '⏳', color: 'bg-accent/10', text: 'En attente' },
             preparing: { icon: '<span class="text-accent-dark">🍳</span>', color: 'bg-yellow-100', text: 'En préparation' },
@@ -465,7 +716,7 @@ https://creativecommons.org/licenses/by-nc/4.0/legalcode
             tr.className = `border-b ${config.color || ''}`;
             tr.innerHTML = `
                 <td class="p-4">${order.customer.name}</td>
-                <td class="p-4">${order.customer.address}</td>
+                <td class="p-4 hidden md:table-cell">${order.customer.address}</td>
                 <td class="p-4">
                     <input type="time" class="border rounded px-2 py-1" value="${order.deliverySlot || ''}" onchange="updateDeliverySlot('${order.id}', this.value)">
                 </td>
@@ -483,16 +734,65 @@ https://creativecommons.org/licenses/by-nc/4.0/legalcode
                 <td class="p-4"><button class="text-accent underline" onclick="openDetailsDrawer('${order.id}')">Détail</button></td>
             `;
             commandesBody.appendChild(tr);
+
+            // ----- vue carte mobile -----
+            const card = document.createElement('div');
+            card.className = `${config.color || ''} p-4 rounded-lg shadow-md flex flex-col gap-2 md:hidden`;
+            card.innerHTML = `
+    <div class="flex justify-between items-center mb-2">
+      <p class="font-semibold text-base">${order.customer.name}</p>
+      <span class="text-sm font-medium">${order.total.toFixed(2)}€</span>
+    </div>
+    <div class="flex flex-col gap-2">
+      <div class="flex items-center gap-2">
+        <input
+          type="time"
+          class="border rounded px-2 py-1 text-xs w-24"
+          value="${order.deliverySlot || ''}"
+          onchange="updateDeliverySlot('${order.id}', this.value)"
+        />
+        <span class="text-lg">${config.icon}</span>
+        <select
+          class="border rounded px-1 py-1 text-sm w-auto"
+          onchange="updateOrderStatus('${order.id}', this.value)"
+        >
+          <option value="submitted" ${order.status === 'submitted' ? 'selected' : ''}>En attente</option>
+          <option value="preparing" ${order.status === 'preparing' ? 'selected' : ''}>En préparation</option>
+          <option value="ready" ${order.status === 'ready' ? 'selected' : ''}>Prête</option>
+          <option value="delivered" ${order.status === 'delivered' ? 'selected' : ''}>Livrée</option>
+        </select>
+      </div>
+      <button
+        class="text-accent underline self-end mt-1"
+        onclick="openDetailsDrawer('${order.id}')"
+      >
+        Détail
+      </button>
+    </div>`;
+            commandesCards.appendChild(card);
         });
     }
 
-    function updateStatut(id, statut) {
-      const data = loadDemandes();
-      const item = data.find(r => r.id === id);
-      if (item) {
-        item.statut = statut;
-        saveDemandes(data);
-        render();
+    function updateStatut(id, statut, refusalReason = null) {
+      const demandes = loadDemandes();
+      const demandeIndex = demandes.findIndex(r => r.id === id);
+      if (demandeIndex > -1) {
+        const demande = demandes[demandeIndex];
+        demande.statut = statut;
+        if (statut === 'refused') {
+          demande.refusalReason = refusalReason;
+        }
+
+        if (statut === 'accepted') {
+          saveDemandes(demandes); // Save the updated status to localStorage
+          currentDemandeToAccept = demande;
+          deliverySlotInput.value = ''; // Clear previous value
+          deliverySlotModal.classList.remove('hidden');
+        } else if (statut === 'refused') {
+          showToast('Demande refusée.');
+          saveDemandes(demandes); // Save changes for refused demand
+          render();
+        }
       }
     }
   </script>
@@ -505,7 +805,9 @@ https://creativecommons.org/licenses/by-nc/4.0/legalcode
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/responsive.css">
   <title>Thaï Garden – Demande de disponibilité</title>
 
   <!-- Google Fonts -->
@@ -534,6 +836,64 @@ https://creativecommons.org/licenses/by-nc/4.0/legalcode
   <style>
     body { font-family: 'Noto Sans', sans-serif; }
     h1, h2 { font-family: 'Playfair Display', serif; }
+
+    /* Custom Scrollbar for Panier List */
+    #panier-list::-webkit-scrollbar {
+      width: 8px; /* Largeur de la barre de défilement */
+    }
+
+    #panier-list::-webkit-scrollbar-track {
+      background: #f1f1f1; /* Couleur de fond de la piste */
+      border-radius: 10px;
+    }
+
+    #panier-list::-webkit-scrollbar-thumb {
+      background: #888; /* Couleur du "pouce" de la barre de défilement */
+      border-radius: 10px;
+    }
+
+    #panier-list::-webkit-scrollbar-thumb:hover {
+      background: #555; /* Couleur du "pouce" au survol */
+    }
+
+    /* Pour Firefox */
+    #panier-list {
+      scrollbar-width: thin; /* "thin" ou "auto" */
+      scrollbar-color: #888 #f1f1f1; /* couleur du pouce et couleur de la piste */
+    }
+
+    /* Product Modal Responsive Styles */
+    #product-modal > div {
+      /* Default for desktop */
+      margin: auto;
+      max-width: 48rem; /* Adjust as needed */
+      max-height: 90vh;
+      overflow: hidden;
+    }
+
+    @media (max-width: 767px) { /* Mobile styles */
+      #product-modal > div {
+        width: calc(100% - 2rem); /* 1rem margin on each side */
+        height: calc(100% - 2rem); /* 1rem margin on top/bottom */
+        margin: 1rem; /* Small offset from edges */
+        border-radius: 0.75rem; /* Rounded corners */
+        flex-direction: column; /* Stack image and content vertically */
+      }
+      #product-modal-image {
+        width: 100%;
+        height: 50%; /* Adjust image height for mobile */
+        object-fit: cover;
+      }
+      #product-modal-add-to-cart {
+        position: sticky;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        padding: 1rem;
+        background-color: #ED8B00; /* Ensure button color is consistent */
+        z-index: 100;
+      }
+    }
   </style>
 </head>
 <body class="flex flex-col min-h-screen bg-gradient-to-b from-gray-50 to-white text-gray-800">
@@ -542,199 +902,178 @@ https://creativecommons.org/licenses/by-nc/4.0/legalcode
   <header class="fixed top-0 w-full bg-white/70 backdrop-blur-sm shadow-md z-50">
     <nav class="max-w-5xl mx-auto flex items-center justify-between py-4 px-6">
       <a href="index.html" class="text-2xl font-bold text-primary">Thaï Garden</a>
-      <a href="menu.html" class="text-accent font-semibold hover:underline">Retour menu</a>
+      <div class="hidden md:flex gap-8 font-medium">
+        <a href="index.html" class="hover:text-accent transition">Accueil</a>
+        <a href="commande.html" class="hover:text-accent transition">Menu</a>
+        <a href="index.html#contact" class="hover:text-accent transition">Contact</a>
+      </div>
+      <a href="commande.html" class="hidden md:block ml-6 px-4 py-2 bg-accent text-white font-semibold rounded-full shadow hover:shadow-lg transition">
+        Commander
+      </a>
+      <button id="burger-btn" class="md:hidden">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+      </button>
     </nav>
+    <div id="mobile-menu" class="hidden md:hidden">
+      <a href="index.html" class="block py-2 px-4 text-sm hover:bg-gray-200">Accueil</a>
+      <a href="commande.html" class="block py-2 px-4 text-sm hover:bg-gray-200">Menu</a>
+      <a href="index.html#contact" class="block py-2 px-4 text-sm hover:bg-gray-200">Contact</a>
+      <a href="commande.html" class="block py-2 px-4 text-sm hover:bg-gray-200">Commander</a>
+    </div>
+    <!-- Restaurant Closed Banner for Mobile -->
+    <div id="restaurant-closed-banner-mobile" class="hidden bg-red-600 text-white text-center py-2 text-sm font-semibold">
+      Le restaurant est actuellement fermé.
+    </div>
   </header>
 
   <!-- Contenu principal -->
-  <main class="flex-1 pt-24 pb-12 max-w-3xl mx-auto px-4">
+  <main class="flex-1 pt-24 pb-12 mx-auto px-4">
 
     <h1 class="text-4xl font-extrabold text-primary text-center mb-10">Commander</h1>
 
-    <!-- Étape 1 : Choix emporter / livraison -->
-    <section id="step-choix" class="text-center space-y-6">
-      <p class="text-lg">Choisissez votre mode de récupération :</p>
-      <div class="flex flex-col sm:flex-row justify-center gap-6">
-        <button
-          id="btn-emporter"
-          class="px-8 py-4 bg-primary text-white rounded-lg shadow hover:shadow-lg transition"
-        >
-          Emporter
-        </button>
-        <button
-          id="btn-livraison"
-          class="px-8 py-4 bg-accent text-white rounded-lg shadow hover:shadow-lg transition"
-        >
-          Livraison
-        </button>
-      </div>
+    <!-- Message de refus (initiallement caché) -->
+    <section id="msg-refused" class="hidden bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-8" role="alert">
+      <strong class="font-bold">Demande refusée !</strong>
+      <span class="block sm:inline" id="refusal-reason-display"></span>
+      <p class="mt-4">Nous sommes désolés, votre demande n'a pas pu être acceptée pour le moment.</p>
+      <button id="btn-new-demand" class="mt-4 px-6 py-3 bg-accent text-white font-bold rounded-lg shadow-md hover:shadow-lg transition">Faire une nouvelle demande</button>
     </section>
 
-    <!-- Étape 2 : Message pour « Emporter » -->
-    <section
-      id="section-emporter"
-      class="hidden mt-12 text-center bg-white/70 backdrop-blur-sm p-8 rounded-lg shadow-md"
-    >
-      <h2 class="text-2xl font-semibold mb-4">Retrait sur place (Emporter)</h2>
-      <p>Merci de passer directement au restaurant pour récupérer votre commande.<br/>
-         Adresse : GR François Mitterrand, 34130 Mauguio</p>
-      <a href="tel:+33987117057" class="inline-block mt-6 px-6 py-3 border-2 border-primary text-primary font-medium rounded-lg hover:bg-primary hover:text-white transition">
-        Appeler le restaurant
-      </a>
-    </section>
+    
 
     <!-- Étape 2 : Formulaire « Demande de disponibilité » pour livraison -->
-    <section id="section-livraison" class="mt-12 bg-white/70 backdrop-blur-sm p-8 rounded-lg shadow-md">
-        <h2 class="text-2xl font-semibold mb-6 text-center">Demande de disponibilité – Livraison</h2>
+    <section id="section-livraison" class="hidden mt-12 bg-white/70 backdrop-blur-sm p-8 rounded-lg shadow-md">
+        <h2 class="text-2xl font-semibold mb-6 text-center">Vos coordonnées</h2>
       
         <p class="mb-6 text-center text-gray-700">
-          Envoyez votre demande de disponibilité au restaurant.
-          Nous reviendrons vers vous dans <strong>quelques minutes</strong> pour confirmer votre créneau de livraison.
-          Ensuite, vous pourrez finaliser votre commande en ligne.
-          En attendant, découvrez notre
-          <a href="menu.html" class="text-accent underline">menu complet</a>.
+          Veuillez renseigner vos coordonnées pour valider votre commande.
         </p>
       
-        <form id="form-disponibilite" class="space-y-6" onsubmit="return handleSubmit(event)">
-          <!-- Nom -->
-          <div class="flex flex-col gap-2">
-            <label for="nom" class="font-medium">Nom</label>
-            <input
-              required id="nom" type="text"
-              placeholder="Votre nom complet"
-              class="border rounded px-3 py-2 focus:ring-2 focus:ring-accent"
-            />
-          </div>
-      
-          <!-- Téléphone -->
-          <div class="flex flex-col gap-1">
-            <label for="tel" class="font-medium">Téléphone</label>
-            <input
-              required id="tel" type="tel"
-              placeholder="+33 6 12 34 56 78"
-              class="border rounded px-3 py-2 focus:ring-2 focus:ring-accent"
-            />
-            <p class="text-sm text-gray-500">Format international, ex : +33 6 12 34 56 78</p>
-          </div>
-      
-          <!-- Adresse -->
-          <div class="flex flex-col gap-2">
-            <label for="adresse" class="font-medium">Adresse de livraison</label>
-            <input
-              required id="adresse" type="text"
-              placeholder="Votre adresse de livraison"
-              class="border rounded px-3 py-2 focus:ring-2 focus:ring-accent"
-            />
-          </div>
-      
-          <!-- Bouton d’envoi -->
-          <button
-            type="submit"
-            class="w-full px-6 py-3 bg-accent text-white font-bold rounded-lg shadow-md hover:shadow-lg transition"
-          >
-            Envoyer ma demande de disponibilité
-          </button>
-        </form>
-      
-        <!-- Message de confirmation -->
-        <div id="msg-ok" class="hidden mt-6 text-center text-green-700 font-medium">
-          Merci ! Votre demande de disponibilité a été envoyée.
-          Nous vous recontacterons bientôt pour confirmer votre créneau.
-        </div>
-
-        <!-- Message de refus -->
-        <div id="msg-refused" class="hidden mt-6 text-center text-red-700 font-medium">
-          Désolé, le restaurant n'est pas en mesure de prendre votre commande pour le moment. Veuillez réessayer plus tard.
-          <button id="btn-new-demand" class="mt-4 px-6 py-3 bg-accent text-white font-bold rounded-lg shadow-md hover:shadow-lg transition">Faire une nouvelle demande</button>
-        </div>
-
-        <!-- Message pour commander -->
-        <div id="msg-order-ready" class="hidden mt-6 text-center text-blue-700 font-medium">
-          Votre demande de disponibilité a été acceptée ! Vous pouvez maintenant passer votre commande.
-          <a href="menu.html" class="text-accent underline">Accéder au menu</a>.
-        </div>
+        
       </section>
 
       <!-- Étape 3 : Affichage du menu pour la commande -->
 
       <!-- Wok à composer -->
-      <section id="wok-composer" class="hidden mt-12">
-        <h2 class="text-3xl font-extrabold text-primary text-center mb-8">Wok à composer</h2>
-        <div class="bg-white p-8 rounded-lg shadow-md">
-          <!-- Choix de la base -->
-          <div class="mb-6">
-            <h3 class="text-xl font-semibold mb-2">1. Choix de la base</h3>
-            <div id="wok-base" class="grid md:grid-cols-2 gap-4"></div>
-          </div>
-          <!-- Choix de la pulpe -->
-          <div class="mb-6">
-            <h3 class="text-xl font-semibold mb-2">2. Choix de la pulpe</h3>
-            <div id="wok-pulpe" class="grid md:grid-cols-2 gap-4"></div>
-          </div>
-          <!-- Choix des favoris -->
-          <div class="mb-6">
-            <h3 class="text-xl font-semibold mb-2">3. Choix des favoris</h3>
-            <div id="wok-favoris" class="grid md:grid-cols-3 gap-4"></div>
-          </div>
-          <!-- Choix de la sauce -->
-          <div class="mb-6">
-            <h3 class="text-xl font-semibold mb-2">4. Choix de la sauce</h3>
-            <div id="wok-sauce" class="grid md:grid-cols-2 gap-4"></div>
-          </div>
-          <!-- Toppings -->
-          <div class="mb-6">
-            <h3 class="text-xl font-semibold mb-2">5. Toppings (+0.60€)</h3>
-            <div id="wok-toppings" class="grid md:grid-cols-2 gap-4"></div>
+      <section id="wok-composer" class="mb-8 pt-8 -mt-8">
+        <h2 class="text-2xl font-bold text-primary mb-4">Wok à composer</h2>
+        <div class="bg-white p-4 md:p-8 rounded-lg shadow-md">
+
+          <!-- Onglets pour Mobile -->
+          <div class="md:hidden border-b border-gray-200 mb-4">
+            <nav class="-mb-px flex space-x-4 overflow-x-auto" aria-label="Tabs">
+              <button class="wok-tab whitespace-nowrap py-3 px-2 border-b-2 font-medium text-sm border-accent text-accent">Base</button>
+              <button class="wok-tab whitespace-nowrap py-3 px-2 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300">Pulpe</button>
+              <button class="wok-tab whitespace-nowrap py-3 px-2 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300">Favoris</button>
+              <button class="wok-tab whitespace-nowrap py-3 px-2 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300">Sauce</button>
+              <button class="wok-tab whitespace-nowrap py-3 px-2 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300">Toppings</button>
+            </nav>
           </div>
 
-          <div class="text-right font-bold text-xl mb-6">
+          <!-- Contenu des étapes -->
+          <div id="wok-steps-content">
+            <!-- Étape 1: Base -->
+            <div class="wok-step-pane md:mb-6">
+              <h3 class="hidden md:block text-xl font-semibold mb-2">1. Choix de la base</h3>
+              <div id="wok-base" class="grid md:grid-cols-2 gap-4"></div>
+            </div>
+
+            <!-- Étape 2: Pulpe -->
+            <div class="wok-step-pane hidden md:mb-6">
+              <h3 class="hidden md:block text-xl font-semibold mb-2">2. Choix de la pulpe</h3>
+              <div id="wok-pulpe" class="grid md:grid-cols-2 gap-4"></div>
+            </div>
+
+            <!-- Étape 3: Favoris -->
+            <div class="wok-step-pane hidden md:mb-6">
+              <h3 class="hidden md:block text-xl font-semibold mb-2">3. Choix des favoris</h3>
+              <div id="wok-favoris" class="grid md:grid-cols-3 gap-4"></div>
+            </div>
+
+            <!-- Étape 4: Sauce -->
+            <div class="wok-step-pane hidden md:mb-6">
+              <h3 class="hidden md:block text-xl font-semibold mb-2">4. Choix de la sauce</h3>
+              <div id="wok-sauce" class="grid md:grid-cols-2 gap-4"></div>
+            </div>
+
+            <!-- Étape 5: Toppings -->
+            <div class="wok-step-pane hidden md:mb-6">
+              <h3 class="hidden md:block text-xl font-semibold mb-2">5. Toppings (+0.60€)</h3>
+              <div id="wok-toppings" class="grid md:grid-cols-2 gap-4"></div>
+            </div>
+          </div>
+
+          <div class="text-right font-bold text-xl mt-6">
             Total Wok: <span id="wok-total">0.00</span>€
           </div>
           <button id="btn-add-wok" class="w-full px-6 py-3 bg-accent text-white font-bold rounded-lg shadow-md hover:shadow-lg transition">Ajouter le Wok au panier</button>
         </div>
       </section>
 
-      <section id="order-menu" class="hidden mt-12">
-        <h2 class="text-3xl font-extrabold text-primary text-center mb-8">Notre Menu</h2>
+      <section id="order-menu" class="mt-8 md:mt-12">
+        <!-- Sticky Nav pour mobile -->
+        <div id="category-nav" class="md:hidden sticky top-16 bg-white/90 backdrop-blur-sm z-40 overflow-x-auto">
+          <div class="flex items-center space-x-4 border-b px-4">
+            <a href="#wok-composer" class="category-link whitespace-nowrap py-3 px-2 text-sm font-medium text-gray-600">Wok</a>
+            <a href="#entrees-section" class="category-link whitespace-nowrap py-3 px-2 text-sm font-medium text-gray-600">Entrées</a>
+            <a href="#plats-section" class="category-link whitespace-nowrap py-3 px-2 text-sm font-medium text-gray-600">Plats</a>
+            <a href="#desserts-section" class="category-link whitespace-nowrap py-3 px-2 text-sm font-medium text-gray-600">Desserts</a>
+            <a href="#boissons-section" class="category-link whitespace-nowrap py-3 px-2 text-sm font-medium text-gray-600">Boissons</a>
+          </div>
+        </div>
 
-        <div id="entrees-section" class="mb-8">
+        <h2 class="hidden md:block text-3xl font-extrabold text-primary text-center mb-8">Notre Menu</h2>
+
+        <div id="entrees-section" class="mb-8 pt-8 -mt-8">
           <h3 class="text-2xl font-bold text-primary mb-4">Entrées</h3>
-          <ul id="order-entrees-list" class="grid md:grid-cols-2 lg:grid-cols-3 gap-8"></ul>
+          <ul id="order-entrees-list" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-8"></ul>
         </div>
 
-        <div id="plats-section" class="mb-8">
+        <div id="plats-section" class="mb-8 pt-8 -mt-8">
           <h3 class="text-2xl font-bold text-primary mb-4">Plats</h3>
-          <ul id="order-plats-list" class="grid md:grid-cols-2 lg:grid-cols-3 gap-8"></ul>
+          <ul id="order-plats-list" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-8"></ul>
         </div>
 
-        <div id="desserts-section" class="mb-8">
+        <div id="desserts-section" class="mb-8 pt-8 -mt-8">
           <h3 class="text-2xl font-bold text-primary mb-4">Desserts</h3>
-          <ul id="order-desserts-list" class="grid md:grid-cols-2 lg:grid-cols-3 gap-8"></ul>
+          <ul id="order-desserts-list" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-8"></ul>
         </div>
 
-        <div id="boissons-section" class="mb-8">
+        <div id="boissons-section" class="mb-8 pt-8 -mt-8">
           <h3 class="text-2xl font-bold text-primary mb-4">Boissons</h3>
-          <ul id="order-boissons-list" class="grid md:grid-cols-2 lg:grid-cols-3 gap-8"></ul>
+          <ul id="order-boissons-list" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-8"></ul>
         </div>
       </section>
 
   </main>
 
   <!-- Panier flottant -->
-  <div id="cart-float" class="fixed bottom-6 right-6 z-50 hidden">
+  <div id="cart-float" class="fixed bottom-6 right-6 z-50 hidden md:block">
     <a href="#" class="relative block">
       <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-accent" viewBox="0 0 20 20" fill="currentColor">
-        <path d="M3 1a1 1 0 000 2h1.22l.305 1.222a.997 0 00.922.778h9.446a1 1 0 00.922-.778L16.78 3H17a1 1 0 000-2H3zM6.07 7l1.22 4.891a1 1 0 00.922.609h4.576a1 1 0 00.922-.609L14.93 7H6.07z" />
+        <path d="M3 1a1 1 0 000 2h1.22l.305 1.222a.997.997 0 00.922.778h9.446a1 1 0 00.922-.778L16.78 3H17a1 1 0 000-2H3zM6.07 7l1.22 4.891a1 1 0 00.922.609h4.576a1 1 0 00.922-.609L14.93 7H6.07z" />
       </svg>
       <span id="cart-count" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">0</span>
     </a>
   </div>
 
+  <!-- Bouton panier flottant pour mobile -->
+  <div id="mobile-cart-button" class="md:hidden fixed bottom-0 left-0 right-0 p-4 bg-white/90 backdrop-blur-sm z-40 border-t border-gray-200 hidden">
+    <button id="btn-view-cart-mobile" class="w-full px-6 py-3 bg-accent text-white font-bold rounded-lg shadow-md flex justify-between items-center">
+      <span>Voir le panier</span>
+      <span id="mobile-cart-total">0.00€</span>
+    </button>
+  </div>
+
   <!-- Modale Panier -->
   <section id="panier-section" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-    <div class="bg-white rounded-lg shadow-xl p-8 max-w-2xl w-full">
+    <div class="bg-white rounded-lg shadow-xl p-8 max-w-2xl w-full flex flex-col max-h-[90vh]">
       <h2 class="text-3xl font-extrabold text-primary mb-6">Votre Panier</h2>
-      <ul id="panier-list" class="space-y-4 mb-6">
+      <div id="restaurant-closed-message-cart" class="hidden bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4">
+        <strong class="font-bold">Restaurant fermé !</strong>
+        <span class="block sm:inline">Le restaurant est actuellement fermé. Vous pouvez remplir votre panier et commander plus tard.</span>
+      </div>
+      <ul id="panier-list" class="space-y-4 mb-6 overflow-y-auto flex-grow">
         <!-- Les éléments du panier seront injectés ici -->
       </ul>
       <div class="text-right font-bold text-xl mb-6">
@@ -744,6 +1083,33 @@ https://creativecommons.org/licenses/by-nc/4.0/legalcode
         <button id="btn-close-panier" class="px-6 py-2 bg-gray-300 text-gray-800 rounded-lg hover:bg-gray-400 transition">Fermer</button>
         <button id="btn-valider-commande" class="px-6 py-2 bg-accent text-white font-bold rounded-lg shadow-md hover:shadow-lg transition">Valider ma commande</button>
       </div>
+      
+    </div>
+  </section>
+
+  <!-- Modale Coordonnées Client -->
+  <section id="coords-modal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+    <div class="bg-white rounded-lg shadow-xl p-8 max-w-md w-full">
+      <h2 class="text-3xl font-extrabold text-primary mb-6 text-center">Vos coordonnées</h2>
+      <form id="form-coords" class="space-y-6">
+        <div class="flex flex-col gap-2">
+          <label for="nom-coords" class="font-medium">Nom</label>
+          <input required id="nom-coords" type="text" placeholder="Votre nom complet" class="border rounded px-3 py-2 focus:ring-2 focus:ring-accent" />
+        </div>
+        <div class="flex flex-col gap-1">
+          <label for="tel-coords" class="font-medium">Téléphone</label>
+          <input required id="tel-coords" type="tel" placeholder="+33 6 12 34 56 78" class="border rounded px-3 py-2 focus:ring-2 focus:ring-accent" />
+          <p class="text-sm text-gray-500">Format international, ex : +33 6 12 34 56 78</p>
+        </div>
+        <div class="flex flex-col gap-2">
+          <label for="adresse-coords" class="font-medium">Adresse de livraison</label>
+          <input required id="adresse-coords" type="text" placeholder="Votre adresse de livraison" class="border rounded px-3 py-2 focus:ring-2 focus:ring-accent" />
+        </div>
+        <div class="flex justify-between">
+          <button type="button" id="btn-cancel-coords" class="px-6 py-2 bg-gray-300 text-gray-800 rounded-lg hover:bg-gray-400 transition">Annuler</button>
+          <button type="submit" class="px-6 py-2 bg-accent text-white font-bold rounded-lg shadow-md hover:shadow-lg transition">Confirmer la commande</button>
+        </div>
+      </form>
     </div>
   </section>
 
@@ -752,17 +1118,13 @@ https://creativecommons.org/licenses/by-nc/4.0/legalcode
     import { menuItems } from './data/menu.js';
     import { initWokComposer } from './js/wok.js';
 
-    const btnEmporter  = document.getElementById('btn-emporter');
-    const btnLivraison = document.getElementById('btn-livraison');
-    const secEmporter  = document.getElementById('section-emporter');
-    const secLivraison = document.getElementById('section-livraison');
     const formDisponibilite = document.getElementById('form-disponibilite');
     const msgOk = document.getElementById('msg-ok');
     const msgRefused = document.getElementById('msg-refused');
+    const refusalReasonDisplay = document.getElementById('refusal-reason-display');
+    const btnNewDemand = document.getElementById('btn-new-demand');
     const msgOrderReady = document.getElementById('msg-order-ready');
-    const stepChoix = document.getElementById('step-choix');
     const orderMenuSection = document.getElementById('order-menu');
-    const orderMenuList = document.getElementById('order-menu-list');
     const wokComposerSection = document.getElementById('wok-composer');
     const cartFloat = document.getElementById('cart-float');
     const panierSection = document.getElementById('panier-section');
@@ -770,13 +1132,158 @@ https://creativecommons.org/licenses/by-nc/4.0/legalcode
     const btnValiderCommande = document.getElementById('btn-valider-commande');
     const panierList = document.getElementById('panier-list');
     const panierTotal = document.getElementById('panier-total');
-    const btnNewDemand = document.getElementById('btn-new-demand');
+    const coordsModal = document.getElementById('coords-modal');
+    const formCoords = document.getElementById('form-coords');
+    const btnCancelCoords = document.getElementById('btn-cancel-coords');
+    const nomCoordsInput = document.getElementById('nom-coords');
+    const telCoordsInput = document.getElementById('tel-coords');
+    const adresseCoordsInput = document.getElementById('adresse-coords');
+    const btnViewCartMobile = document.getElementById('btn-view-cart-mobile');
+    const restaurantClosedBannerMobile = document.getElementById('restaurant-closed-banner-mobile');
+    const restaurantClosedMessageCart = document.getElementById('restaurant-closed-message-cart');
+    const btnConfirmOrder = document.querySelector('#coords-modal button[type="submit"]');
 
-    btnNewDemand.addEventListener('click', () => {
-      showInitialChoice();
+    // Descriptions for menu items
+    const itemDescriptions = {
+      "NEMS POULET X4": "Délicieux nems croustillants au poulet, parfaits pour une entrée savoureuse.",
+      "NEMS CREVETTES X4": "Nems croustillants aux crevettes, une entrée légère et parfumée.",
+      "NEMS LÉGUMES X4": "Nems végétariens aux légumes frais, une option saine et gourmande.",
+      "CREVETTES TEMPURA X3": "Crevettes enrobées d'une pâte légère et frites à la perfection.",
+      "BEIGNET DE CREVETTE X3": "Beignets de crevettes moelleux et savoureux.",
+      "BROCHETTES POULET SATAY X2": "Brochettes de poulet marinées à la sauce satay, grillées et parfumées.",
+      "BROCHETTES POULET YAKITORI X2": "Brochettes de poulet laquées à la sauce yakitori, tendres et sucrées-salées.",
+      "BROCHETTE BŒUF FROMAGE X2": "Brochettes de bœuf et fromage, une combinaison originale et fondante.",
+      "PINCE DE CRABE X3": "Délicieuses pinces de crabe, idéales pour les amateurs de fruits de mer.",
+      "ROULEAUX DE PRINTEMPS* X2": "Rouleaux frais et légers, garnis de légumes croquants et de vermicelles.",
+      "RIZ NATURE": "Riz blanc parfumé, accompagnement idéal pour tous nos plats.",
+      "PAD THAÏ": "Pâtes de riz - oignons - chou - carotte - œuf - soja - cacahuètes - citron - coriandre. 1 protéine au choix.",
+      "KHAO PAD": "Riz frit - oignons - chou - carotte - œuf - soja - cacahuètes - citron - coriandre. 1 protéine au choix.",
+      "BÒ BÚN": "Vermicelle de riz - nems - salade - carotte - concombre - soja - menthe - coriandre - cacahuètes. 1 protéine au choix.",
+      "SOUPE TOM YUM": "Soupe thaïlandaise épicée à base de galanga, citronnelle, lait de coco et crevettes.",
+      "POULET AU CURRY": "Poulet cuisiné avec des légumes et lait de coco. Accompagné de riz parfumé.",
+      "COUPELLE MANGUE": "Délicieuse coupelle de mangue fraîche, un dessert exotique et rafraîchissant.",
+      "COUPELLE ANANAS": "Coupelle d'ananas frais, sucré et juteux.",
+      "GLACE": "Sélection de glaces artisanales pour une touche de douceur.",
+      "MOCHI GLACE X2": "Deux mochis glacés, une spécialité japonaise douce et rafraîchissante.",
+      "SOFT": "Boissons rafraîchissantes sans alcool.",
+      "MAYA": "Boisson exotique à base de litchi et eau de coco.",
+      "CITRONNADE": "Citronnade maison, désaltérante et acidulée.",
+      "GINGER BEER": "Boisson au gingembre, pétillante et légèrement épicée.",
+      "EAU / EAU GAZEUSE": "Eau plate ou gazeuse, pour accompagner votre repas.",
+      "MOGU MOGU": "Boisson fruitée avec des morceaux de nata de coco.",
+      "BUBBLE TEA": "Thé aux perles de tapioca, disponible en plusieurs saveurs."
+    };
+
+    // Product Modal elements
+    const productModal = document.getElementById('product-modal');
+    const productModalClose = document.getElementById('product-modal-close');
+    const productModalImage = document.getElementById('product-modal-image');
+    const productModalName = document.getElementById('product-modal-name');
+    const productModalDescription = document.getElementById('product-modal-description');
+    const productModalPrice = document.getElementById('product-modal-price');
+    const productModalAddToCart = document.getElementById('product-modal-add-to-cart');
+
+    productModalClose.addEventListener('click', () => {
+      productModal.classList.add('hidden');
+    });
+
+    productModal.addEventListener('click', (e) => {
+      if (e.target === productModal) { // Clicked outside the modal content
+        productModal.classList.add('hidden');
+      }
+    });
+
+    productModalAddToCart.addEventListener('click', (e) => {
+      const itemId = e.target.dataset.id;
+      if (itemId) {
+        addToCart(+itemId);
+        productModal.classList.add('hidden');
+      }
+    });
+
+    function openProductModal(item) {
+      productModalImage.src = item.img;
+      productModalImage.alt = item.nom;
+      productModalName.textContent = item.nom;
+      productModalDescription.textContent = itemDescriptions[item.nom] || "Description non disponible.";
+      productModalPrice.textContent = `${item.prix.toFixed(2)}€`;
+      productModalAddToCart.dataset.id = item.id;
+      productModal.classList.remove('hidden');
+    }
+
+    // Helpers for restaurant status
+    function getRestaurantStatus() {
+      const status = localStorage.getItem('restaurantOuvert');
+      return status === null ? true : JSON.parse(status); // Default to true if not set
+    }
+
+    function updateRestaurantStatusUI() {
+      const isOpen = getRestaurantStatus();
+
+      // Update mobile banner
+      if (restaurantClosedBannerMobile) {
+        restaurantClosedBannerMobile.classList.toggle('hidden', isOpen);
+      }
+
+      // Update cart modal message
+      if (restaurantClosedMessageCart) {
+        restaurantClosedMessageCart.classList.toggle('hidden', isOpen);
+      }
+
+      // Disable/enable order button
+      if (btnConfirmOrder) {
+        btnConfirmOrder.disabled = !isOpen;
+        if (!isOpen) {
+          btnConfirmOrder.textContent = 'Restaurant fermé';
+          btnConfirmOrder.classList.remove('bg-accent', 'hover:shadow-lg');
+          btnConfirmOrder.classList.add('bg-gray-400', 'cursor-not-allowed');
+        } else {
+          btnConfirmOrder.textContent = 'Confirmer la commande';
+          btnConfirmOrder.classList.add('bg-accent', 'hover:shadow-lg');
+          btnConfirmOrder.classList.remove('bg-gray-400', 'cursor-not-allowed');
+        }
+      }
+
+      // Adjust sticky category nav position
+      const headerElement = document.querySelector('header');
+      const categoryNav = document.getElementById('category-nav');
+
+      if (headerElement && categoryNav) {
+        const headerHeight = headerElement.offsetHeight;
+        categoryNav.style.top = `${headerHeight}px`;
+      }
+    }
+
+    // Initial update on load
+    updateRestaurantStatusUI();
+
+    // Reactive update every 10 seconds
+    setInterval(updateRestaurantStatusUI, 10000);
+
+    // Listen for storage changes from other tabs/windows
+    window.addEventListener('storage', (e) => {
+      if (e.key === 'restaurantOuvert') {
+        updateRestaurantStatusUI();
+      }
+    });
+
+    // Scroll doux pour la nav des catégories
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            document.querySelector(this.getAttribute('href')).scrollIntoView({
+                behavior: 'smooth'
+            });
+        });
     });
 
     cartFloat.addEventListener('click', (e) => {
+      e.preventDefault();
+      renderPanier();
+      panierSection.classList.remove('hidden');
+    });
+
+    btnViewCartMobile.addEventListener('click', (e) => {
       e.preventDefault();
       renderPanier();
       panierSection.classList.remove('hidden');
@@ -788,47 +1295,39 @@ https://creativecommons.org/licenses/by-nc/4.0/legalcode
 
     btnValiderCommande.addEventListener('click', () => {
       const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+      if (cart.length === 0) {
+        alert('Votre panier est vide. Veuillez ajouter des articles avant de valider.');
+        return;
+      }
+      panierSection.classList.add('hidden');
+      coordsModal.classList.remove('hidden');
+    });
+
+    btnCancelCoords.addEventListener('click', () => {
+      coordsModal.classList.add('hidden');
+      panierSection.classList.remove('hidden'); // Return to cart view
+    });
+
+    formCoords.addEventListener('submit', (e) => {
+      e.preventDefault();
+
+      if (!getRestaurantStatus()) {
+        alert('Le restaurant est actuellement fermé. Vous ne pouvez pas passer commande.');
+        return;
+      }
+
+      const cart = JSON.parse(localStorage.getItem('cart') || '[]');
       const total = parseFloat(panierTotal.textContent);
 
-      const demandes = loadDemandes();
-      const lastDemande = demandes.find(d => d.statut === 'accepted'); // Find the accepted demand
-
-      if (lastDemande) {
-        let commandes = loadCommandes();
-        let command = commandes.find(cmd => cmd.demandeId === lastDemande.id);
-
-        if (!command) {
-          // Create a new command if it doesn't exist for this accepted demand
-          command = {
-            id: `cmd-${Date.now()}`,
-            demandeId: lastDemande.id,
-            customer: { name: lastDemande.nom, address: lastDemande.adresse, phone: lastDemande.tel },
-            deliverySlot: '',
-            items: [],
-            total: 0,
-            status: 'submitted'
-          };
-          commandes.push(command);
-        }
-
-        // Update command details with cart content
-        command.items = cart.map(item => {
+      const nouvelleDemande = {
+        id: `req-${Date.now()}`,
+        nom: nomCoordsInput.value,
+        tel: telCoordsInput.value,
+        adresse: adresseCoordsInput.value,
+        mode: 'Livraison', // Always delivery for now
+        statut: 'pending',
+        items: cart.map(item => {
           const menuItem = item.isWok ? item.details : menuItems.find(m => String(m.id) === item.itemId);
-          
-          if (!menuItem) {
-            console.error("Erreur: Article non trouvé dans menuItems pour l'ID:", item.itemId);
-            // Vous pouvez choisir de sauter cet article, ou de lancer une erreur, ou d'utiliser des valeurs par défaut
-            // Pour l'instant, nous allons retourner un objet avec des valeurs par défaut pour éviter le crash
-            return { 
-              id: item.itemId, 
-              name: "Article inconnu", 
-              quantity: item.qty, 
-              price: 0, 
-              isWok: item.isWok || false,
-              details: item.isWok ? item.details : null
-            };
-          }
-
           return { 
             id: item.itemId, 
             name: menuItem.nom, 
@@ -837,34 +1336,17 @@ https://creativecommons.org/licenses/by-nc/4.0/legalcode
             isWok: item.isWok || false,
             details: item.isWok ? menuItem.details : null
           };
-        });
-        command.total = total;
-        command.status = 'submitted'; // Ensure status is submitted
+        }),
+        total: total
+      };
 
-        saveCommandes(commandes);
+      const demandes = loadDemandes();
+      demandes.push(nouvelleDemande);
+      saveDemandes(demandes);
 
-        localStorage.removeItem('cart');
-        localStorage.setItem('currentOrderId', command.id); // Store order ID for tracking page
-        window.location.href = 'suivi.html'; // Redirect to tracking page
-      } else {
-        alert("Erreur: Aucune demande acceptée trouvée pour créer la commande.");
-      }
-    });
-
-    btnEmporter.addEventListener('click', () => {
-      secEmporter.classList.remove('hidden');
-      secLivraison.classList.add('hidden');
-      window.scrollTo({ top: secEmporter.offsetTop - 80, behavior: 'smooth' });
-    });
-
-    btnLivraison.addEventListener('click', () => {
-      secLivraison.classList.remove('hidden');
-      secEmporter.classList.add('hidden');
-      formDisponibilite.classList.remove('hidden'); // Ensure form is visible
-      msgOk.classList.add('hidden');
-      msgRefused.classList.add('hidden');
-      msgOrderReady.classList.add('hidden');
-      window.scrollTo({ top: secLivraison.offsetTop - 80, behavior: 'smooth' });
+      localStorage.removeItem('cart');
+      localStorage.setItem('currentDemandId', nouvelleDemande.id); // Store demand ID for tracking page
+      window.location.href = 'suivi.html'; // Redirect to tracking page
     });
 
     // Helpers pour le localStorage
@@ -886,43 +1368,7 @@ https://creativecommons.org/licenses/by-nc/4.0/legalcode
       localStorage.setItem('commandes', JSON.stringify(commandes, null, 2));
     }
 
-    function showInitialChoice() {
-      stepChoix.classList.remove('hidden');
-      secEmporter.classList.add('hidden');
-      secLivraison.classList.add('hidden');
-      msgOk.classList.add('hidden');
-      msgRefused.classList.add('hidden');
-      msgOrderReady.classList.add('hidden');
-      orderMenuSection.classList.add('hidden');
-      wokComposerSection.classList.add('hidden');
-      cartFloat.classList.add('hidden'); // Hide cart float
-    }
-
-    function showPendingMessage() {
-      stepChoix.classList.add('hidden');
-      formDisponibilite.classList.add('hidden');
-      secLivraison.classList.remove('hidden');
-      msgOk.classList.remove('hidden');
-      msgRefused.classList.add('hidden');
-      msgOrderReady.classList.add('hidden');
-      orderMenuSection.classList.add('hidden');
-      wokComposerSection.classList.add('hidden');
-    }
-
-    function showRefusedMessage() {
-      stepChoix.classList.add('hidden');
-      formDisponibilite.classList.add('hidden');
-      secLivraison.classList.remove('hidden');
-      msgOk.classList.add('hidden');
-      msgRefused.classList.remove('hidden');
-      msgOrderReady.classList.add('hidden');
-      orderMenuSection.classList.add('hidden');
-      wokComposerSection.classList.add('hidden');
-    }
-
     function showOrderUI() {
-      stepChoix.classList.add('hidden');
-      secLivraison.classList.add('hidden');
       orderMenuSection.classList.remove('hidden');
       wokComposerSection.classList.remove('hidden');
       cartFloat.classList.remove('hidden');
@@ -935,15 +1381,20 @@ https://creativecommons.org/licenses/by-nc/4.0/legalcode
 
       menuItems.forEach(item => {
         const li = document.createElement('li');
-        li.className = 'bg-white p-4 rounded-lg shadow-md flex flex-col items-center text-center relative';
+        // Vue mobile : liste, Vue desktop : grille
+        li.className = 'bg-white p-4 rounded-lg shadow-md flex md:flex-col items-center text-center relative md:p-4 cursor-pointer';
+        li.onclick = () => openProductModal(item);
         li.innerHTML = `
-          <img src="${item.img}" alt="${item.nom}" class="w-32 h-32 rounded-lg object-cover mb-4" />
-          <div class="flex-grow text-center">
+          <img src="${item.img}" alt="${item.nom}" class="w-24 h-24 md:w-32 md:h-32 rounded-lg object-cover mr-4 md:mr-0 md:mb-4" />
+          <div class="flex-grow text-left md:text-center">
             <p class="font-medium text-lg">${item.nom}</p>
+            <span class="font-semibold text-accent md:hidden">${item.prix.toFixed(2)}€</span>
           </div>
-          <span class="font-semibold text-accent">${item.prix.toFixed(2)}€</span>
-          <button data-id="${item.id}" class="mt-4 px-4 py-2 bg-accent text-white font-semibold rounded-full shadow hover:shadow-lg transition">+</button>
-          <span data-id="${item.id}" class="item-qty-badge absolute -top-2 -right-2 bg-blue-500 text-white text-xs font-bold rounded-full h-6 w-6 flex items-center justify-center hidden">0</span>
+          <div class="flex flex-col items-center">
+             <span class="font-semibold text-accent hidden md:block mb-2">${item.prix.toFixed(2)}€</span>
+            <button data-id="${item.id}" class="mt-2 px-4 py-2 bg-accent text-white font-semibold rounded-full shadow hover:shadow-lg transition">+</button>
+          </div>
+          <span data-id="${item.id}" class="item-qty-badge absolute top-0 right-0 bg-blue-500 text-white text-xs font-bold rounded-full h-6 w-6 flex items-center justify-center hidden">0</span>
         `;
         
         switch (item.categorie) {
@@ -963,12 +1414,73 @@ https://creativecommons.org/licenses/by-nc/4.0/legalcode
       });
 
       document.querySelectorAll('#order-menu button').forEach(btn => {
-        btn.addEventListener('click', e => addToCart(+e.target.dataset.id));
+        btn.addEventListener('click', e => {
+          e.stopPropagation(); // Prevent the click from bubbling up to the li (card)
+          addToCart(+e.target.dataset.id);
+        });
       });
 
       initWokComposer();
       updateCartBadge();
       updateItemBadges();
+      setupCategoryObserver(); // Pour la nav sticky
+      setupWokTabs(); // Pour le formulaire Wok
+    }
+
+    function setupWokTabs() {
+      const tabs = document.querySelectorAll('.wok-tab');
+      const panes = document.querySelectorAll('.wok-step-pane');
+
+      tabs.forEach((tab, index) => {
+        tab.addEventListener('click', () => {
+          // Masquer tous les contenus
+          panes.forEach(pane => pane.classList.add('hidden'));
+          // Afficher le contenu correspondant
+          panes[index].classList.remove('hidden');
+
+          // Gérer le style des onglets
+          tabs.forEach(t => {
+            t.classList.remove('border-accent', 'text-accent');
+            t.classList.add('border-transparent', 'text-gray-500', 'hover:text-gray-700', 'hover:border-gray-300');
+          });
+          tab.classList.add('border-accent', 'text-accent');
+          tab.classList.remove('border-transparent', 'text-gray-500', 'hover:text-gray-700', 'hover:border-gray-300');
+        });
+      });
+
+      // Gérer l'affichage desktop (tout est visible)
+      const handleDesktopView = () => {
+        if (window.innerWidth >= 768) { // 768px est le point de rupture `md` de Tailwind
+          panes.forEach(pane => pane.classList.remove('hidden'));
+        } else {
+          // Sur mobile, s'assurer que seul le premier onglet est visible au départ
+          panes.forEach((pane, index) => {
+            if (index !== 0) pane.classList.add('hidden');
+          });
+        }
+      };
+
+      // Appeler la fonction au chargement et au redimensionnement
+      handleDesktopView();
+      window.addEventListener('resize', handleDesktopView);
+    }
+
+    function setupCategoryObserver() {
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          const id = entry.target.getAttribute('id');
+          const link = document.querySelector(`.category-link[href="#${id}"]`);
+          
+          if (entry.isIntersecting) {
+            document.querySelectorAll('.category-link').forEach(l => l.classList.remove('text-accent', 'border-accent', 'border-b-2'));
+            link.classList.add('text-accent', 'border-accent', 'border-b-2');
+          } 
+        });
+      }, { rootMargin: "-50% 0px -50% 0px", threshold: 0 });
+
+      document.querySelectorAll('div[id$="-section"], section[id$="-composer"]').forEach(section => {
+        observer.observe(section);
+      });
     }
 
     function updateItemBadges() {
@@ -1002,9 +1514,40 @@ https://creativecommons.org/licenses/by-nc/4.0/legalcode
     }
 
     function updateCartBadge() {
-      const count = JSON.parse(localStorage.getItem('cart') || '[]')
-        .reduce((sum, it) => sum + it.qty, 0);
+      const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+      const count = cart.reduce((sum, it) => sum + it.qty, 0);
+      const total = cart.reduce((sum, cartItem) => {
+          const menuItem = cartItem.isWok ? cartItem.details : menuItems.find(item => String(item.id) === cartItem.itemId);
+          return sum + (menuItem.prix * cartItem.qty);
+      }, 0);
+
+      const cartFloat = document.getElementById('cart-float'); // Bouton panier desktop
+      const mobileCartButton = document.getElementById('mobile-cart-button'); // Bouton panier mobile
+
+      // Mettre à jour le badge du panier desktop
       document.getElementById('cart-count').textContent = count;
+
+      // Déterminer si nous sommes sur un écran mobile (moins de 768px, breakpoint `md` de Tailwind)
+      const isMobileScreen = window.innerWidth < 768;
+
+      if (isMobileScreen) {
+        // Sur les écrans mobiles
+        cartFloat.classList.add('hidden'); // S'assurer que le panier desktop est masqué
+        if (count > 0) {
+          document.getElementById('mobile-cart-total').textContent = `${total.toFixed(2)}€`;
+          mobileCartButton.classList.remove('hidden'); // Afficher le panier mobile s'il y a des articles
+        } else {
+          mobileCartButton.classList.add('hidden'); // Masquer le panier mobile s'il n'y a pas d'articles
+        }
+      } else {
+        // Sur les écrans desktop
+        mobileCartButton.classList.add('hidden'); // S'assurer que le panier mobile est masqué
+        if (count > 0) {
+          cartFloat.classList.remove('hidden'); // Afficher le panier desktop s'il y a des articles
+        } else {
+          cartFloat.classList.add('hidden'); // Masquer le panier desktop s'il n'y a pas d'articles
+        }
+      }
     }
 
     function renderPanier() {
@@ -1022,7 +1565,7 @@ https://creativecommons.org/licenses/by-nc/4.0/legalcode
         const menuItem = cartItem.isWok ? cartItem.details : menuItems.find(item => String(item.id) === cartItem.itemId);
         if (menuItem) {
           const li = document.createElement('li');
-          li.className = 'flex items-center justify-between';
+          li.className = 'flex items-center justify-between pr-4'; // Ajout de pr-4 ici
           li.innerHTML = `
             <div>
               <p class="font-medium">${menuItem.nom}</p>
@@ -1051,7 +1594,6 @@ https://creativecommons.org/licenses/by-nc/4.0/legalcode
 
       panierTotal.textContent = total.toFixed(2);
 
-      // Add event listeners for quantity buttons
       // Add event listeners for quantity buttons
       panierList.querySelectorAll('.btn-qty-increase').forEach(btn => {
         btn.addEventListener('click', e => updateQuantity(String(e.target.dataset.id), 1));
@@ -1095,81 +1637,355 @@ https://creativecommons.org/licenses/by-nc/4.0/legalcode
     }
 
     document.addEventListener('DOMContentLoaded', () => {
-      checkDemandStatusAndDisplay();
+      // Check for existing active demand/order and redirect to suivi.html
+      const currentDemandId = localStorage.getItem('currentDemandId');
+      if (currentDemandId) {
+        const demandes = loadDemandes();
+        const currentDemand = demandes.find(d => d.id === currentDemandId);
+
+        if (currentDemand) {
+          if (currentDemand.statut === 'pending') {
+            window.location.href = 'suivi.html';
+            return;
+          } else if (currentDemand.statut === 'accepted') {
+            const commandes = loadCommandes();
+            const associatedCommand = commandes.find(cmd => cmd.demandeId === currentDemand.id);
+            if (associatedCommand && associatedCommand.status !== 'delivered') {
+              window.location.href = 'suivi.html';
+              return;
+            }
+          } else if (currentDemand.statut === 'refused') {
+            msgRefused.classList.remove('hidden');
+            if (currentDemand.refusalReason) {
+              refusalReasonDisplay.textContent = ` Motif: ${currentDemand.refusalReason}`;
+            }
+            orderMenuSection.classList.add('hidden');
+            wokComposerSection.classList.add('hidden');
+            cartFloat.classList.add('hidden');
+            mobileCartButton.classList.add('hidden'); // Hide mobile cart button as well
+            
+            btnNewDemand.addEventListener('click', () => {
+              localStorage.removeItem('currentDemandId');
+              localStorage.removeItem('cart');
+              window.location.href = 'commande.html'; // Reload to start a new order
+            });
+            return;
+          }
+        }
+      }
+
+      showOrderUI(); // Always show order UI on this page if no active order
       updateItemBadges(); // Initial update on page load
     });
 
-    window.addEventListener('storage', (e) => {
-      if (e.key === 'demandes') {
-        checkDemandStatusAndDisplay();
-      }
-    });
-
-    function checkDemandStatusAndDisplay() {
-      const mesDemandes = loadDemandes();
-      const commandes = loadCommandes();
-      const currentOrderId = localStorage.getItem('currentOrderId');
-      const currentOrder = commandes.find(cmd => cmd.id === currentOrderId);
-
-      // If there's an active order that's not delivered, redirect to suivi.html
-      if (currentOrder && currentOrder.status !== 'delivered') {
-        window.location.href = 'suivi.html';
-        return;
-      }
-
-      const lastDemande = mesDemandes[mesDemandes.length - 1]; 
-
-      if (!lastDemande) {
-        showInitialChoice();
-        return;
-      }
-
-      if (lastDemande.statut === 'accepted') {
-        const associatedCommand = commandes.find(cmd => cmd.demandeId === lastDemande.id);
-        if (associatedCommand && associatedCommand.status === 'delivered') {
-          showInitialChoice();
-        } else {
-          // If the demand is accepted but no active order is being tracked, show the order UI
-          showOrderUI();
-        }
-      } else if (lastDemande.statut === 'refused') {
-        showRefusedMessage();
-      } else { // pending
-        showPendingMessage();
-      }
-    }
-
     window.addWokToCart = function(wokItem) {
       const cart = JSON.parse(localStorage.getItem('cart') || '[]');
-      cart.push({ itemId: String(wokItem.id), qty: 1, isWok: true, details: wokItem });
+      cart.push({ itemId: `wok-${Date.now()}`, qty: 1, isWok: true, details: wokItem });
       localStorage.setItem('cart', JSON.stringify(cart));
       updateCartBadge();
       updateItemBadges();
     }
+  </script>
+  <script src="js/responsive.js"></script>
 
-    window.handleSubmit = function(e) {
-      e.preventDefault();
+  <!-- Product Detail Modal -->
+  <div id="product-modal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-[90]">
+    <div class="bg-white rounded-lg shadow-xl p-6 max-w-lg w-full relative flex flex-col max-h-[90vh] overflow-hidden md:flex-row">
+      <button id="product-modal-close" class="absolute top-3 right-3 p-2 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-600 hover:text-gray-800 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-accent">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+      </button>
+      <img id="product-modal-image" src="" alt="Product Image" class="w-full h-48 object-cover rounded-lg mb-4 md:w-1/2 md:h-auto md:mb-0 md:mr-6">
+      <div class="flex-1 overflow-y-auto">
+        <h3 id="product-modal-name" class="text-2xl font-bold text-primary mb-2"></h3>
+        <p id="product-modal-description" class="text-gray-700 mb-4"></p>
+        <p id="product-modal-price" class="text-xl font-semibold text-accent mb-4"></p>
+        <button id="product-modal-add-to-cart" class="w-full px-6 py-3 bg-accent text-white font-bold rounded-lg shadow-md hover:shadow-lg transition">Ajouter au panier</button>
+      </div>
+    </div>
+  </div>
 
-      const nomInput = document.getElementById('nom');
-      const telInput = document.getElementById('tel');
-      const adresseInput = document.getElementById('adresse');
+</body>
 
-      const nouvelles = loadDemandes();
-      nouvelles.push({
-        id: `req-${Date.now()}`,
-        nom: nomInput.value,
-        tel: telInput.value,
-        adresse: adresseInput.value,
-        mode: 'Livraison',
-        statut: 'pending'
-      });
-      saveDemandes(nouvelles);
+</html>
 
-      showPendingMessage();
-      return false;
+--- css/responsive.css ---
+
+/* Base styles - (Mobile First) */
+
+/* Small devices (landscape phones, 576px and up) */
+@media (min-width: 576px) {
+  /* ... */
+}
+
+/* Medium devices (tablets, 768px and up) */
+@media (min-width: 768px) {
+  /* ... */
+}
+
+/* Large devices (desktops, 992px and up) */
+@media (min-width: 992px) {
+  /* ... */
+}
+
+/* Extra large devices (large desktops, 1200px and up) */
+@media (min-width: 1200px) {
+  /* ... */
+}
+
+
+--- css/styles.css ---
+
+/* General Reset for Box Sizing */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  width: 100%;
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+
+body {
+  -webkit-text-size-adjust: 100%; /* For iOS Safari */
+  text-size-adjust: 100%;
+}
+
+/* Responsive media */
+img,
+video,
+canvas,
+svg {
+  max-width: 100%;
+  height: auto;
+}
+
+
+--- data/menu.js ---
+
+export const menuItems = [
+  // Entrées
+  { "id": 1, "nom": "Nems Poulet x4", "prix": 5.00, "categorie": "Entrées", "img": "assets/images/nems.jpg" },
+  { "id": 2, "nom": "Nems Crevettes x4", "prix": 5.50, "categorie": "Entrées", "img": "assets/images/nems.jpg" },
+  { "id": 3, "nom": "Nems Légumes x4", "prix": 5.00, "categorie": "Entrées", "img": "assets/images/nems.jpg" },
+  { "id": 4, "nom": "Crevettes Tempura x3", "prix": 4.90, "categorie": "Entrées", "img": "assets/images/nems.jpg" },
+  { "id": 5, "nom": "Beignet de crevette x3", "prix": 4.90, "categorie": "Entrées", "img": "assets/images/nems.jpg" },
+  { "id": 6, "nom": "Brochettes poulet satay x2", "prix": 5.00, "categorie": "Entrées", "img": "assets/images/nems.jpg" },
+  { "id": 7, "nom": "Brochettes poulet yakitori x2", "prix": 4.50, "categorie": "Entrées", "img": "assets/images/nems.jpg" },
+  { "id": 8, "nom": "Brochette bœuf fromage x2", "prix": 5.50, "categorie": "Entrées", "img": "assets/images/nems.jpg" },
+  { "id": 9, "nom": "Pince de crabe x3", "prix": 4.50, "categorie": "Entrées", "img": "assets/images/nems.jpg" },
+  { "id": 10, "nom": "Rouleaux de printemps x2", "prix": 5.00, "categorie": "Entrées", "img": "assets/images/nems.jpg" },
+  { "id": 11, "nom": "Riz nature", "prix": 4.00, "categorie": "Entrées", "img": "assets/images/nems.jpg" },
+
+  // Plats
+  { "id": 12, "nom": "Pad Thaï - Poulet", "prix": 12.50, "categorie": "Plats", "img": "assets/images/pad-thai.jpg" },
+  { "id": 13, "nom": "Pad Thaï - Tofu", "prix": 12.50, "categorie": "Plats", "img": "assets/images/pad-thai.jpg" },
+  { "id": 14, "nom": "Pad Thaï - Poulet Crousti", "prix": 13.50, "categorie": "Plats", "img": "assets/images/pad-thai.jpg" },
+  { "id": 15, "nom": "Pad Thaï - Bœuf", "prix": 13.50, "categorie": "Plats", "img": "assets/images/pad-thai.jpg" },
+  { "id": 16, "nom": "Pad Thaï - Crevettes", "prix": 13.50, "categorie": "Plats", "img": "assets/images/pad-thai.jpg" },
+  
+  { "id": 17, "nom": "Khao Pad - Poulet", "prix": 12.50, "categorie": "Plats", "img": "assets/images/pad-thai.jpg" },
+  { "id": 18, "nom": "Khao Pad - Tofu", "prix": 12.50, "categorie": "Plats", "img": "assets/images/pad-thai.jpg" },
+  { "id": 19, "nom": "Khao Pad - Poulet Crousti", "prix": 13.50, "categorie": "Plats", "img": "assets/images/pad-thai.jpg" },
+  { "id": 20, "nom": "Khao Pad - Bœuf", "prix": 13.50, "categorie": "Plats", "img": "assets/images/pad-thai.jpg" },
+  { "id": 21, "nom": "Khao Pad - Crevettes", "prix": 13.50, "categorie": "Plats", "img": "assets/images/pad-thai.jpg" },
+
+  { "id": 22, "nom": "Bò Bún - Poulet", "prix": 12.50, "categorie": "Plats", "img": "assets/images/pad-thai.jpg" },
+  { "id": 23, "nom": "Bò Bún - Bœuf", "prix": 13.50, "categorie": "Plats", "img": "assets/images/pad-thai.jpg" },
+  { "id": 24, "nom": "Bò Bún - Crevettes", "prix": 13.50, "categorie": "Plats", "img": "assets/images/pad-thai.jpg" },
+
+  { "id": 25, "nom": "Soupe Tom Yum", "prix": 14.50, "categorie": "Plats", "img": "assets/images/pad-thai.jpg" },
+  { "id": 26, "nom": "Poulet au curry", "prix": 14.50, "categorie": "Plats", "img": "assets/images/pad-thai.jpg" },
+
+  // Desserts
+  { "id": 27, "nom": "Coupelle mangue", "prix": 5.00, "categorie": "Desserts", "img": "assets/images/nems.jpg" },
+  { "id": 28, "nom": "Coupelle ananas", "prix": 5.00, "categorie": "Desserts", "img": "assets/images/nems.jpg" },
+  { "id": 29, "nom": "Glace", "prix": 4.90, "categorie": "Desserts", "img": "assets/images/nems.jpg" },
+  { "id": 30, "nom": "Mochi glace x2", "prix": 5.00, "categorie": "Desserts", "img": "assets/images/nems.jpg" },
+
+  // Boissons
+  { "id": 31, "nom": "Soft", "prix": 2.00, "categorie": "Boissons", "img": "assets/images/nems.jpg" },
+  { "id": 32, "nom": "Maya", "prix": 3.90, "categorie": "Boissons", "img": "assets/images/nems.jpg" },
+  { "id": 33, "nom": "Citronnade", "prix": 2.00, "categorie": "Boissons", "img": "assets/images/nems.jpg" },
+  { "id": 34, "nom": "Ginger beer", "prix": 3.00, "categorie": "Boissons", "img": "assets/images/nems.jpg" },
+  { "id": 35, "nom": "Eau / eau gazeuse", "prix": 2.00, "categorie": "Boissons", "img": "assets/images/nems.jpg" },
+  { "id": 36, "nom": "Mogu Mogu", "prix": 3.00, "categorie": "Boissons", "img": "assets/images/nems.jpg" },
+  { "id": 37, "nom": "Bubble Tea", "prix": 6.00, "categorie": "Boissons", "img": "assets/images/nems.jpg" }
+]
+
+--- index.html ---
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="css/styles.css">
+  <title>Thaï Garden – Accueil</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link 
+    href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;700&family=Playfair+Display:wght@700&display=swap" 
+    rel="stylesheet"
+  >
+
+  <!-- Tailwind + config couleurs -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#704B24',
+            accent:  '#ED8B00'
+          },
+          fontFamily: {
+            sans: ['Noto Sans', 'sans-serif'],
+            serif: ['Playfair Display', 'serif']
+          }
+        }
+      }
     }
   </script>
+
+  <style>
+    body { font-family: 'Noto Sans', sans-serif; }
+    h1, h2, h3 { font-family: 'Playfair Display', serif; }
+  </style>
+</head>
+<body class="bg-gradient-to-b from-gray-50 to-white text-gray-800 flex flex-col min-h-screen">
+
+  <!-- Sticky Navbar -->
+  <header class="fixed top-0 w-full bg-white/70 backdrop-blur-sm shadow-md z-50">
+    <nav class="max-w-5xl mx-auto flex items-center justify-between py-4 px-6">
+      <a href="index.html" class="text-2xl font-bold text-primary">Thaï Garden</a>
+      <div class="hidden md:flex gap-8 font-medium">
+        <a href="index.html" class="hover:text-accent transition">Accueil</a>
+        <a href="commande.html" class="hover:text-accent transition">Menu</a>
+        <a href="#contact" class="hover:text-accent transition">Contact</a>
+      </div>
+      <a href="commande.html" class="hidden md:block ml-6 px-4 py-2 bg-accent text-white font-semibold rounded-full shadow hover:shadow-lg transition">
+        Commander
+      </a>
+      <button id="burger-btn" class="md:hidden">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+      </button>
+    </nav>
+    <div id="mobile-menu" class="hidden md:hidden">
+      <a href="index.html" class="block py-2 px-4 text-sm hover:bg-gray-200">Accueil</a>
+      <a href="commande.html" class="block py-2 px-4 text-sm hover:bg-gray-200">Menu</a>
+      <a href="#contact" class="block py-2 px-4 text-sm hover:bg-gray-200">Contact</a>
+      <a href="commande.html" class="block py-2 px-4 text-sm hover:bg-gray-200">Commander</a>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <section class="relative h-screen flex items-center justify-center text-center overflow-hidden">
+    <div class="absolute inset-0 bg-cover bg-center" style="background-image:url('assets/images/hero.png')"></div>
+    <div class="absolute inset-0 bg-gradient-to-b from-black/60 to-black/20"></div>
+    <div class="relative z-10 px-4">
+      <h1 class="text-[clamp(2.5rem,5vw,4rem)] font-extrabold text-white mb-4">Bienvenue chez Thaï Garden</h1>
+      <p class="text-xl text-white/90 mb-8 max-w-2xl mx-auto">
+        Street-food thaïlandaise fraîche et authentique à Mauguio.
+      </p>
+      <div class="flex flex-col sm:flex-row gap-4 justify-center">
+        <a href="commande.html" class="px-8 py-3 bg-accent text-white font-semibold rounded-full shadow-lg hover:shadow-xl transition">
+          Voir le menu
+        </a>
+        <a href="#contact" class="px-8 py-3 border-2 border-white text-white font-semibold rounded-full shadow-lg hover:bg-white/20 transition">
+          Nous contacter
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Services -->
+  <section class="py-16 bg-gradient-to-r from-white to-gray-100 fade-in-section">
+    <div class="max-w-5xl mx-auto px-6 grid grid-cols-1 md:grid-cols-3 gap-8">
+      <div class="bg-white p-8 rounded-lg shadow-md hover:shadow-lg transition text-center transform transition-transform duration-300 hover:scale-105">
+        <img src="assets/icons/accessibility.svg" alt="Accessibilité" class="h-12 mx-auto mb-4" />
+        <h3 class="text-xl font-semibold mb-2">Accessibilité</h3>
+        <p>Entrée PMR et terrasse extérieure.</p>
+      </div>
+      <div class="bg-white p-8 rounded-lg shadow-md hover:shadow-lg transition text-center transform transition-transform duration-300 hover:scale-105">
+        <img src="assets/icons/terrace.svg" alt="Terrasse" class="h-12 mx-auto mb-4" />
+        <h3 class="text-xl font-semibold mb-2">Terrasse</h3>
+        <p>Profitez de nos plats en plein air.</p>
+      </div>
+      <div class="bg-white p-8 rounded-lg shadow-md hover:shadow-lg transition text-center transform transition-transform duration-300 hover:scale-105">
+        <img src="assets/icons/delivery.svg" alt="Livraison" class="h-12 mx-auto mb-4" />
+        <h3 class="text-xl font-semibold mb-2">À emporter & livraison</h3>
+        <p>Commandez pour emporter ou vous faire livrer.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact Section -->
+  <section id="contact" class="py-16 bg-gradient-to-b from-white to-gray-50 fade-in-section">
+    <div class="max-w-5xl mx-auto px-6 grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+      <!-- Left column: horaires + contact -->
+      <div class="space-y-8">
+        <div>
+          <h3 class="text-2xl font-semibold mb-2">Horaires</h3>
+          <ul class="list-disc list-inside space-y-1">
+            <li>Lundi : fermé</li>
+            <li>Mardi – Vendredi : 11h00–14h00 & 18h30–22h00</li>
+            <li>Samedi – Dimanche : 18h30–22h30</li>
+          </ul>
+        </div>
+        <div>
+          <h3 class="text-2xl font-semibold mb-2">Contact</h3>
+          <p>Téléphone : <a href="tel:+33987117057" class="text-accent hover:underline">+33 9 87 11 70 57</a></p>
+          <p>Email : <a href="mailto:etmfood@gmail.com" class="text-accent hover:underline">etmfood@gmail.com</a></p>
+        </div>
+      </div>
+      <!-- Right column: map -->
+      <div class="rounded-lg overflow-hidden shadow-lg">
+        <iframe
+          src="https://maps.google.com/maps?q=Tha%C3%AF%20Garden%2C%20Mauguio&z=16&output=embed"
+          width="100%" height="400" frameborder="0" style="border:0;" allowfullscreen="" loading="lazy"
+        ></iframe>
+      </div>
+    </div>
+  </section>
+
+  <!-- Social Networks Section -->
+  <section class="py-16 bg-gradient-to-b from-gray-50 to-white fade-in-section">
+    <div class="max-w-5xl mx-auto px-6 text-center">
+      <h2 class="text-3xl font-extrabold text-primary mb-8">Suivez-nous sur les réseaux sociaux !</h2>
+      <div class="flex justify-center gap-8">
+        <a href="https://www.facebook.com/profile.php?id=100086590987828" target="_blank" rel="noopener noreferrer" class="text-primary hover:text-accent transition">
+          <svg fill="currentColor" viewBox="0 0 24 24" class="h-10 w-10">
+            <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12c6.627 0 12-5.373 12-12S18.627 0 12 0zm3.6 8.4h-1.8c-.6 0-.6.4-.6.7v1.2h2.4l-.3 2.4h-2.1v7.2h-3.6v-7.2h-1.8v-2.4h1.8v-1.5c0-1.5 1.2-2.7 2.7-2.7h2.1v2.4z"/>
+          </svg>
+        </a>
+        <a href="https://www.instagram.com/thaigardenmauguio/" target="_blank" rel="noopener noreferrer" class="text-primary hover:text-accent transition">
+          <svg fill="currentColor" viewBox="0 0 24 24" class="h-10 w-10">
+            <path d="M16.98 0H7.02C3.14 0 0 3.14 0 7.02v9.96C0 20.86 3.14 24 7.02 24h9.96C20.86 24 24 20.86 24 16.98V7.02C24 3.14 20.86 0 16.98 0zM12 18c-3.31 0-6-2.69-6-6s2.69-6 6-6 6 2.69 6 6-2.69 6-6 6zm6.5-11.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zM12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4z"/>
+          </svg>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="mt-auto bg-[#704B24] text-white py-6">
+    <div class="max-w-5xl mx-auto text-center">
+      <p>© 2025 Thaï Garden — Mauguio</p>
+      
+    </div>
+  </footer>
+
+  <script src="js/responsive.js"></script>
 </body>
+  <a href="commande.html" class="fixed bottom-6 right-6 z-50 bg-accent text-white p-4 rounded-full shadow-lg hover:shadow-xl transition">
+    Commander
+  </a>
 </html>
 
 --- js/main.js ---
@@ -1197,6 +2013,18 @@ window.addEventListener('DOMContentLoaded', function() {
     observer.observe(section);
   });
 });
+
+--- js/responsive.js ---
+
+document.addEventListener('DOMContentLoaded', function () {
+  const burgerBtn = document.getElementById('burger-btn');
+  const mobileMenu = document.getElementById('mobile-menu');
+
+  burgerBtn.addEventListener('click', function () {
+    mobileMenu.classList.toggle('hidden');
+  });
+});
+
 
 --- js/wok.js ---
 
@@ -1243,13 +2071,13 @@ export const wokOptions = {
     { nom: "Aigre-douce" },
   ],
   toppings: [
-    { nom: "Coriandre fraîche" },
-    { nom: "Cacahuètes" },
-    { nom: "Oignons frits" },
-    { nom: "Crevettes séchées" },
-    { nom: "Ciboulette thaï" },
-    { nom: "Citron" },
-    { nom: "Graines de sesame" },
+    { nom: "Coriandre fraîche", prix: 0.60 },
+    { nom: "Cacahuètes", prix: 0.60 },
+    { nom: "Oignons frits", prix: 0.60 },
+    { nom: "Crevettes séchées", prix: 0.60 },
+    { nom: "Ciboulette thaï", prix: 0.60 },
+    { nom: "Citron", prix: 0.60 },
+    { nom: "Graines de sesame", prix: 0.60 },
   ],
 };
 
@@ -1275,7 +2103,7 @@ function renderWokOptions() {
       input.type = type === 'radio' ? 'radio' : 'checkbox';
       input.name = type === 'radio' ? containerId : item.nom;
       input.value = item.nom;
-      input.dataset.prix = item.prix || (containerId === 'wok-toppings' ? 0.60 : 0);
+      input.dataset.prix = item.prix || 0;
       input.dataset.category = containerId.replace('wok-', '');
       input.addEventListener('change', updateWokSelection);
 
@@ -1326,7 +2154,7 @@ function calculateWokTotal() {
   if (selectedWok.base) total += selectedWok.base.prix;
   selectedWok.pulpes.forEach(p => total += p.prix);
   selectedWok.favoris.forEach(f => total += f.prix);
-  selectedWok.toppings.forEach(t => total += 0.60);
+  selectedWok.toppings.forEach(t => total += t.prix);
 
   selectedWok.total = total;
   document.getElementById('wok-total').textContent = total.toFixed(2);
@@ -1379,3 +2207,522 @@ document.getElementById('btn-add-wok').addEventListener('click', () => {
 export function initWokComposer() {
   renderWokOptions();
 }
+
+
+--- menu.html ---
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/responsive.css">
+  <title>Thaï Garden – Menu</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link 
+    href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;700&family=Playfair+Display:wght@700&display=swap" 
+    rel="stylesheet" 
+  />
+
+  <!-- Tailwind + config couleurs & typographie -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: { primary: '#704B24', accent: '#ED8B00' },
+          fontFamily: {
+            sans: ['Noto Sans', 'sans-serif'],
+            serif: ['Playfair Display', 'serif']
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body { font-family: 'Noto Sans', sans-serif; }
+    h1,h2,h3 { font-family: 'Playfair Display', serif; }
+  </style>
+</head>
+<body class="flex flex-col min-h-screen bg-gradient-to-b from-gray-50 to-white text-gray-800">
+
+  <!-- Navbar -->
+  <header class="fixed top-0 w-full bg-white/70 backdrop-blur-sm shadow-md z-50">
+    <nav class="max-w-5xl mx-auto flex items-center justify-between py-4 px-6">
+      <a href="index.html" class="text-2xl font-bold text-primary">Thaï Garden</a>
+      <div class="hidden md:flex gap-8 font-medium">
+        <a href="index.html" class="hover:text-accent transition">Accueil</a>
+        <a href="commande.html" class="hover:text-accent transition">Menu</a>
+        <a href="index.html#contact" class="hover:text-accent transition">Contact</a>
+      </div>
+      <a href="commande.html" class="hidden md:block ml-6 px-4 py-2 bg-accent text-white font-semibold rounded-full shadow hover:shadow-lg transition">
+        Commander
+      </a>
+      <button id="burger-btn" class="md:hidden">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+      </button>
+    </nav>
+    <div id="mobile-menu" class="hidden md:hidden">
+      <a href="index.html" class="block py-2 px-4 text-sm hover:bg-gray-200">Accueil</a>
+      <a href="commande.html" class="block py-2 px-4 text-sm hover:bg-gray-200">Menu</a>
+      <a href="index.html#contact" class="block py-2 px-4 text-sm hover:bg-gray-200">Contact</a>
+      <a href="commande.html" class="block py-2 px-4 text-sm hover:bg-gray-200">Commander</a>
+    </div>
+  </header>
+
+  <!-- Hero for Menu -->
+  <section class="relative h-80 flex items-center justify-center mt-16 overflow-hidden rounded-b-3xl shadow-lg">
+    <div class="absolute inset-0 bg-cover bg-center" style="background-image:url('assets/images/hero-menu.jpg')"></div>
+    <div class="absolute inset-0 bg-gradient-to-b from-black/20 to-black/60"></div>
+    <div class="relative z-10 text-center text-white px-4">
+      <h1 class="text-[clamp(2rem,5vw,3rem)] font-extrabold text-white drop-shadow-lg">Notre Menu</h1>
+    </div>
+  </section>
+
+  <main class="flex-1 pt-8">
+
+    <!-- Entrées -->
+    <section class="py-12 bg-gradient-to-r from-white via-gray-50 to-gray-100 fade-in-section">
+      <div class="max-w-5xl mx-auto px-6">
+        <h2 class="sticky top-16 z-30 mx-auto inline-block text-3xl font-extrabold text-primary text-center px-4 py-2 mb-4">Entrées</h2>
+        <ul class="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <li class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition transform hover:scale-105 flex items-center gap-4">
+            <img src="assets/images/nems-poulet.jpg" alt="Nems poulet x4" class="w-20 h-20 rounded-lg object-cover" />
+            <div class="flex-1"><p class="font-medium text-lg">Nems poulet x4</p></div>
+            <span class="font-semibold text-accent">5.00€</span>
+          </li>
+          <li class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition transform hover:scale-105 flex items-center gap-4">
+            <img src="assets/images/nems-crevettes.jpg" alt="Nems crevettes x4" class="w-20 h-20 rounded-lg object-cover" />
+            <div class="flex-1"><p class="font-medium text-lg">Nems crevettes x4</p></div>
+            <span class="font-semibold text-accent">5.50€</span>
+          </li>
+          <li class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition transform hover:scale-105 flex items-center gap-4">
+            <img src="assets/images/nems-legumes.jpg" alt="Nems légumes x4" class="w-20 h-20 rounded-lg object-cover" />
+            <div class="flex-1"><p class="font-medium text-lg">Nems légumes x4</p></div>
+            <span class="font-semibold text-accent">5.00€</span>
+          </li>
+          <li class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition transform hover:scale-105 flex items-center gap-4">
+            <img src="assets/images/crevettes-tempura.jpg" alt="Crevettes tempura x3" class="w-20 h-20 rounded-lg object-cover" />
+            <div class="flex-1"><p class="font-medium text-lg">Crevettes tempura x3</p></div>
+            <span class="font-semibold text-accent">4.90€</span>
+          </li>
+          <li class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition transform hover:scale-105 flex items-center gap-4">
+            <img src="assets/images/beignet-crevette.jpg" alt="Beignet de crevette x3" class="w-20 h-20 rounded-lg object-cover" />
+            <div class="flex-1"><p class="font-medium text-lg">Beignet de crevette x3</p></div>
+            <span class="font-semibold text-accent">4.90€</span>
+          </li>
+          <li class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition transform hover:scale-105 flex items-center gap-4">
+            <img src="assets/images/brochette-poulet-satay.jpg" alt="Brochettes poulet satay x2" class="w-20 h-20 rounded-lg object-cover" />
+            <div class="flex-1"><p class="font-medium text-lg">Brochettes poulet satay x2</p></div>
+            <span class="font-semibold text-accent">5.00€</span>
+          </li>
+          <li class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition transform hover:scale-105 flex items-center gap-4">
+            <img src="assets/images/brochette-poulet-yakitori.jpg" alt="Brochettes poulet yakitori x2" class="w-20 h-20 rounded-lg object-cover" />
+            <div class="flex-1"><p class="font-medium text-lg">Brochettes poulet yakitori x2</p></div>
+            <span class="font-semibold text-accent">4.50€</span>
+          </li>
+          <li class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition transform hover:scale-105 flex items-center gap-4">
+            <img src="assets/images/brochette-boeuf-fromage.jpg" alt="Brochette boeuf fromage x2" class="w-20 h-20 rounded-lg object-cover" />
+            <div class="flex-1"><p class="font-medium text-lg">Brochette boeuf fromage x2</p></div>
+            <span class="font-semibold text-accent">5.50€</span>
+          </li>
+          <li class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition transform hover:scale-105 flex items-center gap-4">
+            <img src="assets/images/pince-crabe.jpg" alt="Pince de crabe x3" class="w-20 h-20 rounded-lg object-cover" />
+            <div class="flex-1"><p class="font-medium text-lg">Pince de crabe x3</p></div>
+            <span class="font-semibold text-accent">4.50€</span>
+          </li>
+          <li class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition transform hover:scale-105 flex items-center gap-4">
+            <img src="assets/images/rouleaux-printemps.jpg" alt="Rouleaux de printemps x2" class="w-20 h-20 rounded-lg object-cover" />
+            <div class="flex-1"><p class="font-medium text-lg">Rouleaux de printemps x2</p></div>
+            <span class="font-semibold text-accent">5.00€</span>
+          </li>
+          <li class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition transform hover:scale-105 flex items-center gap-4">
+            <img src="assets/images/riz-nature.jpg" alt="Riz nature" class="w-20 h-20 rounded-lg object-cover" />
+            <div class="flex-1"><p class="font-medium text-lg">Riz nature</p></div>
+            <span class="font-semibold text-accent">4.00€</span>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- Plats -->
+    <section class="py-12 bg-gradient-to-r from-gray-100 via-white to-gray-50 fade-in-section">
+      <div class="max-w-5xl mx-auto px-6">
+        <h2 class="sticky top-16 z-30 mx-auto inline-block text-3xl font-extrabold text-primary text-center px-4 py-2 mb-4">Plats</h2>
+        <ul class="space-y-8">
+          <li class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition transform hover:scale-105">
+            <h3 class="text-2xl font-semibold">Pad Thaï</h3>
+            <p class="mt-1">Pâtes de riz, oignons, chou, carotte, œuf, soja, cacahuètes, citron, coriandre</p>
+            <ul class="mt-2 list-disc list-inside">
+              <li>Poulet ou Tofu : 12.50€</li>
+              <li>Poulet crousti, Bœuf ou Crevettes : 13.50€</li>
+            </ul>
+          </li>
+          <li class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition transform hover:scale-105">
+            <h3 class="text-2xl font-semibold">Khao Pad</h3>
+            <p class="mt-1">Riz frit, oignons, chou, carotte, œuf, soja, cacahuètes, citron, coriandre</p>
+            <ul class="mt-2 list-disc list-inside">
+              <li>Poulet ou Tofu : 12.50€</li>
+              <li>Poulet crousti, Bœuf ou Crevettes : 13.50€</li>
+            </ul>
+          </li>
+          <li class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition transform hover:scale-105">
+            <h3 class="text-2xl font-semibold">Bò Bún</h3>
+            <p class="mt-1">Vermicelle de riz, nems, salade, carotte, concombre, soja, menthe, coriandre, cacahuètes</p>
+            <ul class="mt-2 list-disc list-inside">
+              <li>Poulet : 12.50€</li>
+              <li>ou Bœuf / Crevettes : 13.50€</li>
+            </ul>
+          </li>
+          <li class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition transform hover:scale-105">
+            <h3 class="text-2xl font-semibold">Soupe Tom Yum</h3>
+            <p class="mt-1">Soupe thaïlandaise épicée à base de galanga, citronnelle, lait de coco et crevettes</p>
+            <p class="mt-2 font-semibold">14.50€</p>
+          </li>
+          <li class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition transform hover:scale-105">
+            <h3 class="text-2xl font-semibold">Poulet au curry</h3>
+            <p class="mt-1">Poulet cuisiné avec des légumes et lait de coco. Accompagné de riz parfumé</p>
+            <p class="mt-2 font-semibold">14.50€</p>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- Wok à composer -->
+    <section class="py-12 bg-gradient-to-r from-white via-gray-50 to-gray-100 fade-in-section">
+      <div class="max-w-5xl mx-auto px-6">
+        <h2 class="sticky top-16 z-30 mx-auto inline-block text-3xl font-extrabold text-primary text-center px-4 py-2 mb-4">Wok à composer</h2>
+        <!-- Choix de la base -->
+        <div class="mb-6">
+          <h3 class="text-xl font-semibold mb-2">1. Choix de la base</h3>
+          <ul class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <li class="flex justify-between"><span>Pâtes de riz</span><span>6.90€</span></li>
+            <li class="flex justify-between"><span>Nouilles jaunes</span><span>6.90€</span></li>
+            <li class="flex justify-between"><span>Udon</span><span>6.90€</span></li>
+            <li class="flex justify-between"><span>Riz parfumé</span><span>6.90€</span></li>
+          </ul>
+        </div>
+        <!-- Choix de la pulpe -->
+        <div class="mb-6">
+          <h3 class="text-xl font-semibold mb-2">2. Choix de la pulpe</h3>
+          <ul class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <li class="flex justify-between"><span>Oignons</span><span>+0.40€</span></li>
+            <li class="flex justify-between"><span>Ail</span><span>+0.40€</span></li>
+            <li class="flex justify-between"><span>Gingembre</span><span>+0.40€</span></li>
+            <li class="flex justify-between"><span>Piment</span><span>+0.40€</span></li>
+          </ul>
+        </div>
+        <!-- Choix des favoris -->
+        <div class="mb-6">
+          <h3 class="text-xl font-semibold mb-2">3. Choix des favoris</h3>
+          <ul class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+            <li class="flex justify-between"><span>Poulet</span><span>+2.00€</span></li>
+            <li class="flex justify-between"><span>Poulet crousti</span><span>+2.80€</span></li>
+            <li class="flex justify-between"><span>Bœuf</span><span>+2.50€</span></li>
+            <li class="flex justify-between"><span>Crevettes</span><span>+2.50€</span></li>
+            <li class="flex justify-between"><span>Calamar</span><span>+2.50€</span></li>
+            <li class="flex justify-between"><span>Tofu</span><span>+2.00€</span></li>
+            <li class="flex justify-between"><span>Pak choï</span><span>+1.40€</span></li>
+            <li class="flex justify-between"><span>Poivrons</span><span>+1.40€</span></li>
+            <li class="flex justify-between"><span>Oignons doux</span><span>+1.20€</span></li>
+            <li class="flex justify-between"><span>Citronnelle</span><span>+1.20€</span></li>
+            <li class="flex justify-between"><span>Brocolis</span><span>+1.40€</span></li>
+            <li class="flex justify-between"><span>Basilic thaï</span><span>+1.20€</span></li>
+            <li class="flex justify-between"><span>Mini maïs</span><span>+1.40€</span></li>
+            <li class="flex justify-between"><span>Ananas</span><span>+1.40€</span></li>
+            <li class="flex justify-between"><span>Champignon noir</span><span>+1.50€</span></li>
+            <li class="flex justify-between"><span>Champignon de Paris</span><span>+1.50€</span></li>
+            <li class="flex justify-between"><span>Shitaké</span><span>+1.50€</span></li>
+            <li class="flex justify-between"><span>Bambou</span><span>+1.40€</span></li>
+            <li class="flex justify-between"><span>Noix de cajou</span><span>+1.20€</span></li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- Desserts & Boissons -->
+    <section class="py-12 bg-gradient-to-b from-gray-100 via-white to-gray-50 fade-in-section">
+      <div class="max-w-5xl mx-auto px-4">
+        <h2 class="sticky top-16 z-30 mx-auto inline-block text-3xl font-extrabold text-primary text-center px-4 py-2 mb-4">Desserts</h2>
+        <ul class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+          <li class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition transform hover:scale-105 flex justify-between">
+            <span>Coupelle mangue</span><span>5.00€</span>
+          </li>
+          <li class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition transform hover:scale-105 flex justify-between">
+            <span>Coupelle ananas</span><span>5.00€</span>
+          </li>
+          <li class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition transform hover:scale-105 flex justify-between">
+            <span>Glace</span><span>4.90€</span>
+          </li>
+          <li class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition transform hover:scale-105 flex justify-between">
+            <span>Mochi glace x2</span><span>5.00€</span>
+          </li>
+        </ul>
+        <h2 class="sticky top-16 z-30 mx-auto inline-block bg-white/50 backdrop-blur-sm text-3xl font-extrabold text-primary text-center px-4 py-2 mb-4 mt-12 rounded-b-3xl">Bubble Tea (6.00€)</h2>
+        <div class="grid md:grid-cols-2 gap-6">
+          <div>
+            <h3 class="font-semibold mb-2">Boba</h3>
+            <ul class="list-disc list-inside space-y-1">
+              <li>Tropical</li>
+              <li>Pasteque</li>
+              <li>Pomme verte</li>
+              <li>Fraise</li>
+              <li>Mangue</li>
+              <li>Passion</li>
+              <li>Litchi</li>
+              <li>Peche</li>
+            </ul>
+          </div>
+          <div>
+            <h3 class="font-semibold mb-2">Sirops</h3>
+            <ul class="list-disc list-inside space-y-1">
+              <li>Pasteque</li>
+              <li>Pomme verte</li>
+              <li>Fraise</li>
+              <li>Mangue</li>
+              <li>Passion</li>
+              <li>Peche</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-[#704B24] text-white py-6">
+    <div class="max-w-5xl mx-auto text-center">
+      <p>© 2025 Thaï Garden — Mauguio</p>
+      <p>GR François Mitterrand, 34130 Mauguio • <a href="tel:+33987117057" class="text-accent hover:underline">+33 9 87 11 70 57</a></p>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+  <script src="js/responsive.js"></script>
+  <a href="commande.html" class="fixed bottom-6 right-6 z-50 bg-accent text-white p-4 rounded-full shadow-lg hover:shadow-xl transition">
+    Commander
+  </a>
+</body>
+</html>
+
+--- suivi.html ---
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Thaï Garden – Suivi de commande</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind CDN + couleurs -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#704B24',
+            accent:  '#ED8B00'
+          },
+          fontFamily: {
+            sans: ['Noto Sans', 'sans-serif'],
+            serif: ['Playfair Display', 'serif']
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    body { font-family: 'Noto Sans', sans-serif; }
+    h1, h2 { font-family: 'Playfair Display', serif; }
+  </style>
+</head>
+<body class="flex flex-col min-h-screen bg-gradient-to-b from-gray-50 to-white text-gray-800">
+
+  <!-- Header minimal -->
+  <header class="fixed top-0 w-full bg-white/70 backdrop-blur-sm shadow-md z-50">
+    <nav class="max-w-5xl mx-auto flex items-center justify-between py-4 px-6">
+      <a href="index.html" class="text-2xl font-bold text-primary">Thaï Garden</a>
+      <a href="index.html" class="text-accent font-semibold hover:underline">Retour accueil</a>
+    </nav>
+  </header>
+
+  <!-- Contenu principal -->
+  <main class="flex-1 pt-24 pb-12 max-w-3xl mx-auto px-4 text-center">
+    <h1 class="text-4xl font-extrabold text-primary mb-10">Suivi de votre commande</h1>
+
+    <div id="demand-status-message" class="bg-white/70 backdrop-blur-sm p-8 rounded-lg shadow-md space-y-4 mb-8 hidden">
+      <p class="text-lg font-semibold" id="demand-message-text"></p>
+      <button id="btn-new-demand-from-suivi" class="px-6 py-3 bg-accent text-white font-bold rounded-lg shadow-md hover:shadow-lg transition hidden">Faire une nouvelle demande</button>
+    </div>
+
+    <div id="order-details" class="bg-white/70 backdrop-blur-sm p-8 rounded-lg shadow-md space-y-4 hidden">
+      <p class="text-lg"><strong>Numéro de commande :</strong> <span id="order-id"></span></p>
+      <p class="text-lg"><strong>Statut actuel :</strong> <span id="order-status" class="font-semibold"></span></p>
+      <p class="text-lg"><strong>Créneau de livraison :</strong> <span id="delivery-slot"></span></p>
+      <div id="order-items" class="text-left mt-4">
+        <h3 class="font-semibold text-xl mb-2">Articles :</h3>
+        <ul id="items-list" class="list-disc list-inside"></ul>
+      </div>
+      <p class="text-xl font-bold mt-4">Total : <span id="order-total"></span>€</p>
+    </div>
+
+    </main>
+
+  <script>
+    function loadDemandes() {
+      return JSON.parse(localStorage.getItem('demandes') || '[]');
+    }
+
+    function saveDemandes(data) {
+      localStorage.setItem('demandes', JSON.stringify(data));
+    }
+
+    function loadCommandes() {
+      return JSON.parse(localStorage.getItem('commandes') || '[]');
+    }
+
+    const demandStatusMessageDiv = document.getElementById('demand-status-message');
+    const demandMessageText = document.getElementById('demand-message-text');
+    const btnNewDemandFromSuivi = document.getElementById('btn-new-demand-from-suivi');
+    const orderDetailsDiv = document.getElementById('order-details');
+
+    btnNewDemandFromSuivi.addEventListener('click', () => {
+      localStorage.removeItem('currentDemandId');
+      localStorage.removeItem('currentOrderId');
+      window.location.href = 'commande.html';
+    });
+
+    let retryCount = 0;
+    const MAX_RETRIES = 15;
+    const RETRY_DELAY_MS = 250; // 250ms delay
+
+    function renderStatus() {
+      const currentDemandId = localStorage.getItem('currentDemandId');
+      console.log('currentDemandId:', currentDemandId);
+      const demandes = loadDemandes();
+      console.log('demandes:', demandes);
+      const currentDemand = demandes.find(d => d.id === currentDemandId);
+      console.log('currentDemand:', currentDemand);
+
+      if (!currentDemand && retryCount < MAX_RETRIES) {
+        // If demand not found and retries left, try again after a short delay
+        retryCount++;
+        setTimeout(renderStatus, RETRY_DELAY_MS);
+        return; // Exit this call, wait for retry
+      }
+
+      if (!currentDemand) {
+        // If still not found after max retries
+        demandStatusMessageDiv.classList.remove('hidden');
+        demandMessageText.textContent = 'Aucune demande en cours ou trouvée.';
+        btnNewDemandFromSuivi.classList.remove('hidden');
+        orderDetailsDiv.classList.add('hidden');
+        return;
+      }
+
+      // Reset retry count if demand is found
+      retryCount = 0;
+
+      if (currentDemand.statut === 'pending') {
+        demandStatusMessageDiv.classList.remove('hidden');
+        demandMessageText.innerHTML = '⌛ En attente de validation du restaurant.<br><span class="text-sm text-gray-600">Cela ne prendra pas plus de quelques minutes. En cas de problème, contactez le restaurant au <a href="tel:+33987117057" class="text-accent hover:underline">+33 9 87 11 70 57</a>.</span>';
+        btnNewDemandFromSuivi.classList.add('hidden');
+        orderDetailsDiv.classList.add('hidden');
+      } else if (currentDemand.statut === 'refused') {
+        demandStatusMessageDiv.classList.remove('hidden');
+        demandMessageText.innerHTML = `Votre demande a été refusée par le restaurant.<br><span class="text-sm text-gray-600">Le restaurant n'est malheureusement pas en mesure de prendre votre commande pour le moment. ${currentDemand.refusalReason ? `<br>Motif: ${currentDemand.refusalReason}` : ''}</span>`;
+        btnNewDemandFromSuivi.classList.remove('hidden');
+        orderDetailsDiv.classList.add('hidden');
+      } else if (currentDemand.statut === 'accepted') {
+        demandStatusMessageDiv.classList.add('hidden');
+        orderDetailsDiv.classList.remove('hidden');
+        renderOrderDetails(currentDemand.id);
+      }
+    }
+
+    let orderRetryCount = 0;
+    const ORDER_MAX_RETRIES = 15;
+    const ORDER_RETRY_DELAY_MS = 250; // Same as demand retries
+
+    function renderOrderDetails(demandId) {
+      const commandes = loadCommandes();
+      const order = commandes.find(cmd => cmd.demandeId === demandId);
+
+      if (!order && orderRetryCount < ORDER_MAX_RETRIES) {
+        // If order not found and retries left, try again after a short delay
+        orderRetryCount++;
+        setTimeout(() => renderOrderDetails(demandId), ORDER_RETRY_DELAY_MS);
+        return; // Exit this call, wait for retry
+      }
+
+      if (!order) {
+        // If still not found after max retries
+        orderDetailsDiv.innerHTML = '<p class="text-red-700 bg-red-100 p-4 rounded-lg font-bold">Erreur : Commande associée introuvable. Veuillez contacter le support.</p>';
+        return;
+      }
+
+      // Reset retry count if order is found
+      orderRetryCount = 0;
+
+      const statusConfig = {
+          submitted: { icon: '⏳', color: 'text-yellow-500', text: 'En attente' },
+          preparing: { icon: '<span class="text-accent">🍳</span>', color: 'text-yellow-500', text: 'En préparation' },
+          ready: { icon: '<span class="text-green-500">✅</span>', color: 'text-green-500', text: 'Prête' },
+          delivered: { icon: '<span class="text-gray-500">🚚</span>', color: 'text-gray-500', text: 'Livrée' }
+      };
+
+      document.getElementById('order-id').textContent = order.id.slice(4);
+      document.getElementById('delivery-slot').textContent = order.deliverySlot || "En attente de confirmation du créneau.";
+      document.getElementById('order-total').textContent = order.total.toFixed(2);
+
+      const config = statusConfig[order.status] || {};
+      const statusElement = document.getElementById('order-status');
+      statusElement.innerHTML = `${config.icon || ''} ${config.text || order.status}`;
+      statusElement.className = 'font-semibold'; // Reset classes
+      statusElement.classList.add(config.color || '');
+
+      const itemsList = document.getElementById('items-list');
+      itemsList.innerHTML = '';
+      if (order.items && order.items.length > 0) {
+        order.items.forEach(item => {
+          const li = document.createElement('li');
+          if (item.isWok && item.details) {
+              li.innerHTML = `
+                  ${item.name} (${item.quantity})
+                  <ul class="list-disc list-inside pl-4 text-sm">
+                      <li><strong>Base:</strong> ${item.details.base}</li>
+                      <li><strong>Pulpes:</strong> ${item.details.pulpes.join(', ') || 'Aucune'}</li>
+                      <li><strong>Favoris:</strong> ${item.details.favoris.join(', ') || 'Aucun'}</li>
+                      <li><strong>Sauce:</strong> ${item.details.sauce}</li>
+                      <li><strong>Toppings:</strong> ${item.details.toppings.join(', ') || 'Aucun'}</li>
+                  </ul>`;
+          } else {
+              li.textContent = `${item.name} (${item.quantity})`;
+          }
+          itemsList.appendChild(li);
+        });
+      } else {
+        itemsList.innerHTML = '<li>Aucun article détaillé.</li>';
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', renderStatus);
+    window.addEventListener('storage', (e) => {
+      if (e.key === 'demandes' || e.key === 'commandes') {
+        renderStatus();
+      }
+    });
+  </script>
+</body>
+</html>
