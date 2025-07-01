@@ -724,7 +724,7 @@ https://creativecommons.org/licenses/by-nc/4.0/legalcode
   <div id="cart-float" class="fixed bottom-6 right-6 z-50 hidden">
     <a href="#" class="relative block">
       <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-accent" viewBox="0 0 20 20" fill="currentColor">
-        <path d="M3 1a1 1 0 000 2h1.22l.305 1.222a.997.997 0 00.922.778h9.446a1 1 0 00.922-.778L16.78 3H17a1 1 0 000-2H3zM6.07 7l1.22 4.891a1 1 0 00.922.609h4.576a1 1 0 00.922-.609L14.93 7H6.07z" />
+        <path d="M3 1a1 1 0 000 2h1.22l.305 1.222a.997 0 00.922.778h9.446a1 1 0 00.922-.778L16.78 3H17a1 1 0 000-2H3zM6.07 7l1.22 4.891a1 1 0 00.922.609h4.576a1 1 0 00.922-.609L14.93 7H6.07z" />
       </svg>
       <span id="cart-count" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">0</span>
     </a>
