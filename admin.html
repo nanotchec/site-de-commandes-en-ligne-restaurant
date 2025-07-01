@@ -77,35 +77,37 @@
     </nav>
   </header>
 
-  <main class="pt-32 pb-12 max-w-5xl mx-auto px-4">
+  <main class="pt-32 pb-12 max-w-5xl mx-auto">
 
-    <div id="view-demandes">
+    <div id="view-demandes" class="px-4">
         <!-- Demandes en attente -->
         <h1 class="text-4xl font-extrabold text-primary text-center mb-10">Demandes en attente</h1>
         <div id="pending-container" class="space-y-4"></div>
     </div>
 
     <div id="view-commandes" class="hidden">
-        <h1 class="text-4xl font-extrabold text-primary text-center mb-10">Commandes</h1>
-        <table class="w-full text-left border-collapse">
-            <thead>
-              <tr class="border-b">
-                <th class="p-4">Client</th>
-                <th class="p-4">Adresse</th>
-                <th class="p-4">Créneau</th>
-                <th class="p-4">Contenu</th>
-                <th class="p-4">Total</th>
-                <th class="p-4">Statut</th>
-                <th class="p-4">Action</th>
-              </tr>
-            </thead>
-            <tbody id="commandes-body">
-              <!-- Les lignes de commande seront injectées ici par le JS -->
-            </tbody>
-        </table>
+        <h1 class="text-4xl font-extrabold text-primary text-center mb-10 px-4">Commandes</h1>
+        <div class="overflow-x-auto px-0 md:px-4">
+          <table class="w-full text-left border-collapse">
+              <thead>
+                <tr class="border-b">
+                  <th class="p-4">Client</th>
+                  <th class="p-4">Adresse</th>
+                  <th class="p-4">Créneau</th>
+                  <th class="p-4">Contenu</th>
+                  <th class="p-4">Total</th>
+                  <th class="p-4">Statut</th>
+                  <th class="p-4">Action</th>
+                </tr>
+              </thead>
+              <tbody id="commandes-body">
+                <!-- Les lignes de commande seront injectées ici par le JS -->
+              </tbody>
+          </table>
+        </div>
     </div>
 
-    <div id="view-historique" class="hidden">
+    <div id="view-historique" class="px-4 hidden">
         <h1 class="text-4xl font-extrabold text-primary text-center mb-10">Historique des demandes</h1>
         <div id="history-container" class="space-y-4"></div>
     </div>

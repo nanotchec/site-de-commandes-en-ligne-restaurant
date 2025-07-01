@@ -58,6 +58,39 @@
       scrollbar-width: thin; /* "thin" ou "auto" */
       scrollbar-color: #888 #f1f1f1; /* couleur du pouce et couleur de la piste */
     }
+
+    /* Product Modal Responsive Styles */
+    #product-modal > div {
+      /* Default for desktop */
+      margin: auto;
+      max-width: 48rem; /* Adjust as needed */
+      max-height: 90vh;
+      overflow: hidden;
+    }
+
+    @media (max-width: 767px) { /* Mobile styles */
+      #product-modal > div {
+        width: calc(100% - 2rem); /* 1rem margin on each side */
+        height: calc(100% - 2rem); /* 1rem margin on top/bottom */
+        margin: 1rem; /* Small offset from edges */
+        border-radius: 0.75rem; /* Rounded corners */
+        flex-direction: column; /* Stack image and content vertically */
+      }
+      #product-modal-image {
+        width: 100%;
+        height: 50%; /* Adjust image height for mobile */
+        object-fit: cover;
+      }
+      #product-modal-add-to-cart {
+        position: sticky;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        padding: 1rem;
+        background-color: #ED8B00; /* Ensure button color is consistent */
+        z-index: 100;
+      }
+    }
   </style>
 </head>
 <body class="flex flex-col min-h-screen bg-gradient-to-b from-gray-50 to-white text-gray-800">
@@ -307,6 +340,74 @@
     const restaurantClosedMessageCart = document.getElementById('restaurant-closed-message-cart');
     const btnConfirmOrder = document.querySelector('#coords-modal button[type="submit"]');
 
+    // Descriptions for menu items
+    const itemDescriptions = {
+      "NEMS POULET X4": "Délicieux nems croustillants au poulet, parfaits pour une entrée savoureuse.",
+      "NEMS CREVETTES X4": "Nems croustillants aux crevettes, une entrée légère et parfumée.",
+      "NEMS LÉGUMES X4": "Nems végétariens aux légumes frais, une option saine et gourmande.",
+      "CREVETTES TEMPURA X3": "Crevettes enrobées d'une pâte légère et frites à la perfection.",
+      "BEIGNET DE CREVETTE X3": "Beignets de crevettes moelleux et savoureux.",
+      "BROCHETTES POULET SATAY X2": "Brochettes de poulet marinées à la sauce satay, grillées et parfumées.",
+      "BROCHETTES POULET YAKITORI X2": "Brochettes de poulet laquées à la sauce yakitori, tendres et sucrées-salées.",
+      "BROCHETTE BŒUF FROMAGE X2": "Brochettes de bœuf et fromage, une combinaison originale et fondante.",
+      "PINCE DE CRABE X3": "Délicieuses pinces de crabe, idéales pour les amateurs de fruits de mer.",
+      "ROULEAUX DE PRINTEMPS* X2": "Rouleaux frais et légers, garnis de légumes croquants et de vermicelles.",
+      "RIZ NATURE": "Riz blanc parfumé, accompagnement idéal pour tous nos plats.",
+      "PAD THAÏ": "Pâtes de riz - oignons - chou - carotte - œuf - soja - cacahuètes - citron - coriandre. 1 protéine au choix.",
+      "KHAO PAD": "Riz frit - oignons - chou - carotte - œuf - soja - cacahuètes - citron - coriandre. 1 protéine au choix.",
+      "BÒ BÚN": "Vermicelle de riz - nems - salade - carotte - concombre - soja - menthe - coriandre - cacahuètes. 1 protéine au choix.",
+      "SOUPE TOM YUM": "Soupe thaïlandaise épicée à base de galanga, citronnelle, lait de coco et crevettes.",
+      "POULET AU CURRY": "Poulet cuisiné avec des légumes et lait de coco. Accompagné de riz parfumé.",
+      "COUPELLE MANGUE": "Délicieuse coupelle de mangue fraîche, un dessert exotique et rafraîchissant.",
+      "COUPELLE ANANAS": "Coupelle d'ananas frais, sucré et juteux.",
+      "GLACE": "Sélection de glaces artisanales pour une touche de douceur.",
+      "MOCHI GLACE X2": "Deux mochis glacés, une spécialité japonaise douce et rafraîchissante.",
+      "SOFT": "Boissons rafraîchissantes sans alcool.",
+      "MAYA": "Boisson exotique à base de litchi et eau de coco.",
+      "CITRONNADE": "Citronnade maison, désaltérante et acidulée.",
+      "GINGER BEER": "Boisson au gingembre, pétillante et légèrement épicée.",
+      "EAU / EAU GAZEUSE": "Eau plate ou gazeuse, pour accompagner votre repas.",
+      "MOGU MOGU": "Boisson fruitée avec des morceaux de nata de coco.",
+      "BUBBLE TEA": "Thé aux perles de tapioca, disponible en plusieurs saveurs."
+    };
+
+    // Product Modal elements
+    const productModal = document.getElementById('product-modal');
+    const productModalClose = document.getElementById('product-modal-close');
+    const productModalImage = document.getElementById('product-modal-image');
+    const productModalName = document.getElementById('product-modal-name');
+    const productModalDescription = document.getElementById('product-modal-description');
+    const productModalPrice = document.getElementById('product-modal-price');
+    const productModalAddToCart = document.getElementById('product-modal-add-to-cart');
+
+    productModalClose.addEventListener('click', () => {
+      productModal.classList.add('hidden');
+    });
+
+    productModal.addEventListener('click', (e) => {
+      if (e.target === productModal) { // Clicked outside the modal content
+        productModal.classList.add('hidden');
+      }
+    });
+
+    productModalAddToCart.addEventListener('click', (e) => {
+      const itemId = e.target.dataset.id;
+      if (itemId) {
+        addToCart(+itemId);
+        productModal.classList.add('hidden');
+      }
+    });
+
+    function openProductModal(item) {
+      productModalImage.src = item.img;
+      productModalImage.alt = item.nom;
+      productModalName.textContent = item.nom;
+      productModalDescription.textContent = itemDescriptions[item.nom] || "Description non disponible.";
+      productModalPrice.textContent = `${item.prix.toFixed(2)}€`;
+      productModalAddToCart.dataset.id = item.id;
+      productModal.classList.remove('hidden');
+    }
+
     // Helpers for restaurant status
     function getRestaurantStatus() {
       const status = localStorage.getItem('restaurantOuvert');
@@ -478,7 +579,8 @@
       menuItems.forEach(item => {
         const li = document.createElement('li');
         // Vue mobile : liste, Vue desktop : grille
-        li.className = 'bg-white p-4 rounded-lg shadow-md flex md:flex-col items-center text-center relative md:p-4';
+        li.className = 'bg-white p-4 rounded-lg shadow-md flex md:flex-col items-center text-center relative md:p-4 cursor-pointer';
+        li.onclick = () => openProductModal(item);
         li.innerHTML = `
           <img src="${item.img}" alt="${item.nom}" class="w-24 h-24 md:w-32 md:h-32 rounded-lg object-cover mr-4 md:mr-0 md:mb-4" />
           <div class="flex-grow text-left md:text-center">
@@ -509,7 +611,10 @@
       });
 
       document.querySelectorAll('#order-menu button').forEach(btn => {
-        btn.addEventListener('click', e => addToCart(+e.target.dataset.id));
+        btn.addEventListener('click', e => {
+          e.stopPropagation(); // Prevent the click from bubbling up to the li (card)
+          addToCart(+e.target.dataset.id);
+        });
       });
 
       initWokComposer();
@@ -779,5 +884,23 @@
     }
   </script>
   <script src="js/responsive.js"></script>
+
+  <!-- Product Detail Modal -->
+  <div id="product-modal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-[90]">
+    <div class="bg-white rounded-lg shadow-xl p-6 max-w-lg w-full relative flex flex-col max-h-[90vh] overflow-hidden md:flex-row">
+      <button id="product-modal-close" class="absolute top-3 right-3 p-2 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-600 hover:text-gray-800 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-accent">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+      </button>
+      <img id="product-modal-image" src="" alt="Product Image" class="w-full h-48 object-cover rounded-lg mb-4 md:w-1/2 md:h-auto md:mb-0 md:mr-6">
+      <div class="flex-1 overflow-y-auto">
+        <h3 id="product-modal-name" class="text-2xl font-bold text-primary mb-2"></h3>
+        <p id="product-modal-description" class="text-gray-700 mb-4"></p>
+        <p id="product-modal-price" class="text-xl font-semibold text-accent mb-4"></p>
+        <button id="product-modal-add-to-cart" class="w-full px-6 py-3 bg-accent text-white font-bold rounded-lg shadow-md hover:shadow-lg transition">Ajouter au panier</button>
+      </div>
+    </div>
+  </div>
+
 </body>
+
 </html>
