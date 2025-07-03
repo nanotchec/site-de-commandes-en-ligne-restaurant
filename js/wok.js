@@ -155,14 +155,16 @@ document.getElementById('btn-add-wok').addEventListener('click', () => {
 
   const wokItem = {
     id: `wok-${Date.now()}`,
-    name: 'Wok Composé',
-    price: selectedWok.total,
-    category: 'Wok',
-    base: selectedWok.base.name,
-    pulpes: selectedWok.pulpes.map(p => p.name),
-    favoris: selectedWok.favoris.map(f => f.name),
-    sauce: selectedWok.sauce.name,
-    toppings: selectedWok.toppings.map(t => t.name),
+    nom: 'Wok Composé',
+    prix: selectedWok.total,
+    isWok: true,
+    details: {
+      base: selectedWok.base.name,
+      pulpes: selectedWok.pulpes.map(p => p.name),
+      favoris: selectedWok.favoris.map(f => f.name),
+      sauce: selectedWok.sauce.name,
+      toppings: selectedWok.toppings.map(t => t.name),
+    }
   };
 
   window.addWokToCart(wokItem);

@@ -270,7 +270,7 @@
   </div>
 
   <!-- Modale Panier -->
-  <section id="panier-section" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+  <section id="panier-section" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 md:p-0">
     <div class="bg-white rounded-lg shadow-xl p-8 max-w-2xl w-full flex flex-col max-h-[90vh]">
       <h2 class="text-3xl font-extrabold text-primary mb-6">Votre Panier</h2>
       <div id="restaurant-closed-message-cart" class="hidden bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4">
@@ -444,17 +444,28 @@
     // Scroll doux pour la nav des catégories
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function (e) {
-            e.preventDefault();
-            document.querySelector(this.getAttribute('href')).scrollIntoView({
-                behavior: 'smooth'
-            });
+            const href = this.getAttribute('href');
+            if (href && href.length > 1) { // S'assurer que le href n'est pas juste "#"
+                e.preventDefault();
+                const targetElement = document.querySelector(href);
+                if (targetElement) {
+                    targetElement.scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                }
+            }
         });
     });
 
     cartFloat.addEventListener('click', (e) => {
       e.preventDefault();
-      renderPanier();
       panierSection.classList.remove('hidden');
+      try {
+        renderPanier();
+      } catch (err) {
+        console.error("Erreur lors de l'affichage du panier:", err);
+        panierList.innerHTML = '<p class="text-red-500">Une erreur est survenue lors de l\'affichage de votre panier.</p>';
+      }
     });
 
     btnViewCartMobile.addEventListener('click', (e) => {
@@ -502,15 +513,19 @@
         statut: 'pending',
         items: cart.map(item => {
           const menuItem = item.isWok ? item.details : menuItems.find(m => String(m.id) === item.itemId);
-          return { 
-            id: item.itemId, 
-            name: menuItem.nom, 
-            quantity: item.qty, 
-            price: menuItem.prix, 
+          if (!menuItem) {
+            console.error(`Impossible de trouver l'article avec l'ID: ${item.itemId}`);
+            return null; // ou gérer l'erreur autrement
+          }
+          return {
+            id: item.itemId,
+            name: menuItem.nom,
+            quantity: item.qty,
+            price: menuItem.prix,
             isWok: item.isWok || false,
-            details: item.isWok ? menuItem.details : null
+            details: item.isWok ? menuItem : null
           };
-        }),
+        }).filter(Boolean),
         total: total
       };
 
@@ -685,8 +700,17 @@
       const cart = JSON.parse(localStorage.getItem('cart') || '[]');
       const count = cart.reduce((sum, it) => sum + it.qty, 0);
       const total = cart.reduce((sum, cartItem) => {
-          const menuItem = cartItem.isWok ? cartItem.details : menuItems.find(item => String(item.id) === cartItem.itemId);
-          return sum + (menuItem.prix * cartItem.qty);
+          let price = 0;
+          if (cartItem.isWok && cartItem.details) {
+              price = cartItem.details.prix || cartItem.details.price || 0;
+          } else if (cartItem.isWok) {
+              price = cartItem.prix || 0;
+          }
+          else {
+              const menuItem = menuItems.find(item => String(item.id) === cartItem.itemId);
+              price = menuItem ? menuItem.prix : 0;
+          }
+          return sum + (price * cartItem.qty);
       }, 0);
 
       const cartFloat = document.getElementById('cart-float'); // Bouton panier desktop
@@ -719,61 +743,80 @@
     }
 
     function renderPanier() {
-      const cart = JSON.parse(localStorage.getItem('cart') || '[]');
-      panierList.innerHTML = '';
-      let total = 0;
+        const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+        panierList.innerHTML = '';
+        let total = 0;
 
-      if (cart.length === 0) {
-        panierList.innerHTML = '<p>Votre panier est vide.</p>';
-        panierTotal.textContent = '0.00';
-        return;
-      }
-
-      cart.forEach(cartItem => {
-        const menuItem = cartItem.isWok ? cartItem.details : menuItems.find(item => String(item.id) === cartItem.itemId);
-        if (menuItem) {
-          const li = document.createElement('li');
-          li.className = 'flex items-center justify-between pr-4'; // Ajout de pr-4 ici
-          li.innerHTML = `
-            <div>
-              <p class="font-medium">${menuItem.nom}</p>
-              <p class="text-sm text-gray-600">${menuItem.prix.toFixed(2)}€</p>
-              ${cartItem.isWok ? `
-                <div class="text-xs text-gray-500 pl-4">
-                  <p><strong>Base:</strong> ${menuItem.details.base}</p>
-                  <p><strong>Pulpes:</strong> ${menuItem.details.pulpes.join(', ') || 'Aucune'}</p>
-                  <p><strong>Favoris:</strong> ${menuItem.details.favoris.join(', ') || 'Aucun'}</p>
-                  <p><strong>Sauce:</strong> ${menuItem.details.sauce}</p>
-                  <p><strong>Toppings:</strong> ${menuItem.details.toppings.join(', ') || 'Aucun'}</p>
-                </div>
-              ` : ''}
-            </div>
-            <div class="flex items-center gap-2">
-              <button data-id="${cartItem.itemId}" class="btn-qty-decrease px-2 py-1 bg-gray-200 rounded">-</button>
-              <span>${cartItem.qty}</span>
-              <button data-id="${cartItem.itemId}" class="btn-qty-increase px-2 py-1 bg-gray-200 rounded">+</button>
-              <button data-id="${cartItem.itemId}" class="btn-remove-item text-red-500 hover:text-red-700">Supprimer</button>
-            </div>
-          `;
-          panierList.appendChild(li);
-          total += menuItem.prix * cartItem.qty;
+        if (cart.length === 0) {
+            panierList.innerHTML = '<p>Votre panier est vide.</p>';
+            panierTotal.textContent = '0.00';
+            return;
         }
-      });
 
-      panierTotal.textContent = total.toFixed(2);
+        cart.forEach(cartItem => {
+            let menuItem;
 
-      // Add event listeners for quantity buttons
-      panierList.querySelectorAll('.btn-qty-increase').forEach(btn => {
-        btn.addEventListener('click', e => updateQuantity(String(e.target.dataset.id), 1));
-      });
+            if (cartItem.isWok) {
+                const source = cartItem.details ? cartItem.details : cartItem;
+                menuItem = {
+                    nom: source.nom || source.name,
+                    prix: source.prix || source.price,
+                    details: cartItem.details || source,
+                    isWok: true,
+                    itemId: cartItem.itemId
+                };
+            } else {
+                menuItem = menuItems.find(item => String(item.id) === cartItem.itemId);
+            }
 
-      panierList.querySelectorAll('.btn-qty-decrease').forEach(btn => {
-        btn.addEventListener('click', e => updateQuantity(String(e.target.dataset.id), -1));
-      });
+            if (menuItem && menuItem.prix !== undefined) {
+                const li = document.createElement('li');
+                li.className = 'flex items-center justify-between pr-4';
 
-      panierList.querySelectorAll('.btn-remove-item').forEach(btn => {
-        btn.addEventListener('click', e => removeFromCart(String(e.target.dataset.id)));
-      });
+                const wokDetailsHTML = menuItem.isWok ? `
+                    <div class="text-xs text-gray-500 pl-4">
+                        <p><strong>Base:</strong> ${menuItem.details.base}</p>
+                        <p><strong>Pulpes:</strong> ${menuItem.details.pulpes.join(', ') || 'Aucune'}</p>
+                        <p><strong>Favoris:</strong> ${menuItem.details.favoris.join(', ') || 'Aucun'}</p>
+                        <p><strong>Sauce:</strong> ${menuItem.details.sauce}</p>
+                        <p><strong>Toppings:</strong> ${menuItem.details.toppings.join(', ') || 'Aucun'}</p>
+                    </div>
+                ` : '';
+
+                li.innerHTML = `
+                    <div>
+                        <p class="font-medium">${menuItem.nom}</p>
+                        <p class="text-sm text-gray-600">${menuItem.prix.toFixed(2)}€</p>
+                        ${wokDetailsHTML}
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button data-id="${cartItem.itemId}" class="btn-qty-decrease px-2 py-1 bg-gray-200 rounded">-</button>
+                        <span>${cartItem.qty}</span>
+                        <button data-id="${cartItem.itemId}" class="btn-qty-increase px-2 py-1 bg-gray-200 rounded">+</button>
+                        <button data-id="${cartItem.itemId}" class="btn-remove-item text-red-500 hover:text-red-700">Supprimer</button>
+                    </div>
+                `;
+                panierList.appendChild(li);
+                total += menuItem.prix * cartItem.qty;
+            } else {
+                console.warn(`L'article avec l'ID ${cartItem.itemId} n'a pas été trouvé ou n'a pas de prix et sera ignoré.`);
+            }
+        });
+
+        panierTotal.textContent = total.toFixed(2);
+
+        // Add event listeners for quantity buttons
+        panierList.querySelectorAll('.btn-qty-increase').forEach(btn => {
+            btn.addEventListener('click', e => updateQuantity(String(e.target.dataset.id), 1));
+        });
+
+        panierList.querySelectorAll('.btn-qty-decrease').forEach(btn => {
+            btn.addEventListener('click', e => updateQuantity(String(e.target.dataset.id), -1));
+        });
+
+        panierList.querySelectorAll('.btn-remove-item').forEach(btn => {
+            btn.addEventListener('click', e => removeFromCart(String(e.target.dataset.id)));
+        });
     }
 
     function updateQuantity(id, change) {
@@ -874,7 +917,18 @@
 
     window.addWokToCart = function(wokItem) {
       const cart = JSON.parse(localStorage.getItem('cart') || '[]');
-      cart.push({ itemId: `wok-${Date.now()}`, qty: 1, isWok: true, details: wokItem });
+      // On cherche si un wok identique existe déjà pour incrémenter la quantité
+      const existingWok = cart.find(item => 
+        item.isWok && JSON.stringify(item.details) === JSON.stringify(wokItem.details)
+      );
+
+      if (existingWok) {
+        existingWok.qty++;
+      } else {
+        // Le wokItem est maintenant l'objet complet à ajouter au panier
+        cart.push({ ...wokItem, qty: 1, itemId: wokItem.id });
+      }
+      
       localStorage.setItem('cart', JSON.stringify(cart));
       updateCartBadge();
       updateItemBadges();
