@@ -10,6 +10,11 @@
   /* ... */
 }
 
+/* Responsive adjustments for wok composer */
+@media (max-width: 767px) {
+  /* JavaScript will handle display property */
+}
+
 /* Large devices (desktops, 992px and up) */
 @media (min-width: 992px) {
   /* ... */

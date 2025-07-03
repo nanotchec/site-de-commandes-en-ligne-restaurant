@@ -63,80 +63,58 @@
     </div>
     <!-- Secondary navigation -->
     <nav class="border-t border-gray-200 overflow-x-auto">
-        <div class="max-w-5xl mx-auto flex flex-nowrap sm:flex-wrap gap-4 px-6">
-             <button id="tab-demandes" class="flex items-center gap-2 py-3 px-4 border-b-2 border-accent font-semibold flex-shrink-0">
-                Demandes <span id="badge-demandes" class="ml-1 bg-red-500 text-white rounded-full px-2 text-sm hidden">0</span>
-            </button>
-            <button id="tab-commandes" class="flex items-center gap-2 py-3 px-4 text-gray-600 hover:text-primary flex-shrink-0">
-                Commandes <span id="badge-commandes" class="ml-1 bg-red-500 text-white rounded-full px-2 text-sm hidden">0</span>
-            </button>
-             <button id="tab-historique" class="flex items-center gap-2 py-3 px-4 text-gray-600 hover:text-primary flex-shrink-0">
-                Historique
-            </button>
-        </div>
+      <div class="max-w-5xl mx-auto flex flex-nowrap sm:flex-wrap gap-4 px-6">
+        <button id="tab-demandes" class="flex items-center gap-2 py-3 px-4 border-b-2 border-accent font-semibold flex-shrink-0">
+          Demandes <span id="badge-demandes" class="ml-1 bg-red-500 text-white rounded-full px-2 text-sm hidden">0</span>
+        </button>
+        <button id="tab-commandes" class="flex items-center gap-2 py-3 px-4 text-gray-600 hover:text-primary flex-shrink-0">
+          Commandes <span id="badge-commandes" class="ml-1 bg-red-500 text-white rounded-full px-2 text-sm hidden">0</span>
+        </button>
+        <button id="tab-historique" class="flex items-center gap-2 py-3 px-4 text-gray-600 hover:text-primary flex-shrink-0">
+          Historique
+        </button>
+      </div>
     </nav>
   </header>
 
   <main class="pt-44 sm:pt-32 pb-12 max-w-5xl mx-auto">
 
     <div id="view-demandes" class="px-4">
-        <!-- Demandes en attente -->
-        <h1 class="text-4xl font-extrabold text-primary text-center mb-10">Demandes en attente</h1>
-        <div id="pending-container" class="space-y-4"></div>
+      <!-- Demandes en attente -->
+      <h1 class="text-4xl font-extrabold text-primary text-center mb-10">Demandes en attente</h1>
+      <div id="pending-container" class="space-y-4"></div>
     </div>
 
     <div id="view-commandes" class="hidden">
-        <h1 class="text-4xl font-extrabold text-primary text-center mb-10 px-4">Commandes</h1>
-        <!-- Liste mobile (cartes) -->
-        <div id="commandes-cards" class="space-y-4 md:hidden"></div>
-        <div class="overflow-x-auto px-0 md:px-4 hidden md:block">
-          <table class="w-full text-left border-collapse text-xs sm:text-sm">
-              <thead>
-                <tr class="border-b">
-                  <th class="p-4">Client</th>
-                  <th class="hidden md:table-cell p-4">Adresse</th>
-                  <th class="p-4">Créneau</th>
-                  <th class="p-4">Contenu</th>
-                  <th class="p-4">Total</th>
-                  <th class="p-4">Statut</th>
-                  <th class="p-4">Action</th>
-                </tr>
-              </thead>
-              <tbody id="commandes-body">
-                <!-- Les lignes de commande seront injectées ici par le JS -->
-              </tbody>
-          </table>
-        </div>
+      <h1 class="text-4xl font-extrabold text-primary text-center mb-10 px-4">Commandes</h1>
+      <!-- Liste mobile (cartes) -->
+      <div id="commandes-cards" class="space-y-4 md:hidden"></div>
+      <div class="overflow-x-auto px-0 md:px-4 hidden md:block">
+        <table class="w-full text-left border-collapse text-xs sm:text-sm">
+          <thead>
+            <tr class="border-b">
+              <th class="p-4">Client</th>
+              <th class="hidden md:table-cell p-4">Adresse</th>
+              <th class="p-4">Créneau</th>
+              <th class="p-4">Contenu</th>
+              <th class="p-4">Total</th>
+              <th class="p-4">Statut</th>
+              <th class="p-4">Action</th>
+            </tr>
+          </thead>
+          <tbody id="commandes-body">
+            <!-- Les lignes de commande seront injectées ici par le JS -->
+          </tbody>
+        </table>
+      </div>
     </div>
 
     <div id="view-historique" class="px-4 hidden">
-        <h1 class="text-4xl font-extrabold text-primary text-center mb-10">Historique des demandes</h1>
-        <div id="history-container" class="space-y-4"></div>
+      <h1 class="text-4xl font-extrabold text-primary text-center mb-10">Historique des demandes</h1>
+      <div id="history-container" class="space-y-4"></div>
     </div>
 
   </main>
-
-
-
-
-
-  <template id="request-template">
-    <div class="bg-white p-4 rounded-lg shadow-md flex flex-col">
-      <div>
-        <p class="text-lg font-semibold req-name"></p>
-        <p class="text-gray-600 req-mode"></p>
-        <p class="text-gray-600 req-phone"></p>
-        <p class="text-gray-600 req-adresse"></p>
-      </div>
-      <div class="request-details mt-4"></div>
-      <div class="flex gap-2 mt-4 self-end">
-        <button class="px-4 py-2 bg-red-500 text-white rounded btn-refuse">Refuser</button>
-        <button class="px-4 py-2 bg-green-500 text-white rounded btn-accept">Accepter</button>
-      </div>
-    </div>
-  </template>
-
-  
 
   <!-- Order Detail Drawer -->
   <div id="order-drawer" class="fixed inset-y-0 right-0 w-full md:w-96 bg-white shadow-lg transform translate-x-full transition-transform z-[60]" role="dialog" aria-modal="true">
@@ -154,7 +132,7 @@
   <div id="delivery-slot-modal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-[80]">
     <div class="bg-white p-8 rounded-lg shadow-xl max-w-sm w-full text-center">
       <h3 class="text-2xl font-semibold text-primary mb-6">Saisir le créneau de livraison</h3>
-      <input type="time" id="delivery-slot-input" class="border rounded px-3 py-2 text-lg w-full mb-6">
+      <input type="time" id="delivery-slot-input" step="60" class="border rounded px-3 py-2 text-lg w-full mb-6">
       <div class="flex justify-center gap-4">
         <button id="btn-confirm-slot" class="px-6 py-3 bg-accent text-white font-bold rounded-lg shadow-md hover:shadow-lg transition">Confirmer</button>
         <button id="btn-later-slot" class="px-6 py-3 bg-gray-300 text-gray-800 rounded-lg hover:bg-gray-400 transition">Plus tard</button>
@@ -166,9 +144,7 @@
   <div id="refusal-reason-modal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-[80]">
     <div class="bg-white p-8 rounded-lg shadow-xl max-w-md w-full">
       <h3 class="text-2xl font-semibold text-primary mb-6 text-center">Motif de refus</h3>
-      <div id="refusal-reasons-list" class="space-y-3 mb-6">
-        <!-- Reasons will be injected here -->
-      </div>
+      <div id="refusal-reasons-list" class="space-y-3 mb-6"></div>
       <textarea id="other-reason-input" class="hidden w-full border rounded px-3 py-2 mb-6" rows="3" placeholder="Précisez le motif..."></textarea>
       <div class="flex justify-center gap-4">
         <button id="btn-confirm-refusal" class="px-6 py-3 bg-red-500 text-white font-bold rounded-lg shadow-md hover:shadow-lg transition">Confirmer le refus</button>
@@ -177,111 +153,240 @@
     </div>
   </div>
 
-</body>
+  <!-- Request Template -->
+  <template id="request-template">
+    <div class="bg-white p-4 rounded-lg shadow-md flex flex-col">
+      <div>
+        <p class="text-lg font-semibold req-name"></p>
+        <p class="text-gray-600 req-phone"></p>
+        <p class="text-gray-600 req-adresse"></p>
+      </div>
+      <div class="request-details mt-4"></div>
+      <div class="flex gap-2 mt-4 self-end">
+        <button class="px-4 py-2 bg-red-500 text-white rounded btn-refuse">Refuser</button>
+        <button class="px-4 py-2 bg-green-500 text-white rounded btn-accept">Accepter</button>
+      </div>
+    </div>
+  </template>
 
-  <script>
-    /* === Simu base locale : tableau localStorage 'demandes' === */
-    function loadDemandes() {
-      return JSON.parse(localStorage.getItem('demandes') || '[]');
-    }
-    function saveDemandes(data) {
-      localStorage.setItem('demandes', JSON.stringify(data));
-    }
+  <script type="module">
+    import { supabase } from './js/supabase-client.js';
 
-    function loadCommandes() {
-        return JSON.parse(localStorage.getItem('commandes') || '[]');
-    }
-
-    function saveCommandes(data) {
-        localStorage.setItem('commandes', JSON.stringify(data));
-    }
-
-    const refusalReasons = [
+    // --- Constantes et éléments DOM ---
+    const refusalReasons       = [
       "Restaurant complet pour ce créneau.",
       "Zone de livraison non desservie.",
       "Problème technique, veuillez réessayer plus tard.",
       "Informations incomplètes ou incorrectes.",
       "Autre (préciser)"
     ];
-
-    const commandesBody = document.getElementById('commandes-body');
-
-    const pendingEl   = document.getElementById('pending-container');
-    const historyEl   = document.getElementById('history-container');
-    const tpl         = document.getElementById('request-template');
-    let currentId     = null; // id de la demande en cours
-
-    const tabDemandes = document.getElementById('tab-demandes');
-    const tabCommandes = document.getElementById('tab-commandes');
-    const tabHistorique = document.getElementById('tab-historique');
-    const viewDemandes = document.getElementById('view-demandes');
-    const viewCommandes = document.getElementById('view-commandes');
-    const viewHistorique = document.getElementById('view-historique');
-
-    const badgeDemandes = document.getElementById('badge-demandes');
-    const badgeCommandes = document.getElementById('badge-commandes');
-
-    const drawer = document.getElementById('order-drawer');
-    const drawerTitle = document.getElementById('drawer-title');
-    const drawerContent = document.getElementById('drawer-content');
-    const drawerClose = document.getElementById('drawer-close');
-    const toast = document.getElementById('toast');
-    const deliverySlotModal = document.getElementById('delivery-slot-modal');
-    const deliverySlotInput = document.getElementById('delivery-slot-input');
-    const btnConfirmSlot = document.getElementById('btn-confirm-slot');
-    const btnLaterSlot = document.getElementById('btn-later-slot');
-    const refusalReasonModal = document.getElementById('refusal-reason-modal');
-    const refusalReasonsList = document.getElementById('refusal-reasons-list');
-    const otherReasonInput = document.getElementById('other-reason-input');
-    const btnConfirmRefusal = document.getElementById('btn-confirm-refusal');
-    const btnCancelRefusal = document.getElementById('btn-cancel-refusal');
-
-    // Restaurant status toggle
-    const toggleRestaurantStatus = document.getElementById('toggle-restaurant-status');
+    const commandesBody        = document.getElementById('commandes-body');
+    const commandesCards       = document.getElementById('commandes-cards');
+    const pendingEl            = document.getElementById('pending-container');
+    const historyEl            = document.getElementById('history-container');
+    const tpl                  = document.getElementById('request-template');
+    const toggleRestaurant     = document.getElementById('toggle-restaurant-status');
     const restaurantStatusText = document.getElementById('restaurant-status-text');
+    const drawer               = document.getElementById('order-drawer');
+    const drawerTitle          = document.getElementById('drawer-title');
+    const drawerContent        = document.getElementById('drawer-content');
+    const drawerClose          = document.getElementById('drawer-close');
+    const toast                = document.getElementById('toast');
+    const deliverySlotModal    = document.getElementById('delivery-slot-modal');
+    const deliverySlotInput    = document.getElementById('delivery-slot-input');
+    const btnConfirmSlot       = document.getElementById('btn-confirm-slot');
+    const btnLaterSlot         = document.getElementById('btn-later-slot');
+    const refusalReasonModal   = document.getElementById('refusal-reason-modal');
+    const refusalReasonsList   = document.getElementById('refusal-reasons-list');
+    const otherReasonInput     = document.getElementById('other-reason-input');
+    const btnConfirmRefusal    = document.getElementById('btn-confirm-refusal');
+    const btnCancelRefusal     = document.getElementById('btn-cancel-refusal');
 
-    function getRestaurantStatus() {
-      const status = localStorage.getItem('restaurantOuvert');
-      return status === null ? true : JSON.parse(status); // Default to true if not set
+    let currentDemandeToAccept = null;
+    let currentDemandeToRefuse = null;
+
+    // Statuts disponibles (pour commandes et mises à jour)
+    const statusConfig = {
+      submitted:  { icon: '⏳', color: 'bg-accent/10', text: 'En attente' },
+      accepted:   { icon: '✅', color: 'bg-green-100', text: 'Acceptée' },
+      preparing:  { icon: '🍳', color: 'bg-yellow-100', text: 'En préparation' },
+      ready:      { icon: '✅', color: 'bg-green-100', text: 'Prête' },
+      delivered:  { icon: '🚚', color: 'bg-gray-100',  text: 'Livrée' }
+    };
+
+    // --- Gestion du statut du restaurant ---
+    async function getRestaurantStatus() {
+      const { data, error } = await supabase.from('restaurant_status').select('is_open').single();
+      if (error) { console.error(error); return true; }
+      return data.is_open;
     }
-
-    function setRestaurantStatus(isOpen) {
-      localStorage.setItem('restaurantOuvert', JSON.stringify(isOpen));
+    async function setRestaurantStatus(isOpen) {
+      const { error } = await supabase.from('restaurant_status').update({ is_open: isOpen }).eq('id', 1);
+      if (error) { console.error(error); return; }
       updateRestaurantStatusDisplay(isOpen);
     }
-
     function updateRestaurantStatusDisplay(isOpen) {
-      toggleRestaurantStatus.checked = isOpen;
+      toggleRestaurant.checked = isOpen;
       restaurantStatusText.textContent = isOpen ? 'Ouvert' : 'Fermé';
       restaurantStatusText.classList.toggle('text-green-600', isOpen);
       restaurantStatusText.classList.toggle('text-red-600', !isOpen);
     }
-
-    // Initialize status on load
-    updateRestaurantStatusDisplay(getRestaurantStatus());
-
-    toggleRestaurantStatus.addEventListener('change', (event) => {
-      setRestaurantStatus(event.target.checked);
-      showToast(`Restaurant ${event.target.checked ? 'ouvert' : 'fermé'}.`);
+    getRestaurantStatus().then(updateRestaurantStatusDisplay);
+    toggleRestaurant.addEventListener('change', e => {
+      setRestaurantStatus(e.target.checked);
+      showToast(`Restaurant ${e.target.checked ? 'ouvert' : 'fermé'}.`);
     });
 
+    // --- Drawer détails commande ---
     drawerClose.onclick = () => closeDrawer();
+    function openDetailsDrawer(orderId) {
+      supabase.from('orders').select('*').eq('id', orderId).single()
+        .then(({ data: order, error }) => {
+          if (error || !order) { console.error(error); return; }
+          // Si déjà ouvert sur la même commande, on ferme
+          if (!drawer.classList.contains('translate-x-full') &&
+              drawerTitle.textContent.includes(order.id.slice(4))) {
+            closeDrawer();
+            return;
+          }
+          drawerTitle.textContent = `Commande #${order.id.slice(4)}`;
+          const itemsHtml = order.items.map(item => {
+            if (item.isWok && item.details) {
+              return `
+                <li class="mb-2">
+                  <strong>${item.name} (${item.quantity})</strong>
+                  <ul class="list-disc list-inside pl-4 text-sm">
+                    <li><strong>Base:</strong> ${item.details.base}</li>
+                    <li><strong>Pulpes:</strong> ${item.details.pulpes.join(', ') || 'Aucune'}</li>
+                    <li><strong>Favoris:</strong> ${item.details.favoris.join(', ') || 'Aucun'}</li>
+                    <li><strong>Sauce:</strong> ${item.details.sauce}</li>
+                    <li><strong>Toppings:</strong> ${item.details.toppings.join(', ') || 'Aucun'}</li>
+                  </ul>
+                </li>`;
+            } else {
+              return `<li>- ${item.name} (${item.quantity})</li>`;
+            }
+          }).join('');
+          drawerContent.innerHTML = `
+            <p><strong>Client:</strong> ${order.customer_name}</p>
+            <p><strong>Adresse:</strong> ${order.customer_address}</p>
+            <p><strong>Téléphone:</strong> ${order.customer_phone}</p>
+            <p><strong>Créneau:</strong> ${order.delivery_slot || 'Non défini'}</p>
+            <p><strong>Total:</strong> ${order.total.toFixed(2)}€</p>
+            <h4 class="font-semibold mt-4">Articles:</h4>
+            <ul>${itemsHtml}</ul>
+          `;
+          drawer.classList.remove('translate-x-full');
+        });
+    }
+    function closeDrawer() {
+      drawer.classList.add('translate-x-full');
+      showToast(`Détails de la commande fermés.`);
+    }
+    document.addEventListener('click', event => {
+      const inside = drawer.contains(event.target);
+      const isButton = event.target.classList.contains('text-accent');
+      if (!inside && !isButton && !drawer.classList.contains('translate-x-full')) {
+        closeDrawer();
+      }
+    });
 
-    let currentDemandeToAccept = null; // Store the demand object temporarily
-    let currentDemandeToRefuse = null; // Store the demand object temporarily
+    // --- Toast ---
+    function showToast(msg) {
+      toast.textContent = msg;
+      toast.classList.remove('hidden');
+      toast.offsetWidth; // reflow
+      toast.classList.add('opacity-100');
+      setTimeout(() => {
+        toast.classList.remove('opacity-100');
+        toast.addEventListener('transitionend', () => toast.classList.add('hidden'), { once: true });
+      }, 4000);
+    }
 
-    btnConfirmSlot.addEventListener('click', () => {
-      const slot = deliverySlotInput.value;
+    // --- Outils de rendu et filtres ---
+    function setActiveTab(tab) {
+      const tabs  = [ 'tab-demandes', 'tab-commandes', 'tab-historique' ].map(id => document.getElementById(id));
+      const views = [ 'view-demandes', 'view-commandes', 'view-historique' ].map(id => document.getElementById(id));
+      tabs.forEach((t,i) => {
+        if (t === tab) {
+          t.classList.add('border-b-2','border-accent','font-semibold');
+          t.classList.remove('text-gray-600','hover:text-primary');
+          views[i].classList.remove('hidden');
+        } else {
+          t.classList.remove('border-b-2','border-accent','font-semibold');
+          t.classList.add('text-gray-600','hover:text-primary');
+          views[i].classList.add('hidden');
+        }
+      });
+    }
+    document.getElementById('tab-demandes').addEventListener('click', () => setActiveTab(document.getElementById('tab-demandes')));
+    document.getElementById('tab-commandes').addEventListener('click', () => setActiveTab(document.getElementById('tab-commandes')));
+    document.getElementById('tab-historique').addEventListener('click', () => setActiveTab(document.getElementById('tab-historique')));
+
+    async function render() {
+      const { data: orders, error } = await supabase.from('orders')
+        .select('*')
+        .order('created_at', { ascending: false });
+      if (error) { console.error(error); return; }
+      const demandes   = orders.filter(o => o.status === 'submitted' || o.status === 'pending');
+      const commandes  = orders.filter(o => ['accepted','preparing','ready','delivered'].includes(o.status));
+      const historique = orders.filter(o => ['accepted','refused','delivered','preparing','ready'].includes(o.status));
+      renderDemandes(demandes);
+      renderCommandes(commandes);
+      renderHistorique(historique);
+      updateBadges(demandes, commandes);
+    }
+
+    function updateBadges(demandes, commandes) {
+      const bd = document.getElementById('badge-demandes');
+      const bc = document.getElementById('badge-commandes');
+      bd.textContent = demandes.length;
+      bd.classList.toggle('hidden', demandes.length === 0);
+      const activeCmd = commandes.filter(o => o.status !== 'delivered').length;
+      bc.textContent = activeCmd;
+      bc.classList.toggle('hidden', activeCmd === 0);
+    }
+
+    // --- Mises à jour statuts ---
+    async function updateOrderStatus(orderId, newStatus) {
+      const { error } = await supabase.from('orders').update({ status: newStatus }).eq('id', orderId);
+      if (error) { console.error(error); showToast(`Erreur lors de la mise à jour du statut.`); return; }
+      render();
+      showToast(`Commande marquée comme ${statusConfig[newStatus].text}.`);
+    }
+
+    async function updateDeliverySlot(orderId, newSlot) {
+      const { error } = await supabase.from('orders').update({ delivery_slot: newSlot }).eq('id', orderId);
+      if (error) { console.error(error); showToast(`Erreur lors de la mise à jour du créneau de livraison.`); return; }
+      render();
+      showToast(`Créneau de livraison mis à jour pour la commande #${orderId.slice(4)}.`);
+    }
+
+    // Mise à jour pour refus/acceptation de demande
+    async function updateStatut(orderId, newStatus, reason = null) {
+      const updates = { status: newStatus };
+      if (newStatus === 'refused' && reason) updates.refusal_reason = reason;
+      const { error } = await supabase.from('orders').update(updates).eq('id', orderId);
+      if (error) { console.error(error); showToast(`Erreur lors de la mise à jour du statut.`); return; }
+      render();
+      showToast(`Demande ${newStatus === 'refused' ? 'refusée' : 'acceptée'}.`);
+    }
+
+    // --- Flux d'acceptation de demande ---
+    const btnConfirmSlotElem = document.getElementById('btn-confirm-slot');
+    const btnLaterSlotElem   = document.getElementById('btn-later-slot');
+
+    btnConfirmSlotElem.addEventListener('click', () => {
+      const slot = deliverySlotInput.value || null;
       if (currentDemandeToAccept) {
         createCommandFromDemand(currentDemandeToAccept, slot);
         deliverySlotModal.classList.add('hidden');
         currentDemandeToAccept = null;
       }
     });
-
-    btnLaterSlot.addEventListener('click', () => {
+    btnLaterSlotElem.addEventListener('click', () => {
       if (currentDemandeToAccept) {
-        createCommandFromDemand(currentDemandeToAccept, ''); // Empty slot
+        createCommandFromDemand(currentDemandeToAccept, null);
         deliverySlotModal.classList.add('hidden');
         currentDemandeToAccept = null;
       }
@@ -289,393 +394,232 @@
 
     btnConfirmRefusal.addEventListener('click', () => {
       let selectedReason = '';
-      const selectedRadio = refusalReasonsList.querySelector('input[name="refusal-reason"]:checked');
-      if (selectedRadio) {
-        selectedReason = selectedRadio.value;
-        if (selectedReason === 'Autre (préciser)') {
-          selectedReason = otherReasonInput.value.trim();
-        }
+      const sel = refusalReasonsList.querySelector('input[name="refusal-reason"]:checked');
+      if (sel) {
+        selectedReason = sel.value === 'Autre (préciser)' ? otherReasonInput.value.trim() : sel.value;
       }
-
       if (currentDemandeToRefuse && selectedReason) {
         updateStatut(currentDemandeToRefuse.id, 'refused', selectedReason);
         refusalReasonModal.classList.add('hidden');
-        currentDemandeToRefuse = null;
         otherReasonInput.classList.add('hidden');
         otherReasonInput.value = '';
+        currentDemandeToRefuse = null;
       } else {
-        showToast('Veuillez sélectionner un motif de refus ou préciser "Autre".');
+        showToast(`Veuillez sélectionner un motif de refus ou préciser "Autre".`);
       }
     });
-
     btnCancelRefusal.addEventListener('click', () => {
       refusalReasonModal.classList.add('hidden');
-      currentDemandeToRefuse = null;
       otherReasonInput.classList.add('hidden');
       otherReasonInput.value = '';
+      currentDemandeToRefuse = null;
     });
 
-    function promptForRefusalReason(demandeId) {
-      const demandes = loadDemandes();
-      currentDemandeToRefuse = demandes.find(d => d.id === demandeId);
-      if (!currentDemandeToRefuse) return;
-
-      refusalReasonsList.innerHTML = '';
-      refusalReasons.forEach((reason, index) => {
-        const div = document.createElement('div');
-        div.className = 'flex items-center';
-        const input = document.createElement('input');
-        input.type = 'radio';
-        input.name = 'refusal-reason';
-        input.id = `reason-${index}`;
-        input.value = reason;
-        input.className = 'mr-2';
-        input.addEventListener('change', () => {
-          if (reason === 'Autre (préciser)') {
-            otherReasonInput.classList.remove('hidden');
-            otherReasonInput.focus();
-          } else {
-            otherReasonInput.classList.add('hidden');
-            otherReasonInput.value = '';
-          }
+    function promptForRefusalReason(id) {
+      supabase.from('orders').select('*').eq('id', id).single()
+        .then(({ data, error }) => {
+          if (error) { console.error(error); return; }
+          currentDemandeToRefuse = data;
+          refusalReasonsList.innerHTML = '';
+          refusalReasons.forEach((r,idx) => {
+            const div = document.createElement('div');
+            div.className = 'flex items-center';
+            const input = document.createElement('input');
+            input.type = 'radio'; input.name = 'refusal-reason';
+            input.id = `reason-${idx}`; input.value = r; input.className = 'mr-2';
+            input.addEventListener('change', () => {
+              if (r === 'Autre (préciser)') otherReasonInput.classList.remove('hidden');
+              else { otherReasonInput.classList.add('hidden'); otherReasonInput.value = ''; }
+            });
+            const label = document.createElement('label');
+            label.htmlFor = `reason-${idx}`; label.textContent = r;
+            div.append(input, label);
+            refusalReasonsList.append(div);
+          });
+          refusalReasonModal.classList.remove('hidden');
         });
-
-        const label = document.createElement('label');
-        label.htmlFor = `reason-${index}`;
-        label.textContent = reason;
-
-        div.appendChild(input);
-        div.appendChild(label);
-        refusalReasonsList.appendChild(div);
-      });
-
-      refusalReasonModal.classList.remove('hidden');
     }
 
-    function createCommandFromDemand(demande, deliverySlot) {
-      const commandes = loadCommandes();
-      const newCommand = {
-        id: `cmd-${Date.now()}`,
-        demandeId: demande.id,
-        customer: { name: demande.nom, address: demande.adresse, phone: demande.tel },
-        deliverySlot: deliverySlot,
-        items: demande.items,
-        total: demande.total,
-        status: 'submitted'
-      };
-      commandes.push(newCommand);
-      saveCommandes(commandes);
-      showToast('Demande acceptée et commande créée.');
-      render();
-    }
-
-    function openDetailsDrawer(orderId) {
-        const commandes = loadCommandes();
-        const order = commandes.find(c => c.id === orderId);
-        if (!order) return;
-
-        if (!drawer.classList.contains('translate-x-full') && drawerTitle.textContent.includes(order.id.slice(4))) {
-            closeDrawer();
-            return;
-        }
-
-        drawerTitle.textContent = `Commande #${order.id.slice(4)}`;
-        
-        const itemsHtml = order.items.map(item => {
-            if (item.isWok && item.details) {
-                return `
-                    <li class="mb-2">
-                        <strong>${item.name} (${item.quantity})</strong>
-                        <ul class="list-disc list-inside pl-4 text-sm">
-                            <li><strong>Base:</strong> ${item.details.base}</li>
-                            <li><strong>Pulpes:</strong> ${item.details.pulpes.join(', ') || 'Aucune'}</li>
-                            <li><strong>Favoris:</strong> ${item.details.favoris.join(', ') || 'Aucun'}</li>
-                            <li><strong>Sauce:</strong> ${item.details.sauce}</li>
-                            <li><strong>Toppings:</strong> ${item.details.toppings.join(', ') || 'Aucun'}</li>
-                        </ul>
-                    </li>`;
-            } else {
-                return `<li>- ${item.name} (${item.quantity})</li>`;
-            }
-        }).join('');
-
-        let contentHtml = `
-            <p><strong>Client:</strong> ${order.customer.name}</p>
-            <p><strong>Adresse:</strong> ${order.customer.address}</p>
-            <p><strong>Téléphone:</strong> ${order.customer.phone}</p>
-            <p><strong>Créneau:</strong> ${order.deliverySlot || 'Non défini'}</p>
-            <p><strong>Total:</strong> ${order.total.toFixed(2)}€</p>
-            <h4 class="font-semibold mt-4">Articles:</h4>
-            <ul>${itemsHtml}</ul>
-        `;
-        drawerContent.innerHTML = contentHtml;
-        drawer.classList.remove('translate-x-full');
-    }
-
-    function closeDrawer() {
-      drawer.classList.add('translate-x-full');
-      showToast('Détails de la commande fermés.');
-    }
-
-    // Close drawer when clicking outside
-    document.addEventListener('click', (event) => {
-      const isClickInsideDrawer = drawer.contains(event.target);
-      const isDetailButton = event.target.classList.contains('text-accent'); // Assuming 'text-accent' is unique to detail buttons
-      if (!isClickInsideDrawer && !isDetailButton && !drawer.classList.contains('translate-x-full')) {
-        closeDrawer();
+    // --- Création de commande depuis une demande ---
+    async function createCommandFromDemand(demande, deliverySlot) {
+      const { error } = await supabase.from('orders')
+        .update({ status: 'accepted', delivery_slot: deliverySlot })
+        .eq('id', demande.id);
+      if (error) {
+        console.error(error);
+        showToast(`Erreur lors de l'acceptation de la demande.`);
+        return;
       }
-    });
-
-    function showToast(msg) {
-      toast.textContent = msg;
-      toast.classList.remove('hidden');
-      // Force reflow to ensure transition plays
-      toast.offsetWidth;
-      toast.classList.add('opacity-100');
-
-      setTimeout(() => {
-        toast.classList.remove('opacity-100');
-        // Wait for fade-out transition to complete before hiding
-        toast.addEventListener('transitionend', () => {
-          toast.classList.add('hidden');
-        }, { once: true });
-      }, 4000); // Display for 4 seconds
-    }
-
-    function setActiveTab(activeTab) {
-        const tabs = [tabDemandes, tabCommandes, tabHistorique];
-        const views = [viewDemandes, viewCommandes, viewHistorique];
-
-        tabs.forEach((tab, index) => {
-            const view = views[index];
-            if (tab === activeTab) {
-                view.classList.remove('hidden');
-                tab.classList.add('border-b-2', 'border-accent', 'font-semibold');
-                tab.classList.remove('text-gray-600', 'hover:text-primary');
-            } else {
-                view.classList.add('hidden');
-                tab.classList.remove('border-b-2', 'border-accent', 'font-semibold');
-                tab.classList.add('text-gray-600', 'hover:text-primary');
-            }
-        });
-    }
-
-    tabDemandes.addEventListener('click', () => setActiveTab(tabDemandes));
-    tabCommandes.addEventListener('click', () => setActiveTab(tabCommandes));
-    tabHistorique.addEventListener('click', () => setActiveTab(tabHistorique));
-
-    /* Rendu initial */
-    render();
-    setActiveTab(tabDemandes);
-
-    /* Re-render si localStorage change */
-    window.addEventListener('storage', () => {
+      showToast(`Demande acceptée et commande créée.`);
       render();
-    });
-
-    function render() {
-      const demandes = loadDemandes();
-      renderDemandes(demandes);
-
-      const commandes = loadCommandes();
-      renderCommandes(commandes);
-
-      updateBadges(demandes, commandes);
     }
 
-    function updateBadges(demandes, commandes) {
-        const badgeDemandes = document.getElementById('badge-demandes');
-        const badgeCommandes = document.getElementById('badge-commandes');
-
-        const pendingDemandes = demandes.filter(d => d.statut === 'pending').length;
-        badgeDemandes.textContent = pendingDemandes;
-        badgeDemandes.classList.toggle('hidden', pendingDemandes === 0);
-
-        const activeCommandes = commandes.filter(c => c.status !== 'delivered').length;
-        badgeCommandes.textContent = activeCommandes;
-        badgeCommandes.classList.toggle('hidden', activeCommandes === 0);
-    }
-
-    function updateOrderStatus(orderId, newStatus) {
-        const commandes = loadCommandes();
-        const order = commandes.find(o => o.id === orderId);
-        if (order) {
-            order.status = newStatus;
-            saveCommandes(commandes);
-            render();
-            showToast(`Commande marquée comme ${statusConfig[newStatus].text}.`);
-        }
-    }
-
-    function updateDeliverySlot(orderId, newSlot) {
-        const commandes = loadCommandes();
-        const order = commandes.find(o => o.id === orderId);
-        if (order) {
-            order.deliverySlot = newSlot;
-            saveCommandes(commandes);
-            render();
-            showToast(`Créneau de livraison mis à jour pour la commande #${order.id.slice(4)}.`);
-        }
-    }
-
+    // --- Rendu des listes ---
     function renderDemandes(data) {
       pendingEl.innerHTML = '';
-      historyEl.innerHTML = '';
-
       data.forEach(req => {
         const node = tpl.content.cloneNode(true);
-        node.querySelector('.req-name').textContent  = req.nom;
-        node.querySelector('.req-mode').textContent  = req.mode;
-        node.querySelector('.req-phone').textContent = req.tel;
-        node.querySelector('.req-adresse').textContent = req.adresse;
-
-        // Display items and total for the demand
+        node.querySelector('.req-name').textContent    = req.customer_name;
+        node.querySelector('.req-phone').textContent   = req.customer_phone;
+        node.querySelector('.req-adresse').textContent = req.customer_address;
+        // Détails articles & total
+        const details = document.createElement('div');
         const itemsHtml = req.items.map(item => {
-            if (item.isWok && item.details) {
-                return `
-                    <li class="mb-1 text-sm">
-                        <strong>${item.name} (${item.quantity})</strong>
-                        <ul class="list-disc list-inside pl-4 text-xs">
-                            <li>Base: ${item.details.base}</li>
-                            <li>Pulpes: ${item.details.pulpes.join(', ') || 'Aucune'}</li>
-                            <li>Favoris: ${item.details.favoris.join(', ') || 'Aucun'}</li>
-                            <li>Sauce: ${item.details.sauce}</li>
-                            <li>Toppings: ${item.details.toppings.join(', ') || 'Aucun'}</li>
-                        </ul>
-                    </li>`;
-            } else {
-                return `<li class="text-sm">- ${item.name} (${item.quantity})</li>`;
-            }
-        }).join('');
-
-        const detailsDiv = document.createElement('div');
-        detailsDiv.innerHTML = `
-            <h4 class="font-semibold mt-2">Articles:</h4>
-            <ul class="list-none">${itemsHtml}</ul>
-            <p class="font-bold mt-2">Total: ${req.total.toFixed(2)}€</p>
-        `;
-        node.querySelector('.request-details').appendChild(detailsDiv);
-
-        if (req.statut === 'pending') {
-          node.querySelector('.btn-refuse').onclick  = () => { promptForRefusalReason(req.id); };
-          node.querySelector('.btn-accept').onclick  = () => { updateStatut(req.id, 'accepted'); };
-          pendingEl.appendChild(node);
-        } else {
-          // Transformation pour l’historique
-          node.querySelector('.btn-refuse').remove();
-          const btn = node.querySelector('.btn-accept');
-          btn.className =
-            'px-4 py-2 rounded text-white ' +
-            (req.statut === 'accepted' ? 'bg-green-600' : 'bg-red-600');
-          btn.textContent =
-            req.statut === 'accepted' ? 'Acceptée' : 'Refusée';
-          if (req.statut === 'refused' && req.refusalReason) {
-            const reasonP = document.createElement('p');
-            reasonP.className = 'text-sm text-red-500 mt-2';
-            reasonP.textContent = `Motif: ${req.refusalReason}`;
-            node.querySelector('.request-details').appendChild(reasonP);
+          if (item.isWok && item.details) {
+            return `
+              <li class="mb-1 text-sm">
+                <strong>${item.name} (${item.quantity})</strong>
+                <ul class="list-disc list-inside pl-4 text-xs">
+                  <li>Base: ${item.details.base}</li>
+                  <li>Pulpes: ${item.details.pulpes.join(', ') || 'Aucune'}</li>
+                  <li>Favoris: ${item.details.favoris.join(', ') || 'Aucun'}</li>
+                  <li>Sauce: ${item.details.sauce}</li>
+                  <li>Toppings: ${item.details.toppings.join(', ') || 'Aucun'}</li>
+                </ul>
+              </li>`;
+          } else {
+            return `<li class="text-sm">- ${item.name} (${item.quantity})</li>`;
           }
-          historyEl.appendChild(node);
+        }).join('');
+        details.innerHTML = `
+          <h4 class="font-semibold mt-2">Articles:</h4>
+          <ul class="list-none">${itemsHtml}</ul>
+          <p class="font-bold mt-2">Total: ${req.total.toFixed(2)}€</p>
+        `;
+        node.querySelector('.request-details').append(details);
+
+        node.querySelector('.btn-refuse').onclick = () => promptForRefusalReason(req.id);
+        node.querySelector('.btn-accept').onclick = () => {
+          currentDemandeToAccept = req;
+          deliverySlotModal.classList.remove('hidden');
+        };
+
+        pendingEl.appendChild(node);
+      });
+    }
+
+    function renderHistorique(data) {
+      historyEl.innerHTML = '';
+      data.forEach(req => {
+        const node = tpl.content.cloneNode(true);
+        node.querySelector('.req-name').textContent    = req.customer_name;
+        node.querySelector('.req-phone').textContent   = req.customer_phone;
+        node.querySelector('.req-adresse').textContent = req.customer_address;
+
+        const details = document.createElement('div');
+        const itemsHtml = req.items.map(item => {
+          if (item.isWok && item.details) {
+            return `
+              <li class="mb-1 text-sm">
+                <strong>${item.name} (${item.quantity})</strong>
+                <ul class="list-disc list-inside pl-4 text-xs">
+                  <li>Base: ${item.details.base}</li>
+                  <li>Pulpes: ${item.details.pulpes.join(', ') || 'Aucune'}</li>
+                  <li>Favoris: ${item.details.favoris.join(', ') || 'Aucun'}</li>
+                  <li>Sauce: ${item.details.sauce}</li>
+                  <li>Toppings: ${item.details.toppings.join(', ') || 'Aucun'}</li>
+                </ul>
+              </li>`;
+          } else {
+            return `<li class="text-sm">- ${item.name} (${item.quantity})</li>`;
+          }
+        }).join('');
+        details.innerHTML = `
+          <h4 class="font-semibold mt-2">Articles:</h4>
+          <ul class="list-none">${itemsHtml}</ul>
+          <p class="font-bold mt-2">Total: ${req.total.toFixed(2)}€</p>
+        `;
+        node.querySelector('.request-details').append(details);
+
+        // boutons transformés en statut fixe
+        node.querySelector('.btn-refuse').remove();
+        const btn = node.querySelector('.btn-accept');
+        const isAccepted = ['accepted','preparing','ready','delivered'].includes(req.status);
+        btn.className = `px-4 py-2 rounded text-white ${isAccepted ? 'bg-green-600' : 'bg-red-600'}`;
+        btn.textContent = isAccepted ? 'Acceptée' : 'Refusée';
+        if (req.status === 'refused' && req.refusal_reason) {
+          const p = document.createElement('p');
+          p.className = 'text-sm text-red-500 mt-2';
+          p.textContent = `Motif: ${req.refusal_reason}`;
+          node.querySelector('.request-details').append(p);
         }
+
+        historyEl.appendChild(node);
       });
     }
 
     function renderCommandes(commandes) {
-        commandesBody.innerHTML = '';
-        const commandesCards = document.getElementById('commandes-cards');
-        commandesCards.innerHTML = '';
-        const statusConfig = {
-            submitted: { icon: '⏳', color: 'bg-accent/10', text: 'En attente' },
-            preparing: { icon: '<span class="text-accent-dark">🍳</span>', color: 'bg-yellow-100', text: 'En préparation' },
-            ready: { icon: '<span class="text-green-600">✅</span>', color: 'bg-green-100', text: 'Prête' },
-            delivered: { icon: '<span class="text-gray-500">🚚</span>', color: 'bg-gray-100', text: 'Livrée' }
-        };
+      commandesBody.innerHTML = '';
+      commandesCards.innerHTML = '';
 
-        commandes.forEach(order => {
-            const config = statusConfig[order.status] || {};
-            const tr = document.createElement('tr');
-            tr.className = `border-b ${config.color || ''}`;
-            tr.innerHTML = `
-                <td class="p-4">${order.customer.name}</td>
-                <td class="p-4 hidden md:table-cell">${order.customer.address}</td>
-                <td class="p-4">
-                    <input type="time" class="border rounded px-2 py-1" value="${order.deliverySlot || ''}" onchange="updateDeliverySlot('${order.id}', this.value)">
-                </td>
-                <td class="p-4">${order.items.length} article(s)</td>
-                <td class="p-4">${order.total.toFixed(2)}€</td>
-                <td class="p-4">
-                    ${config.icon || ''} 
-                    <select class="border rounded px-2 py-1" onchange="updateOrderStatus('${order.id}', this.value)">
-                        <option value="submitted" ${order.status === 'submitted' ? 'selected' : ''}>${statusConfig.submitted.text}</option>
-                        <option value="preparing" ${order.status === 'preparing' ? 'selected' : ''}>${statusConfig.preparing.text}</option>
-                        <option value="ready" ${order.status === 'ready' ? 'selected' : ''}>${statusConfig.ready.text}</option>
-                        <option value="delivered" ${order.status === 'delivered' ? 'selected' : ''}>${statusConfig.delivered.text}</option>
-                    </select>
-                </td>
-                <td class="p-4"><button class="text-accent underline" onclick="openDetailsDrawer('${order.id}')">Détail</button></td>
-            `;
-            commandesBody.appendChild(tr);
+      commandes.forEach(order => {
+        const cfg = statusConfig[order.status] || {};
+        // version table desktop
+        const tr = document.createElement('tr');
+        tr.className = `border-b ${cfg.color || ''}`;
+        tr.innerHTML = `
+          <td class="p-4">${order.customer_name}</td>
+          <td class="p-4 hidden md:table-cell">${order.customer_address}</td>
+          <td class="p-4">
+            <input type="time" step="60" class="border rounded px-2 py-1 delivery-slot-input" value="${order.delivery_slot||''}" data-order-id="${order.id}">
+          </td>
+          <td class="p-4">${order.items.length} article(s)</td>
+          <td class="p-4">${order.total.toFixed(2)}€</td>
+          <td class="p-4">
+            ${cfg.icon || ''} 
+            <select class="border rounded px-2 py-1 status-select" data-order-id="${order.id}">
+              <option value="submitted"${order.status==='submitted'?' selected':''}>${statusConfig.submitted.text}</option>
+              <option value="accepted"${order.status==='accepted'?' selected':''}>${statusConfig.accepted.text}</option>
+              <option value="preparing"${order.status==='preparing'?' selected':''}>${statusConfig.preparing.text}</option>
+              <option value="ready"${order.status==='ready'?' selected':''}>${statusConfig.ready.text}</option>
+              <option value="delivered"${order.status==='delivered'?' selected':''}>${statusConfig.delivered.text}</option>
+            </select>
+          </td>
+          <td class="p-4"><button class="text-accent underline detail-button" data-order-id="${order.id}">Détail</button></td>
+        `;
+        commandesBody.appendChild(tr);
 
-            // ----- vue carte mobile -----
-            const card = document.createElement('div');
-            card.className = `${config.color || ''} p-4 rounded-lg shadow-md flex flex-col gap-2 md:hidden`;
-            card.innerHTML = `
-    <div class="flex justify-between items-center mb-2">
-      <p class="font-semibold text-base">${order.customer.name}</p>
-      <span class="text-sm font-medium">${order.total.toFixed(2)}€</span>
-    </div>
-    <div class="flex flex-col gap-2">
-      <div class="flex items-center gap-2">
-        <input
-          type="time"
-          class="border rounded px-2 py-1 text-xs w-24"
-          value="${order.deliverySlot || ''}"
-          onchange="updateDeliverySlot('${order.id}', this.value)"
-        />
-        <span class="text-lg">${config.icon}</span>
-        <select
-          class="border rounded px-1 py-1 text-sm w-auto"
-          onchange="updateOrderStatus('${order.id}', this.value)"
-        >
-          <option value="submitted" ${order.status === 'submitted' ? 'selected' : ''}>En attente</option>
-          <option value="preparing" ${order.status === 'preparing' ? 'selected' : ''}>En préparation</option>
-          <option value="ready" ${order.status === 'ready' ? 'selected' : ''}>Prête</option>
-          <option value="delivered" ${order.status === 'delivered' ? 'selected' : ''}>Livrée</option>
-        </select>
-      </div>
-      <button
-        class="text-accent underline self-end mt-1"
-        onclick="openDetailsDrawer('${order.id}')"
-      >
-        Détail
-      </button>
-    </div>`;
-            commandesCards.appendChild(card);
-        });
+        // version carte mobile
+        const card = document.createElement('div');
+        card.className = `${cfg.color||''} p-4 rounded-lg shadow-md flex flex-col gap-2 md:hidden`;
+        card.innerHTML = `
+          <div class="flex justify-between items-center mb-2">
+            <p class="font-semibold text-base">${order.customer_name}</p>
+            <span class="text-sm font-medium">${order.total.toFixed(2)}€</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <input type="time" step="60" class="border rounded px-2 py-1 text-xs delivery-slot-input" value="${order.delivery_slot||''}" data-order-id="${order.id}">
+            <span class="text-lg">${cfg.icon}</span>
+            <select class="border rounded px-1 py-1 text-sm status-select" data-order-id="${order.id}">
+              <option value="submitted"${order.status==='submitted'?' selected':''}>${statusConfig.submitted.text}</option>
+              <option value="accepted"${order.status==='accepted'?' selected':''}>${statusConfig.accepted.text}</option>
+              <option value="preparing"${order.status==='preparing'?' selected':''}>${statusConfig.preparing.text}</option>
+              <option value="ready"${order.status==='ready'?' selected':''}>${statusConfig.ready.text}</option>
+              <option value="delivered"${order.status==='delivered'?' selected':''}>${statusConfig.delivered.text}</option>
+            </select>
+          </div>
+          <button class="text-accent underline self-end mt-1 detail-button" data-order-id="${order.id}">Détail</button>
+        `;
+        commandesCards.appendChild(card);
+      });
+
+      // listeners
+      document.querySelectorAll('.delivery-slot-input').forEach(input => {
+        input.addEventListener('change', e => updateDeliverySlot(e.target.dataset.orderId, e.target.value));
+      });
+      document.querySelectorAll('.status-select').forEach(sel => {
+        sel.addEventListener('change', e => updateOrderStatus(e.target.dataset.orderId, e.target.value));
+      });
+      document.querySelectorAll('.detail-button').forEach(btn => {
+        btn.addEventListener('click', e => openDetailsDrawer(e.target.dataset.orderId));
+      });
     }
 
-    function updateStatut(id, statut, refusalReason = null) {
-      const demandes = loadDemandes();
-      const demandeIndex = demandes.findIndex(r => r.id === id);
-      if (demandeIndex > -1) {
-        const demande = demandes[demandeIndex];
-        demande.statut = statut;
-        if (statut === 'refused') {
-          demande.refusalReason = refusalReason;
-        }
-
-        if (statut === 'accepted') {
-          saveDemandes(demandes); // Save the updated status to localStorage
-          currentDemandeToAccept = demande;
-          deliverySlotInput.value = ''; // Clear previous value
-          deliverySlotModal.classList.remove('hidden');
-        } else if (statut === 'refused') {
-          showToast('Demande refusée.');
-          saveDemandes(demandes); // Save changes for refused demand
-          render();
-        }
-      }
-    }
+    // Initial render + abonnement realtime
+    render();
+    supabase.channel('orders_channel')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'orders' }, () => render())
+      .subscribe();
   </script>
 </body>
 </html>

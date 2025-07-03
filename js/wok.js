@@ -1,55 +1,44 @@
+import { supabase } from './supabase-client.js';
 
-export const wokOptions = {
-  bases: [
-    { nom: "Pâtes de riz", prix: 6.90 },
-    { nom: "Nouilles jaunes", prix: 6.90 },
-    { nom: "Udon", prix: 6.90 },
-    { nom: "Riz parfumé", prix: 6.90 },
-  ],
-  pulpes: [
-    { nom: "Oignons", prix: 0.40 },
-    { nom: "Ail", prix: 0.40 },
-    { nom: "Gingembre", prix: 0.40 },
-    { nom: "Piment", prix: 0.40 },
-  ],
-  favoris: [
-    { nom: "Poulet", prix: 2.00 },
-    { nom: "Poulet crousti", prix: 2.80 },
-    { nom: "Bœuf", prix: 2.50 },
-    { nom: "Crevettes", prix: 2.50 },
-    { nom: "Calamar", prix: 2.50 },
-    { nom: "Tofu", prix: 2.00 },
-    { nom: "Pak choï", prix: 1.40 },
-    { nom: "Poivrons", prix: 1.40 },
-    { nom: "Oignons doux", prix: 1.20 },
-    { nom: "Citronnelle", prix: 1.20 },
-    { nom: "Brocolis", prix: 1.40 },
-    { nom: "Basilic thaï", prix: 1.20 },
-    { nom: "Mini maïs", prix: 1.40 },
-    { nom: "Ananas", prix: 1.40 },
-    { nom: "Champignon noir", prix: 1.50 },
-    { nom: "Champignon de Paris", prix: 1.50 },
-    { nom: "Shitaké", prix: 1.50 },
-    { nom: "Bambou", prix: 1.40 },
-    { nom: "Noix de cajou", prix: 1.20 },
-  ],
-  sauces: [
-    { nom: "Pad Thaï" },
-    { nom: "Pad See Ew" },
-    { nom: "Curry Rouge" },
-    { nom: "Curry Jaune" },
-    { nom: "Aigre-douce" },
-  ],
-  toppings: [
-    { nom: "Coriandre fraîche", prix: 0.60 },
-    { nom: "Cacahuètes", prix: 0.60 },
-    { nom: "Oignons frits", prix: 0.60 },
-    { nom: "Crevettes séchées", prix: 0.60 },
-    { nom: "Ciboulette thaï", prix: 0.60 },
-    { nom: "Citron", prix: 0.60 },
-    { nom: "Graines de sesame", prix: 0.60 },
-  ],
+let wokOptions = {
+  bases: [],
+  pulpes: [],
+  favoris: [],
+  sauces: [],
+  toppings: [],
 };
+
+async function fetchWokOptions() {
+  try {
+    const results = await Promise.all([
+      supabase.from('wok_bases').select('*'),
+      supabase.from('wok_pulpes').select('*'),
+      supabase.from('wok_favoris').select('*'),
+      supabase.from('wok_sauces').select('*'),
+      supabase.from('wok_toppings').select('*')
+    ]);
+
+    const [bases, pulpes, favoris, sauces, toppings] = results;
+
+    if (bases.error) throw new Error(`Erreur bases: ${bases.error.message}`);
+    if (pulpes.error) throw new Error(`Erreur pulpes: ${pulpes.error.message}`);
+    if (favoris.error) throw new Error(`Erreur favoris: ${favoris.error.message}`);
+    if (sauces.error) throw new Error(`Erreur sauces: ${sauces.error.message}`);
+    if (toppings.error) throw new Error(`Erreur toppings: ${toppings.error.message}`);
+
+    wokOptions = {
+      bases: bases.data || [],
+      pulpes: pulpes.data || [],
+      favoris: favoris.data || [],
+      sauces: sauces.data || [],
+      toppings: toppings.data || [],
+    };
+
+    console.log('Wok options fetched successfully:', wokOptions);
+  } catch (error) {
+    console.error('Error fetching wok options:', error);
+  }
+}
 
 let selectedWok = {
   base: null,
@@ -65,21 +54,25 @@ function renderWokOptions() {
 
   const renderOptions = (containerId, items, type) => {
     const container = document.getElementById(containerId);
+    if (!container) {
+      console.error(`Erreur : Le conteneur #${containerId} est introuvable dans le DOM.`);
+      return;
+    }
     container.innerHTML = '';
     items.forEach(item => {
       const div = document.createElement('div');
       div.className = 'flex items-center gap-2';
       const input = document.createElement('input');
       input.type = type === 'radio' ? 'radio' : 'checkbox';
-      input.name = type === 'radio' ? containerId : item.nom;
-      input.value = item.nom;
-      input.dataset.prix = item.prix || 0;
+      input.name = type === 'radio' ? containerId : item.name;
+      input.value = item.name;
+      input.dataset.price = item.price || 0;
       input.dataset.category = containerId.replace('wok-', '');
       input.addEventListener('change', updateWokSelection);
 
       const label = document.createElement('label');
-      label.textContent = `${item.nom}${item.prix ? ` (+${item.prix.toFixed(2)}€)` : ''}`;
-      label.htmlFor = input.id = `${containerId}-${item.nom}`;
+      label.textContent = `${item.name}${item.price ? ` (+${item.price.toFixed(2)}€)` : ''}`;
+      label.htmlFor = input.id = `${containerId}-${item.name}`;
 
       div.appendChild(input);
       div.appendChild(label);
@@ -96,22 +89,27 @@ function renderWokOptions() {
 
 function updateWokSelection(event) {
   const { value, checked, dataset, type } = event.target;
-  const prix = parseFloat(dataset.prix);
+  const price = parseFloat(dataset.price) || 0;
   const category = dataset.category; // e.g., 'base', 'pulpe', 'favoris'
 
   if (type === 'radio') {
-    selectedWok[category] = { nom: value, prix };
-  } else {
-    // For checkboxes, map the singular category to the plural property name in the selectedWok object
-    const listName = category === 'pulpe' ? 'pulpes' : category;
+    selectedWok[category] = { name: value, price };
+  } else { // Checkbox
+    const categoryMapping = {
+      'pulpe': 'pulpes',
+      'favoris': 'favoris',
+      'toppings': 'toppings'
+    };
+    const listName = categoryMapping[category];
+
+    if (!listName || !selectedWok[listName]) return; // Safety check
+
     const list = selectedWok[listName];
 
-    if (!list) return; // Safety check
-
     if (checked) {
-      list.push({ nom: value, prix });
+      list.push({ name: value, price });
     } else {
-      const index = list.findIndex(item => item.nom === value);
+      const index = list.findIndex(item => item.name === value);
       if (index > -1) list.splice(index, 1);
     }
   }
@@ -121,10 +119,10 @@ function updateWokSelection(event) {
 
 function calculateWokTotal() {
   let total = 0;
-  if (selectedWok.base) total += selectedWok.base.prix;
-  selectedWok.pulpes.forEach(p => total += p.prix);
-  selectedWok.favoris.forEach(f => total += f.prix);
-  selectedWok.toppings.forEach(t => total += t.prix);
+  if (selectedWok.base) total += selectedWok.base.price;
+  selectedWok.pulpes.forEach(p => total += p.price);
+  selectedWok.favoris.forEach(f => total += f.price);
+  selectedWok.toppings.forEach(t => total += t.price);
 
   selectedWok.total = total;
   document.getElementById('wok-total').textContent = total.toFixed(2);
@@ -157,16 +155,14 @@ document.getElementById('btn-add-wok').addEventListener('click', () => {
 
   const wokItem = {
     id: `wok-${Date.now()}`,
-    nom: 'Wok Composé',
-    prix: selectedWok.total,
-    categorie: 'Wok',
-    details: {
-      base: selectedWok.base.nom,
-      pulpes: selectedWok.pulpes.map(p => p.nom),
-      favoris: selectedWok.favoris.map(f => f.nom),
-      sauce: selectedWok.sauce.nom,
-      toppings: selectedWok.toppings.map(t => t.nom),
-    }
+    name: 'Wok Composé',
+    price: selectedWok.total,
+    category: 'Wok',
+    base: selectedWok.base.name,
+    pulpes: selectedWok.pulpes.map(p => p.name),
+    favoris: selectedWok.favoris.map(f => f.name),
+    sauce: selectedWok.sauce.name,
+    toppings: selectedWok.toppings.map(t => t.name),
   };
 
   window.addWokToCart(wokItem);
@@ -174,6 +170,14 @@ document.getElementById('btn-add-wok').addEventListener('click', () => {
   resetWokForm();
 });
 
-export function initWokComposer() {
+async function initWokComposer() {
+  await fetchWokOptions();
   renderWokOptions();
+}
+
+// Lançons l'initialisation dès que le script est chargé et que le DOM est prêt.
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initWokComposer);
+} else {
+  initWokComposer();
 }

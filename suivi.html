@@ -65,18 +65,8 @@
 
     </main>
 
-  <script>
-    function loadDemandes() {
-      return JSON.parse(localStorage.getItem('demandes') || '[]');
-    }
-
-    function saveDemandes(data) {
-      localStorage.setItem('demandes', JSON.stringify(data));
-    }
-
-    function loadCommandes() {
-      return JSON.parse(localStorage.getItem('commandes') || '[]');
-    }
+  <script type="module">
+    import { supabase } from './js/supabase-client.js';
 
     const demandStatusMessageDiv = document.getElementById('demand-status-message');
     const demandMessageText = document.getElementById('demand-message-text');
@@ -84,7 +74,6 @@
     const orderDetailsDiv = document.getElementById('order-details');
 
     btnNewDemandFromSuivi.addEventListener('click', () => {
-      localStorage.removeItem('currentDemandId');
       localStorage.removeItem('currentOrderId');
       window.location.href = 'commande.html';
     });
@@ -93,83 +82,74 @@
     const MAX_RETRIES = 15;
     const RETRY_DELAY_MS = 250; // 250ms delay
 
-    function renderStatus() {
-      const currentDemandId = localStorage.getItem('currentDemandId');
-      console.log('currentDemandId:', currentDemandId);
-      const demandes = loadDemandes();
-      console.log('demandes:', demandes);
-      const currentDemand = demandes.find(d => d.id === currentDemandId);
-      console.log('currentDemand:', currentDemand);
+    async function renderStatus() {
+      const currentOrderId = localStorage.getItem('currentOrderId');
+      console.log('currentOrderId:', currentOrderId);
 
-      if (!currentDemand && retryCount < MAX_RETRIES) {
-        // If demand not found and retries left, try again after a short delay
-        retryCount++;
-        setTimeout(renderStatus, RETRY_DELAY_MS);
-        return; // Exit this call, wait for retry
-      }
-
-      if (!currentDemand) {
-        // If still not found after max retries
+      if (!currentOrderId) {
         demandStatusMessageDiv.classList.remove('hidden');
-        demandMessageText.textContent = 'Aucune demande en cours ou trouvée.';
+        demandMessageText.textContent = 'Aucune commande en cours ou trouvée.';
         btnNewDemandFromSuivi.classList.remove('hidden');
         orderDetailsDiv.classList.add('hidden');
         return;
       }
 
-      // Reset retry count if demand is found
-      retryCount = 0;
+      const { data: order, error } = await supabase.from('orders').select('*').eq('id', currentOrderId).single();
 
-      if (currentDemand.statut === 'pending') {
-        demandStatusMessageDiv.classList.remove('hidden');
-        demandMessageText.innerHTML = '⌛ En attente de validation du restaurant.<br><span class="text-sm text-gray-600">Cela ne prendra pas plus de quelques minutes. En cas de problème, contactez le restaurant au <a href="tel:+33987117057" class="text-accent hover:underline">+33 9 87 11 70 57</a>.</span>';
-        btnNewDemandFromSuivi.classList.add('hidden');
-        orderDetailsDiv.classList.add('hidden');
-      } else if (currentDemand.statut === 'refused') {
-        demandStatusMessageDiv.classList.remove('hidden');
-        demandMessageText.innerHTML = `Votre demande a été refusée par le restaurant.<br><span class="text-sm text-gray-600">Le restaurant n'est malheureusement pas en mesure de prendre votre commande pour le moment. ${currentDemand.refusalReason ? `<br>Motif: ${currentDemand.refusalReason}` : ''}</span>`;
-        btnNewDemandFromSuivi.classList.remove('hidden');
-        orderDetailsDiv.classList.add('hidden');
-      } else if (currentDemand.statut === 'accepted') {
-        demandStatusMessageDiv.classList.add('hidden');
-        orderDetailsDiv.classList.remove('hidden');
-        renderOrderDetails(currentDemand.id);
-      }
-    }
-
-    let orderRetryCount = 0;
-    const ORDER_MAX_RETRIES = 15;
-    const ORDER_RETRY_DELAY_MS = 250; // Same as demand retries
-
-    function renderOrderDetails(demandId) {
-      const commandes = loadCommandes();
-      const order = commandes.find(cmd => cmd.demandeId === demandId);
-
-      if (!order && orderRetryCount < ORDER_MAX_RETRIES) {
-        // If order not found and retries left, try again after a short delay
-        orderRetryCount++;
-        setTimeout(() => renderOrderDetails(demandId), ORDER_RETRY_DELAY_MS);
-        return; // Exit this call, wait for retry
+      if (error) {
+        console.error('Error fetching order:', error);
+        if (retryCount < MAX_RETRIES) {
+          retryCount++;
+          setTimeout(renderStatus, RETRY_DELAY_MS);
+        } else {
+          demandStatusMessageDiv.classList.remove('hidden');
+          demandMessageText.textContent = 'Erreur lors du chargement de la commande. Veuillez réessayer.';
+          btnNewDemandFromSuivi.classList.remove('hidden');
+          orderDetailsDiv.classList.add('hidden');
+        }
+        return;
       }
 
       if (!order) {
-        // If still not found after max retries
-        orderDetailsDiv.innerHTML = '<p class="text-red-700 bg-red-100 p-4 rounded-lg font-bold">Erreur : Commande associée introuvable. Veuillez contacter le support.</p>';
+        demandStatusMessageDiv.classList.remove('hidden');
+        demandMessageText.textContent = 'Commande introuvable.';
+        btnNewDemandFromSuivi.classList.remove('hidden');
+        orderDetailsDiv.classList.add('hidden');
         return;
       }
 
       // Reset retry count if order is found
-      orderRetryCount = 0;
+      retryCount = 0;
 
+      if (order.status === 'submitted') {
+        demandStatusMessageDiv.classList.remove('hidden');
+        demandMessageText.innerHTML = '⌛ En attente de validation du restaurant.<br><span class="text-sm text-gray-600">Cela ne prendra pas plus de quelques minutes. En cas de problème, contactez le restaurant au <a href="tel:+33987117057" class="text-accent hover:underline">+33 9 87 11 70 57</a>.</span>';
+        btnNewDemandFromSuivi.classList.add('hidden');
+        orderDetailsDiv.classList.add('hidden');
+      } else if (order.status === 'refused') {
+        demandStatusMessageDiv.classList.remove('hidden');
+        demandMessageText.innerHTML = `Votre demande a été refusée par le restaurant.<br><span class="text-sm text-gray-600">Le restaurant n'est malheureusement pas en mesure de prendre votre commande pour le moment. ${order.refusal_reason ? `<br>Motif: ${order.refusal_reason}` : ''}</span>`;
+        btnNewDemandFromSuivi.classList.remove('hidden');
+        orderDetailsDiv.classList.add('hidden');
+      } else {
+        demandStatusMessageDiv.classList.add('hidden');
+        orderDetailsDiv.classList.remove('hidden');
+        renderOrderDetails(order);
+      }
+    }
+
+    function renderOrderDetails(order) {
       const statusConfig = {
           submitted: { icon: '⏳', color: 'text-yellow-500', text: 'En attente' },
+          pending: { icon: '⏳', color: 'text-yellow-500', text: 'En attente' },
+          accepted: { icon: '✅', color: 'text-green-500', text: 'Acceptée' },
           preparing: { icon: '<span class="text-accent">🍳</span>', color: 'text-yellow-500', text: 'En préparation' },
           ready: { icon: '<span class="text-green-500">✅</span>', color: 'text-green-500', text: 'Prête' },
           delivered: { icon: '<span class="text-gray-500">🚚</span>', color: 'text-gray-500', text: 'Livrée' }
       };
 
-      document.getElementById('order-id').textContent = order.id.slice(4);
-      document.getElementById('delivery-slot').textContent = order.deliverySlot || "En attente de confirmation du créneau.";
+      document.getElementById('order-id').textContent = order.id.slice(0, 8); // Display first 8 chars of ID
+      document.getElementById('delivery-slot').textContent = order.delivery_slot ? order.delivery_slot.substring(0, 5) : "En attente de confirmation du créneau.";
       document.getElementById('order-total').textContent = order.total.toFixed(2);
 
       const config = statusConfig[order.status] || {};
@@ -185,16 +165,16 @@
           const li = document.createElement('li');
           if (item.isWok && item.details) {
               li.innerHTML = `
-                  ${item.name} (${item.quantity})
+                  <strong>${item.name} (${item.quantity})</strong>
                   <ul class="list-disc list-inside pl-4 text-sm">
-                      <li><strong>Base:</strong> ${item.details.base}</li>
-                      <li><strong>Pulpes:</strong> ${item.details.pulpes.join(', ') || 'Aucune'}</li>
-                      <li><strong>Favoris:</strong> ${item.details.favoris.join(', ') || 'Aucun'}</li>
-                      <li><strong>Sauce:</strong> ${item.details.sauce}</li>
-                      <li><strong>Toppings:</strong> ${item.details.toppings.join(', ') || 'Aucun'}</li>
+                      <li><strong>Base:</strong> ${item.details?.base || 'Non spécifiée'}</li>
+                      <li><strong>Pulpes:</strong> ${(item.details?.pulpes || []).join(', ') || 'Aucune'}</li>
+                      <li><strong>Favoris:</strong> ${(item.details?.favoris || []).join(', ') || 'Aucun'}</li>
+                      <li><strong>Sauce:</strong> ${item.details?.sauce || 'Non spécifiée'}</li>
+                      <li><strong>Toppings:</strong> ${(item.details?.toppings || []).join(', ') || 'Aucune'}</li>
                   </ul>`;
           } else {
-              li.textContent = `${item.name} (${item.quantity})`;
+              li.innerHTML = `<strong>${item.name} (${item.quantity})</strong>`;
           }
           itemsList.appendChild(li);
         });
@@ -204,11 +184,12 @@
     }
 
     document.addEventListener('DOMContentLoaded', renderStatus);
-    window.addEventListener('storage', (e) => {
-      if (e.key === 'demandes' || e.key === 'commandes') {
+    supabase.channel('order_tracking').on('postgres_changes', { event: '*', schema: 'public', table: 'orders' }, payload => {
+      const currentOrderId = localStorage.getItem('currentOrderId');
+      if (payload.new.id === currentOrderId) {
         renderStatus();
       }
-    });
+    }).subscribe();
   </script>
 </body>
 </html>

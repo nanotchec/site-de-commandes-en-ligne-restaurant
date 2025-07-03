@@ -59,6 +59,13 @@
       scrollbar-color: #888 #f1f1f1; /* couleur du pouce et couleur de la piste */
     }
 
+    /* FIX WOK COMPOSER */
+    @media (min-width: 768px) { /* md breakpoint */
+      #wok-steps-content .wok-step-pane {
+        display: block !important;
+      }
+    }
+
     /* Product Modal Responsive Styles */
     #product-modal > div {
       /* Default for desktop */
@@ -171,31 +178,31 @@
           <div id="wok-steps-content">
             <!-- Étape 1: Base -->
             <div class="wok-step-pane md:mb-6">
-              <h3 class="hidden md:block text-xl font-semibold mb-2">1. Choix de la base</h3>
+              <h3 class="text-xl font-semibold mb-2">1. Choix de la base</h3>
               <div id="wok-base" class="grid md:grid-cols-2 gap-4"></div>
             </div>
 
             <!-- Étape 2: Pulpe -->
-            <div class="wok-step-pane hidden md:mb-6">
-              <h3 class="hidden md:block text-xl font-semibold mb-2">2. Choix de la pulpe</h3>
+            <div class="wok-step-pane hidden md:block md:mb-6">
+              <h3 class="text-xl font-semibold mb-2">2. Choix de la pulpe</h3>
               <div id="wok-pulpe" class="grid md:grid-cols-2 gap-4"></div>
             </div>
 
             <!-- Étape 3: Favoris -->
-            <div class="wok-step-pane hidden md:mb-6">
-              <h3 class="hidden md:block text-xl font-semibold mb-2">3. Choix des favoris</h3>
+            <div class="wok-step-pane hidden md:block md:mb-6">
+              <h3 class="text-xl font-semibold mb-2">3. Choix des favoris</h3>
               <div id="wok-favoris" class="grid md:grid-cols-3 gap-4"></div>
             </div>
 
             <!-- Étape 4: Sauce -->
-            <div class="wok-step-pane hidden md:mb-6">
-              <h3 class="hidden md:block text-xl font-semibold mb-2">4. Choix de la sauce</h3>
+            <div class="wok-step-pane hidden md:block md:mb-6">
+              <h3 class="text-xl font-semibold mb-2">4. Choix de la sauce</h3>
               <div id="wok-sauce" class="grid md:grid-cols-2 gap-4"></div>
             </div>
 
             <!-- Étape 5: Toppings -->
-            <div class="wok-step-pane hidden md:mb-6">
-              <h3 class="hidden md:block text-xl font-semibold mb-2">5. Toppings (+0.60€)</h3>
+            <div class="wok-step-pane hidden md:block md:mb-6">
+              <h3 class="text-xl font-semibold mb-2">5. Toppings (+0.60€)</h3>
               <div id="wok-toppings" class="grid md:grid-cols-2 gap-4"></div>
             </div>
           </div>
@@ -246,7 +253,7 @@
 
   <!-- Panier flottant -->
   <div id="cart-float" class="fixed bottom-6 right-6 z-50 hidden md:block">
-    <a href="#" class="relative block">
+    <a href="#" class="relative block" style="background-color: transparent !important;">
       <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-accent" viewBox="0 0 20 20" fill="currentColor">
         <path d="M3 1a1 1 0 000 2h1.22l.305 1.222a.997.997 0 00.922.778h9.446a1 1 0 00.922-.778L16.78 3H17a1 1 0 000-2H3zM6.07 7l1.22 4.891a1 1 0 00.922.609h4.576a1 1 0 00.922-.609L14.93 7H6.07z" />
       </svg>
@@ -310,10 +317,11 @@
     </div>
   </section>
 
-  <!-- Script minimal : gestion d’affichage -->
+  <!-- Script minimal : gestion d'affichage -->
   <script type="module">
-    import { menuItems } from './data/menu.js';
-    import { initWokComposer } from './js/wok.js';
+    import { supabase } from './js/supabase-client.js';
+
+    let menuItems = [];
 
     const formDisponibilite = document.getElementById('form-disponibilite');
     const msgOk = document.getElementById('msg-ok');
@@ -339,37 +347,6 @@
     const restaurantClosedBannerMobile = document.getElementById('restaurant-closed-banner-mobile');
     const restaurantClosedMessageCart = document.getElementById('restaurant-closed-message-cart');
     const btnConfirmOrder = document.querySelector('#coords-modal button[type="submit"]');
-
-    // Descriptions for menu items
-    const itemDescriptions = {
-      "NEMS POULET X4": "Délicieux nems croustillants au poulet, parfaits pour une entrée savoureuse.",
-      "NEMS CREVETTES X4": "Nems croustillants aux crevettes, une entrée légère et parfumée.",
-      "NEMS LÉGUMES X4": "Nems végétariens aux légumes frais, une option saine et gourmande.",
-      "CREVETTES TEMPURA X3": "Crevettes enrobées d'une pâte légère et frites à la perfection.",
-      "BEIGNET DE CREVETTE X3": "Beignets de crevettes moelleux et savoureux.",
-      "BROCHETTES POULET SATAY X2": "Brochettes de poulet marinées à la sauce satay, grillées et parfumées.",
-      "BROCHETTES POULET YAKITORI X2": "Brochettes de poulet laquées à la sauce yakitori, tendres et sucrées-salées.",
-      "BROCHETTE BŒUF FROMAGE X2": "Brochettes de bœuf et fromage, une combinaison originale et fondante.",
-      "PINCE DE CRABE X3": "Délicieuses pinces de crabe, idéales pour les amateurs de fruits de mer.",
-      "ROULEAUX DE PRINTEMPS* X2": "Rouleaux frais et légers, garnis de légumes croquants et de vermicelles.",
-      "RIZ NATURE": "Riz blanc parfumé, accompagnement idéal pour tous nos plats.",
-      "PAD THAÏ": "Pâtes de riz - oignons - chou - carotte - œuf - soja - cacahuètes - citron - coriandre. 1 protéine au choix.",
-      "KHAO PAD": "Riz frit - oignons - chou - carotte - œuf - soja - cacahuètes - citron - coriandre. 1 protéine au choix.",
-      "BÒ BÚN": "Vermicelle de riz - nems - salade - carotte - concombre - soja - menthe - coriandre - cacahuètes. 1 protéine au choix.",
-      "SOUPE TOM YUM": "Soupe thaïlandaise épicée à base de galanga, citronnelle, lait de coco et crevettes.",
-      "POULET AU CURRY": "Poulet cuisiné avec des légumes et lait de coco. Accompagné de riz parfumé.",
-      "COUPELLE MANGUE": "Délicieuse coupelle de mangue fraîche, un dessert exotique et rafraîchissant.",
-      "COUPELLE ANANAS": "Coupelle d'ananas frais, sucré et juteux.",
-      "GLACE": "Sélection de glaces artisanales pour une touche de douceur.",
-      "MOCHI GLACE X2": "Deux mochis glacés, une spécialité japonaise douce et rafraîchissante.",
-      "SOFT": "Boissons rafraîchissantes sans alcool.",
-      "MAYA": "Boisson exotique à base de litchi et eau de coco.",
-      "CITRONNADE": "Citronnade maison, désaltérante et acidulée.",
-      "GINGER BEER": "Boisson au gingembre, pétillante et légèrement épicée.",
-      "EAU / EAU GAZEUSE": "Eau plate ou gazeuse, pour accompagner votre repas.",
-      "MOGU MOGU": "Boisson fruitée avec des morceaux de nata de coco.",
-      "BUBBLE TEA": "Thé aux perles de tapioca, disponible en plusieurs saveurs."
-    };
 
     // Product Modal elements
     const productModal = document.getElementById('product-modal');
@@ -402,7 +379,7 @@
       productModalImage.src = item.img;
       productModalImage.alt = item.nom;
       productModalName.textContent = item.nom;
-      productModalDescription.textContent = itemDescriptions[item.nom] || "Description non disponible.";
+      productModalDescription.textContent = item.description || "Description non disponible.";
       productModalPrice.textContent = `${item.prix.toFixed(2)}€`;
       productModalAddToCart.dataset.id = item.id;
       productModal.classList.remove('hidden');
@@ -617,11 +594,9 @@
         });
       });
 
-      initWokComposer();
       updateCartBadge();
       updateItemBadges();
       setupCategoryObserver(); // Pour la nav sticky
-      setupWokTabs(); // Pour le formulaire Wok
     }
 
     function setupWokTabs() {
@@ -630,10 +605,13 @@
 
       tabs.forEach((tab, index) => {
         tab.addEventListener('click', () => {
-          // Masquer tous les contenus
-          panes.forEach(pane => pane.classList.add('hidden'));
-          // Afficher le contenu correspondant
-          panes[index].classList.remove('hidden');
+          // Masquer tous les panneaux
+          panes.forEach(p => p.classList.add('hidden'));
+          
+          // Afficher celui qui correspond à l'onglet cliqué
+          if (panes[index]) {
+            panes[index].classList.remove('hidden');
+          }
 
           // Gérer le style des onglets
           tabs.forEach(t => {
@@ -645,21 +623,14 @@
         });
       });
 
-      // Gérer l'affichage desktop (tout est visible)
-      const handleDesktopView = () => {
-        if (window.innerWidth >= 768) { // 768px est le point de rupture `md` de Tailwind
-          panes.forEach(pane => pane.classList.remove('hidden'));
-        } else {
-          // Sur mobile, s'assurer que seul le premier onglet est visible au départ
-          panes.forEach((pane, index) => {
-            if (index !== 0) pane.classList.add('hidden');
-          });
-        }
-      };
-
-      // Appeler la fonction au chargement et au redimensionnement
-      handleDesktopView();
-      window.addEventListener('resize', handleDesktopView);
+      // Gérer l'affichage au premier chargement (pour mobile)
+      if (window.innerWidth < 768) {
+        panes.forEach((pane, index) => {
+          if (index !== 0) {
+            pane.classList.add('hidden');
+          }
+        });
+      }
     }
 
     function setupCategoryObserver() {
@@ -833,6 +804,33 @@
       updateItemBadges();
     }
 
+    async function fetchAndShowMenu() {
+      try {
+        const { data, error } = await supabase.from('menu_items').select('*');
+        if (error) {
+          console.error("Erreur lors de la récupération du menu:", error);
+          // Afficher un message d'erreur à l'utilisateur pourrait être une bonne amélioration
+          return;
+        }
+        
+        menuItems = data.map(item => ({
+          id: item.id,
+          nom: item.name,
+          description: item.description,
+          prix: item.price,
+          categorie: item.category,
+          img: item.image_url
+        }));
+        
+        showOrderUI();
+        updateItemBadges();
+        setupWokTabs();
+
+      } catch (err) {
+        console.error("Une erreur s'est produite lors du chargement du menu:", err);
+      }
+    }
+
     document.addEventListener('DOMContentLoaded', () => {
       // Check for existing active demand/order and redirect to suivi.html
       const currentDemandId = localStorage.getItem('currentDemandId');
@@ -871,8 +869,7 @@
         }
       }
 
-      showOrderUI(); // Always show order UI on this page if no active order
-      updateItemBadges(); // Initial update on page load
+      fetchAndShowMenu(); // Charge le menu principal
     });
 
     window.addWokToCart = function(wokItem) {
@@ -883,6 +880,7 @@
       updateItemBadges();
     }
   </script>
+  <script type="module" src="js/wok.js"></script>
   <script src="js/responsive.js"></script>
 
   <!-- Product Detail Modal -->

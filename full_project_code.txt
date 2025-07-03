@@ -805,7 +805,7 @@ https://creativecommons.org/licenses/by-nc/4.0/legalcode
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <link rel="stylesheet" href="css/styles.css">
   <link rel="stylesheet" href="css/responsive.css">
   <title>Thaï Garden – Demande de disponibilité</title>
@@ -927,7 +927,7 @@ https://creativecommons.org/licenses/by-nc/4.0/legalcode
   </header>
 
   <!-- Contenu principal -->
-  <main class="flex-1 pt-24 pb-12 mx-auto px-4">
+  <main class="flex-1 pt-24 pb-12 max-w-3xl mx-auto px-4">
 
     <h1 class="text-4xl font-extrabold text-primary text-center mb-10">Commander</h1>
 
@@ -1735,33 +1735,6 @@ https://creativecommons.org/licenses/by-nc/4.0/legalcode
 
 --- css/styles.css ---
 
-/* General Reset for Box Sizing */
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-}
-
-html,
-body {
-  width: 100%;
-  max-width: 100vw;
-  overflow-x: hidden;
-}
-
-body {
-  -webkit-text-size-adjust: 100%; /* For iOS Safari */
-  text-size-adjust: 100%;
-}
-
-/* Responsive media */
-img,
-video,
-canvas,
-svg {
-  max-width: 100%;
-  height: auto;
-}
 
 
 --- data/menu.js ---
@@ -2460,6 +2433,27 @@ export function initWokComposer() {
           </li>
           <li class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition transform hover:scale-105 flex justify-between">
             <span>Mochi glace x2</span><span>5.00€</span>
+          </li>
+        </ul>
+        <h2 class="sticky top-16 z-30 mx-auto inline-block text-3xl font-extrabold text-primary text-center px-4 py-2 mb-4">Boissons</h2>
+        <ul class="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <li class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition transform hover:scale-105 flex justify-between">
+            <span>Soft</span><span>2.00€</span>
+          </li>
+          <li class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition transform hover:scale-105 flex justify-between">
+            <span>Maya (PAM, litchi, eau de coco)</span><span>3.90€</span>
+          </li>
+          <li class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition transform hover:scale-105 flex justify-between">
+            <span>Citronnade</span><span>2.00€</span>
+          </li>
+          <li class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition transform hover:scale-105 flex justify-between">
+            <span>Ginger beer</span><span>3.00€</span>
+          </li>
+          <li class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition transform hover:scale-105 flex justify-between">
+            <span>Eau / eau gazeuse</span><span>2.00€</span>
+          </li>
+          <li class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition transform hover:scale-105 flex justify-between">
+            <span>Mogu Mogu</span><span>3.00€</span>
           </li>
         </ul>
         <h2 class="sticky top-16 z-30 mx-auto inline-block bg-white/50 backdrop-blur-sm text-3xl font-extrabold text-primary text-center px-4 py-2 mb-4 mt-12 rounded-b-3xl">Bubble Tea (6.00€)</h2>
