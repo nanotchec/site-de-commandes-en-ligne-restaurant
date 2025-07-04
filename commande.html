@@ -734,11 +734,7 @@
       } else {
         // Sur les écrans desktop
         mobileCartButton.classList.add('hidden'); // S'assurer que le panier mobile est masqué
-        if (count > 0) {
-          cartFloat.classList.remove('hidden'); // Afficher le panier desktop s'il y a des articles
-        } else {
-          cartFloat.classList.add('hidden'); // Masquer le panier desktop s'il n'y a pas d'articles
-        }
+        cartFloat.classList.remove('hidden'); // Toujours afficher le panier desktop
       }
     }
 
