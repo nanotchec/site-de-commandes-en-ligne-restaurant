@@ -498,7 +498,7 @@
       panierSection.classList.remove('hidden'); // Return to cart view
     });
 
-    formCoords.addEventListener('submit', (e) => {
+    formCoords.addEventListener('submit', async (e) => {
       e.preventDefault();
 
       if (!getRestaurantStatus()) {
@@ -508,35 +508,43 @@
 
       const cart = JSON.parse(localStorage.getItem('cart') || '[]');
       const total = parseFloat(panierTotal.textContent);
+      const btnSubmit = e.target.querySelector('button[type="submit"]');
+      btnSubmit.disabled = true;
+      btnSubmit.textContent = 'Envoi en cours...';
 
-      const nouvelleDemande = {
-        id: `req-${Date.now()}`,
-        nom: nomCoordsInput.value,
-        tel: telCoordsInput.value,
-        adresse: adresseCoordsInput.value,
-        mode: 'Livraison', // Always delivery for now
-        statut: 'pending',
+      const newOrderData = {
+        customer_name: nomCoordsInput.value,
+        customer_phone: telCoordsInput.value,
+        customer_address: adresseCoordsInput.value,
         items: cart.map(item => {
           const menuItem = item.isWok ? item.details : menuItems.find(m => String(m.id) === item.itemId);
-          return { 
-            id: item.itemId, 
-            name: menuItem.nom, 
-            quantity: item.qty, 
-            price: menuItem.prix, 
+          return {
+            id: item.itemId,
+            name: menuItem.nom,
+            quantity: item.qty,
+            price: menuItem.prix,
             isWok: item.isWok || false,
             details: item.isWok ? menuItem : null
           };
         }),
-        total: total
+        total: total,
+        status: 'submitted' // Statut initial
       };
 
-      const demandes = loadDemandes();
-      demandes.push(nouvelleDemande);
-      saveDemandes(demandes);
+      // Insérer la commande dans Supabase et récupérer l'ID généré
+      const { data, error } = await supabase.from('orders').insert([newOrderData]).select().single();
 
+      if (error || !data) {
+        console.error('Erreur lors de l\'envoi de la commande:', error);
+        alert('Une erreur est survenue. Veuillez réessayer.');
+        btnSubmit.disabled = false;
+        btnSubmit.textContent = 'Confirmer la commande';
+        return;
+      }
+      
       localStorage.removeItem('cart');
-      localStorage.setItem('currentDemandId', nouvelleDemande.id); // Store demand ID for tracking page
-      window.location.href = 'suivi.html'; // Redirect to tracking page
+      localStorage.setItem('currentDemandId', data.id); // Utiliser l'ID retourné par Supabase
+      window.location.href = 'suivi.html';
     });
 
     // Helpers pour le localStorage
