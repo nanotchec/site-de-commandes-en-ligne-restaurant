@@ -208,10 +208,10 @@
     // Statuts disponibles (pour commandes et mises à jour)
     const statusConfig = {
       submitted:  { icon: '⏳', color: 'bg-accent/10', text: 'En attente' },
-      accepted:   { icon: '✅', color: 'bg-gray-200', text: 'Acceptée' },
+      accepted:   { icon: '✅', color: 'bg-gray-100', text: 'Acceptée' },
       preparing:  { icon: '🍳', color: 'bg-yellow-100', text: 'En préparation' },
       ready:      { icon: '✅', color: 'bg-green-100', text: 'Prête' },
-      delivered:  { icon: '🚚', color: 'bg-gray-100',  text: 'Livrée' }
+      delivered:  { icon: '🚚', color: 'bg-gray-200',  text: 'Livrée' }
     };
 
     // --- Gestion du statut du restaurant ---
@@ -457,6 +457,7 @@
     // --- Rendu des listes ---
     function renderDemandes(data) {
       pendingEl.innerHTML = '';
+      data.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
       data.forEach(req => {
         const node = tpl.content.cloneNode(true);
         node.querySelector('.req-name').textContent    = req.customer_name;
@@ -500,6 +501,16 @@
 
     function renderHistorique(data) {
       historyEl.innerHTML = '';
+      data.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+
+      const statusOrder = { 'accepted': 1, 'preparing': 2, 'ready': 3, 'delivered': 4, 'refused': 5 };
+
+      data.sort((a, b) => {
+        const statusDiff = (statusOrder[a.status] || 99) - (statusOrder[b.status] || 99);
+        if (statusDiff !== 0) return statusDiff;
+        return new Date(b.created_at) - new Date(a.created_at);
+      });
+      
       data.forEach(req => {
         const node = tpl.content.cloneNode(true);
         node.querySelector('.req-name').textContent    = req.customer_name;
@@ -551,6 +562,16 @@
     function renderCommandes(commandes) {
       commandesBody.innerHTML = '';
       commandesCards.innerHTML = '';
+
+      const statusOrder = { 'accepted': 1, 'preparing': 2, 'ready': 3, 'delivered': 4 };
+
+      commandes.sort((a, b) => {
+        // D'abord par statut
+        const statusDiff = (statusOrder[a.status] || 99) - (statusOrder[b.status] || 99);
+        if (statusDiff !== 0) return statusDiff;
+        // Ensuite par date (plus récent en premier)
+        return new Date(b.created_at) - new Date(a.created_at);
+      });
 
       commandes.forEach(order => {
         const cfg = statusConfig[order.status] || {};
