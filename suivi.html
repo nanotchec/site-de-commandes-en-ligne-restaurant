@@ -74,7 +74,7 @@
     const orderDetailsDiv = document.getElementById('order-details');
 
     btnNewDemandFromSuivi.addEventListener('click', () => {
-      localStorage.removeItem('currentOrderId');
+      localStorage.removeItem('currentDemandId');
       window.location.href = 'commande.html';
     });
 
@@ -83,10 +83,10 @@
     const RETRY_DELAY_MS = 250; // 250ms delay
 
     async function renderStatus() {
-      const currentOrderId = localStorage.getItem('currentOrderId');
-      console.log('currentOrderId:', currentOrderId);
+      const currentDemandId = localStorage.getItem('currentDemandId');
+      console.log('currentDemandId:', currentDemandId);
 
-      if (!currentOrderId) {
+      if (!currentDemandId) {
         demandStatusMessageDiv.classList.remove('hidden');
         demandMessageText.textContent = 'Aucune commande en cours ou trouvée.';
         btnNewDemandFromSuivi.classList.remove('hidden');
@@ -94,7 +94,7 @@
         return;
       }
 
-      const { data: order, error } = await supabase.from('orders').select('*').eq('id', currentOrderId).single();
+      const { data: order, error } = await supabase.from('orders').select('*').eq('id', currentDemandId).single();
 
       if (error) {
         console.error('Error fetching order:', error);
@@ -185,8 +185,8 @@
 
     document.addEventListener('DOMContentLoaded', renderStatus);
     supabase.channel('order_tracking').on('postgres_changes', { event: '*', schema: 'public', table: 'orders' }, payload => {
-      const currentOrderId = localStorage.getItem('currentOrderId');
-      if (payload.new.id === currentOrderId) {
+      const currentDemandId = localStorage.getItem('currentDemandId');
+      if (payload.new.id === currentDemandId) {
         renderStatus();
       }
     }).subscribe();
