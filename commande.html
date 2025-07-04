@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <link rel="stylesheet" href="css/styles.css">
-  <link rel="stylesheet" href="css/responsive.css">
+  <!-- <link rel="stylesheet" href="css/styles.css"> -->
+  <!-- <link rel="stylesheet" href="css/responsive.css"> -->
   <title>Thaï Garden – Demande de disponibilité</title>
 
   <!-- Google Fonts -->
@@ -120,8 +120,8 @@
 
   <!-- Header minimal -->
   <header class="fixed top-0 w-full bg-white/70 backdrop-blur-sm shadow-md z-50">
-    <nav class="max-w-5xl mx-auto flex items-center justify-between py-4 px-6">
-      <a href="index.html" class="text-2xl font-bold text-primary">Thaï Garden</a>
+    <nav class="mx-auto flex items-center justify-between py-4">
+      <a href="index.html" class="text-2xl font-bold text-primary px-4">Thaï Garden</a>
       <div class="hidden md:flex gap-8 font-medium">
         <a href="index.html" class="hover:text-accent transition">Accueil</a>
         <a href="commande.html" class="hover:text-accent transition">Menu</a>
@@ -130,7 +130,7 @@
       <a href="commande.html" class="hidden md:block ml-6 px-4 py-2 bg-accent text-white font-semibold rounded-full shadow hover:shadow-lg transition">
         Commander
       </a>
-      <button id="burger-btn" class="md:hidden">
+      <button id="burger-btn" class="md:hidden px-4">
         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
       </button>
     </nav>
@@ -147,12 +147,12 @@
   </header>
 
   <!-- Contenu principal -->
-  <main class="flex-1 pt-24 pb-12 max-w-3xl mx-auto px-4">
+  <main class="flex-1 pt-24 pb-12 w-full mx-auto">
 
-    <h1 class="text-4xl font-extrabold text-primary text-center mb-10">Commander</h1>
+    <h1 class="text-4xl font-extrabold text-primary text-center mb-10 px-4">Commander</h1>
 
     <!-- Message de refus (initiallement caché) -->
-    <section id="msg-refused" class="hidden bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-8" role="alert">
+    <section id="msg-refused" class="hidden bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-8 mx-4" role="alert">
       <strong class="font-bold">Demande refusée !</strong>
       <span class="block sm:inline" id="refusal-reason-display"></span>
       <p class="mt-4">Nous sommes désolés, votre demande n'a pas pu être acceptée pour le moment.</p>
@@ -162,7 +162,7 @@
     
 
     <!-- Étape 2 : Formulaire « Demande de disponibilité » pour livraison -->
-    <section id="section-livraison" class="hidden mt-12 bg-white/70 backdrop-blur-sm p-8 rounded-lg shadow-md">
+    <section id="section-livraison" class="hidden mt-12 bg-white/70 backdrop-blur-sm p-8 rounded-lg shadow-md mx-4">
         <h2 class="text-2xl font-semibold mb-6 text-center">Vos coordonnées</h2>
       
         <p class="mb-6 text-center text-gray-700">
@@ -175,18 +175,18 @@
       <!-- Étape 3 : Affichage du menu pour la commande -->
 
       <!-- Wok à composer -->
-      <section id="wok-composer" class="mb-8 pt-8 -mt-8">
+      <section id="wok-composer" class="mb-8 pt-8 -mt-8 px-4">
         <h2 class="text-2xl font-bold text-primary mb-4">Wok à composer</h2>
         <div class="bg-white p-4 md:p-8 rounded-lg shadow-md">
 
           <!-- Onglets pour Mobile -->
           <div class="md:hidden border-b border-gray-200 mb-4">
-            <nav class="-mb-px flex space-x-4 overflow-x-auto" aria-label="Tabs">
-              <button class="wok-tab whitespace-nowrap py-3 px-2 border-b-2 font-medium text-sm border-accent text-accent">Base</button>
-              <button class="wok-tab whitespace-nowrap py-3 px-2 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300">Pulpe</button>
-              <button class="wok-tab whitespace-nowrap py-3 px-2 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300">Favoris</button>
-              <button class="wok-tab whitespace-nowrap py-3 px-2 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300">Sauce</button>
-              <button class="wok-tab whitespace-nowrap py-3 px-2 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300">Toppings</button>
+            <nav class="-mb-px flex justify-around" aria-label="Tabs">
+              <button class="wok-tab py-3 px-1 text-xs font-medium border-b-2 border-accent text-accent">Base</button>
+              <button class="wok-tab py-3 px-1 text-xs font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300">Pulpe</button>
+              <button class="wok-tab py-3 px-1 text-xs font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300">Favoris</button>
+              <button class="wok-tab py-3 px-1 text-xs font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300">Sauce</button>
+              <button class="wok-tab py-3 px-1 text-xs font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300">Toppings</button>
             </nav>
           </div>
 
@@ -232,36 +232,36 @@
 
       <section id="order-menu" class="mt-8 md:mt-12">
         <!-- Sticky Nav pour mobile -->
-        <div id="category-nav" class="md:hidden sticky top-16 bg-white/90 backdrop-blur-sm z-40 overflow-x-auto">
-          <div class="flex items-center space-x-4 border-b px-4">
-            <a href="#wok-composer" class="category-link whitespace-nowrap py-3 px-2 text-sm font-medium text-gray-600">Wok</a>
-            <a href="#entrees-section" class="category-link whitespace-nowrap py-3 px-2 text-sm font-medium text-gray-600">Entrées</a>
-            <a href="#plats-section" class="category-link whitespace-nowrap py-3 px-2 text-sm font-medium text-gray-600">Plats</a>
-            <a href="#desserts-section" class="category-link whitespace-nowrap py-3 px-2 text-sm font-medium text-gray-600">Desserts</a>
-            <a href="#boissons-section" class="category-link whitespace-nowrap py-3 px-2 text-sm font-medium text-gray-600">Boissons</a>
+        <div id="category-nav" class="md:hidden sticky top-16 bg-white/90 backdrop-blur-sm z-40 left-0 right-0">
+          <div class="flex justify-around border-b px-4">
+            <a href="#wok-composer" class="category-link py-3 px-1 text-xs font-medium text-gray-600">Wok</a>
+            <a href="#entrees-section" class="category-link py-3 px-1 text-xs font-medium text-gray-600">Entrées</a>
+            <a href="#plats-section" class="category-link py-3 px-1 text-xs font-medium text-gray-600">Plats</a>
+            <a href="#desserts-section" class="category-link py-3 px-1 text-xs font-medium text-gray-600">Desserts</a>
+            <a href="#boissons-section" class="category-link py-3 px-1 text-xs font-medium text-gray-600">Boissons</a>
           </div>
         </div>
 
         <h2 class="hidden md:block text-3xl font-extrabold text-primary text-center mb-8">Notre Menu</h2>
 
-        <div id="entrees-section" class="mb-8 pt-8 -mt-8">
+        <div id="entrees-section" class="mb-8 pt-8 -mt-8 px-4">
           <h3 class="text-2xl font-bold text-primary mb-4">Entrées</h3>
-          <ul id="order-entrees-list" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-8"></ul>
+          <ul id="order-entrees-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8"></ul>
         </div>
 
-        <div id="plats-section" class="mb-8 pt-8 -mt-8">
+        <div id="plats-section" class="mb-8 pt-8 -mt-8 px-4">
           <h3 class="text-2xl font-bold text-primary mb-4">Plats</h3>
-          <ul id="order-plats-list" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-8"></ul>
+          <ul id="order-plats-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8"></ul>
         </div>
 
-        <div id="desserts-section" class="mb-8 pt-8 -mt-8">
+        <div id="desserts-section" class="mb-8 pt-8 -mt-8 px-4">
           <h3 class="text-2xl font-bold text-primary mb-4">Desserts</h3>
-          <ul id="order-desserts-list" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-8"></ul>
+          <ul id="order-desserts-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8"></ul>
         </div>
 
-        <div id="boissons-section" class="mb-8 pt-8 -mt-8">
+        <div id="boissons-section" class="mb-8 pt-8 -mt-8 px-4">
           <h3 class="text-2xl font-bold text-primary mb-4">Boissons</h3>
-          <ul id="order-boissons-list" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-8"></ul>
+          <ul id="order-boissons-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8"></ul>
         </div>
       </section>
 
@@ -580,19 +580,18 @@
       menuItems.forEach(item => {
         const li = document.createElement('li');
         // Vue mobile : liste, Vue desktop : grille
-        li.className = 'bg-white p-4 rounded-lg shadow-md flex md:flex-col items-center text-center relative md:p-4 cursor-pointer';
+        li.className = 'bg-white p-4 rounded-lg shadow-md flex items-center md:flex-col md:text-center relative cursor-pointer';
         li.onclick = () => openProductModal(item);
         li.innerHTML = `
-          <img src="${item.img}" alt="${item.nom}" class="w-24 h-24 md:w-32 md:h-32 rounded-lg object-cover mr-4 md:mr-0 md:mb-4" />
+          <img src="${item.img}" alt="${item.nom}" class="w-20 h-20 md:w-32 md:h-32 rounded-lg object-cover mr-4 md:mr-0 md:mb-4" />
           <div class="flex-grow text-left md:text-center">
             <p class="font-medium text-lg">${item.nom}</p>
-            <span class="font-semibold text-accent md:hidden">${item.prix.toFixed(2)}€</span>
+            <span class="font-semibold text-accent">${item.prix.toFixed(2)}€</span>
           </div>
-          <div class="flex flex-col items-center">
-             <span class="font-semibold text-accent hidden md:block mb-2">${item.prix.toFixed(2)}€</span>
-            <button data-id="${item.id}" class="mt-2 px-4 py-2 bg-accent text-white font-semibold rounded-full shadow hover:shadow-lg transition">+</button>
+          <div class="flex flex-col items-center pl-4 md:pl-0">
+             <button data-id="${item.id}" class="mt-2 px-4 py-2 bg-accent text-white font-semibold rounded-full shadow hover:shadow-lg transition">+</button>
           </div>
-          <span data-id="${item.id}" class="item-qty-badge absolute top-0 right-0 bg-blue-500 text-white text-xs font-bold rounded-full h-6 w-6 flex items-center justify-center hidden">0</span>
+          <span data-id="${item.id}" class="item-qty-badge absolute top-1 right-1 bg-blue-500 text-white text-xs font-bold rounded-full h-6 w-6 flex items-center justify-center hidden">0</span>
         `;
         
         switch (item.categorie) {
