@@ -147,7 +147,7 @@
   </header>
 
   <!-- Contenu principal -->
-  <main class="flex-1 pt-24 pb-12 w-full mx-auto">
+  <main class="flex-1 pt-24 pb-12 w-full max-w-4xl mx-auto">
 
     <h1 class="text-4xl font-extrabold text-primary text-center mb-10 px-4">Commander</h1>
 
@@ -547,23 +547,54 @@
       window.location.href = 'suivi.html';
     });
 
-    // Helpers pour le localStorage
-    function loadDemandes() {
-      const demandesJSON = localStorage.getItem('demandes');
-      return demandesJSON ? JSON.parse(demandesJSON) : [];
-    }
+    document.addEventListener('DOMContentLoaded', async () => {
+      const currentOrderId = localStorage.getItem('currentDemandId');
+      
+      if (currentOrderId) {
+        const { data: order, error } = await supabase
+          .from('orders')
+          .select('status, refusal_reason')
+          .eq('id', currentOrderId)
+          .single();
 
-    function saveDemandes(demandes) {
-      localStorage.setItem('demandes', JSON.stringify(demandes, null, 2)); // pretty print
-    }
+        if (error) {
+          console.error('Error fetching current order status:', error);
+          // En cas d'erreur (ex: commande non trouvée), on nettoie et on continue
+          localStorage.removeItem('currentDemandId');
+        } else if (order) {
+          if (order.status !== 'delivered' && order.status !== 'refused') {
+            window.location.href = 'suivi.html';
+            return; // Arrêter l'exécution pour que la redirection ait lieu
+          } else if (order.status === 'refused') {
+            msgRefused.classList.remove('hidden');
+            if (order.refusal_reason) {
+              refusalReasonDisplay.textContent = ` Motif: ${order.refusal_reason}`;
+            }
+            // Masquer les sections de commande
+            orderMenuSection.classList.add('hidden');
+            wokComposerSection.classList.add('hidden');
+            cartFloat.classList.add('hidden');
+            mobileCartButton.classList.add('hidden');
+            // Afficher le bouton pour une nouvelle demande
+            btnNewDemand.addEventListener('click', () => {
+              localStorage.removeItem('currentDemandId');
+              localStorage.removeItem('cart');
+              window.location.reload();
+            });
+            return; // Arrêter pour ne pas afficher le menu par-dessus
+          }
+        }
+      }
+      // Si aucune commande active ou si la commande est terminée/refusée (et non gérée au-dessus)
+      fetchAndShowMenu();
+    });
 
-    function loadCommandes() {
-      const commandesJSON = localStorage.getItem('commandes');
-      return commandesJSON ? JSON.parse(commandesJSON) : [];
-    }
-
-    function saveCommandes(commandes) {
-      localStorage.setItem('commandes', JSON.stringify(commandes, null, 2));
+    window.addWokToCart = function(wokItem) {
+      const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+      cart.push({ itemId: `wok-${Date.now()}`, qty: 1, isWok: true, details: wokItem });
+      localStorage.setItem('cart', JSON.stringify(cart));
+      updateCartBadge();
+      updateItemBadges();
     }
 
     function showOrderUI() {
@@ -868,55 +899,6 @@
       } catch (err) {
         console.error("Une erreur s'est produite lors du chargement du menu:", err);
       }
-    }
-
-    document.addEventListener('DOMContentLoaded', () => {
-      // Check for existing active demand/order and redirect to suivi.html
-      const currentDemandId = localStorage.getItem('currentDemandId');
-      if (currentDemandId) {
-        const demandes = loadDemandes();
-        const currentDemand = demandes.find(d => d.id === currentDemandId);
-
-        if (currentDemand) {
-          if (currentDemand.statut === 'pending') {
-            window.location.href = 'suivi.html';
-            return;
-          } else if (currentDemand.statut === 'accepted') {
-            const commandes = loadCommandes();
-            const associatedCommand = commandes.find(cmd => cmd.demandeId === currentDemand.id);
-            if (associatedCommand && associatedCommand.status !== 'delivered') {
-              window.location.href = 'suivi.html';
-              return;
-            }
-          } else if (currentDemand.statut === 'refused') {
-            msgRefused.classList.remove('hidden');
-            if (currentDemand.refusalReason) {
-              refusalReasonDisplay.textContent = ` Motif: ${currentDemand.refusalReason}`;
-            }
-            orderMenuSection.classList.add('hidden');
-            wokComposerSection.classList.add('hidden');
-            cartFloat.classList.add('hidden');
-            mobileCartButton.classList.add('hidden'); // Hide mobile cart button as well
-            
-            btnNewDemand.addEventListener('click', () => {
-              localStorage.removeItem('currentDemandId');
-              localStorage.removeItem('cart');
-              window.location.href = 'commande.html'; // Reload to start a new order
-            });
-            return;
-          }
-        }
-      }
-
-      fetchAndShowMenu(); // Charge le menu principal
-    });
-
-    window.addWokToCart = function(wokItem) {
-      const cart = JSON.parse(localStorage.getItem('cart') || '[]');
-      cart.push({ itemId: `wok-${Date.now()}`, qty: 1, isWok: true, details: wokItem });
-      localStorage.setItem('cart', JSON.stringify(cart));
-      updateCartBadge();
-      updateItemBadges();
     }
   </script>
   <script type="module" src="js/wok.js"></script>

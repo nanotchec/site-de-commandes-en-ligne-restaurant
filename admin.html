@@ -639,8 +639,21 @@
     // Initial render + abonnement realtime
     render();
     supabase.channel('orders_channel')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'orders' }, () => render())
-      .subscribe();
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'orders' }, (payload) => {
+        console.log('Realtime change received!', payload);
+        render();
+      })
+      .subscribe((status, err) => {
+        if (status === 'SUBSCRIBED') {
+          console.log('✅ Realtime channel subscribed!');
+        }
+        if (status === 'CHANNEL_ERROR') {
+          console.error('Realtime channel error:', err);
+        }
+        if (status === 'TIMED_OUT') {
+          console.warn('Realtime channel timed out.');
+        }
+      });
   </script>
 </body>
 </html>
