@@ -147,16 +147,6 @@
 
     <h1 class="text-4xl font-extrabold text-primary text-center mb-10 px-4">Commander</h1>
 
-    <!-- Message de refus (initiallement caché) -->
-    <section id="msg-refused" class="hidden bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-8 mx-4" role="alert">
-      <strong class="font-bold">Demande refusée !</strong>
-      <span class="block sm:inline" id="refusal-reason-display"></span>
-      <p class="mt-4">Nous sommes désolés, votre demande n'a pas pu être acceptée pour le moment.</p>
-      <button id="btn-new-demand" class="mt-4 px-6 py-3 bg-accent text-white font-bold rounded-lg shadow-md hover:shadow-lg transition">Faire une nouvelle demande</button>
-    </section>
-
-    
-
     <!-- Étape 2 : Formulaire « Demande de disponibilité » pour livraison -->
     <section id="section-livraison" class="hidden mt-12 bg-white/70 backdrop-blur-sm p-8 rounded-lg shadow-md mx-4">
         <h2 class="text-2xl font-semibold mb-6 text-center">Vos coordonnées</h2>
@@ -508,7 +498,10 @@
       btnSubmit.disabled = true;
       btnSubmit.textContent = 'Envoi en cours...';
 
+      const orderId = crypto.randomUUID(); // Générer l'ID unique côté client
+
       const newOrderData = {
+        id: orderId, // Utiliser l'ID généré
         customer_name: nomCoordsInput.value,
         customer_phone: telCoordsInput.value,
         customer_address: adresseCoordsInput.value,
@@ -527,10 +520,10 @@
         status: 'submitted' // Statut initial
       };
 
-      // Insérer la commande dans Supabase et récupérer l'ID généré
-      const { data, error } = await supabase.from('orders').insert([newOrderData]).select().single();
+      // Insérer la commande dans Supabase
+      const { error } = await supabase.from('orders').insert([newOrderData]);
 
-      if (error || !data) {
+      if (error) {
         console.error('Erreur lors de l\'envoi de la commande:', error);
         alert('Une erreur est survenue. Veuillez réessayer.');
         btnSubmit.disabled = false;
@@ -539,7 +532,7 @@
       }
       
       localStorage.removeItem('cart');
-      localStorage.setItem('currentDemandId', data.id); // Utiliser l'ID retourné par Supabase
+      localStorage.setItem('currentDemandId', orderId); // Utiliser l'ID généré
       window.location.href = 'suivi.html';
     });
 
@@ -547,41 +540,24 @@
       const currentOrderId = localStorage.getItem('currentDemandId');
       
       if (currentOrderId) {
-        const { data: order, error } = await supabase
-          .from('orders')
-          .select('status, refusal_reason')
-          .eq('id', currentOrderId)
-          .single();
+        const { data: order, error } = await supabase.rpc('get_order', { order_id_in: currentOrderId }).single();
 
-        if (error) {
-          console.error('Error fetching current order status:', error);
-          // En cas d'erreur (ex: commande non trouvée), on nettoie et on continue
+        if (error || !order) {
+          // Si erreur ou commande non trouvée, on nettoie et on continue
           localStorage.removeItem('currentDemandId');
-        } else if (order) {
+        } else {
+          // Si la commande est en cours (ni livrée, ni refusée), on redirige vers le suivi
           if (order.status !== 'delivered' && order.status !== 'refused') {
             window.location.href = 'suivi.html';
-            return; // Arrêter l'exécution pour que la redirection ait lieu
-          } else if (order.status === 'refused') {
-            msgRefused.classList.remove('hidden');
-            if (order.refusal_reason) {
-              refusalReasonDisplay.textContent = ` Motif: ${order.refusal_reason}`;
-            }
-            // Masquer les sections de commande
-            orderMenuSection.classList.add('hidden');
-            wokComposerSection.classList.add('hidden');
-            cartFloat.classList.add('hidden');
-            mobileCartButton.classList.add('hidden');
-            // Afficher le bouton pour une nouvelle demande
-            btnNewDemand.addEventListener('click', () => {
-              localStorage.removeItem('currentDemandId');
-              localStorage.removeItem('cart');
-              window.location.reload();
-            });
-            return; // Arrêter pour ne pas afficher le menu par-dessus
+            return; // Important: arrêter l'exécution ici
+          } else {
+            // Si la commande est terminée (livrée ou refusée), on nettoie pour permettre une nouvelle commande
+            localStorage.removeItem('currentDemandId');
           }
         }
       }
-      // Si aucune commande active ou si la commande est terminée/refusée (et non gérée au-dessus)
+      
+      // Si aucune commande active (ou si elle vient d'être nettoyée), on affiche le menu
       fetchAndShowMenu();
     });
 
@@ -736,7 +712,10 @@
       const count = cart.reduce((sum, it) => sum + it.qty, 0);
       const total = cart.reduce((sum, cartItem) => {
           const menuItem = cartItem.isWok ? cartItem.details : menuItems.find(item => String(item.id) === cartItem.itemId);
-          return sum + (menuItem.prix * cartItem.qty);
+          if (menuItem) {
+            return sum + (menuItem.prix * cartItem.qty);
+          }
+          return sum; // Si l'article n'est pas trouvé, on ne l'ajoute pas au total
       }, 0);
 
       const cartFloat = document.getElementById('cart-float'); // Bouton panier desktop
@@ -887,6 +866,14 @@
           categorie: item.category,
           img: item.image_url
         }));
+
+        // Nettoyer le panier des articles qui n'existent plus
+        let cart = JSON.parse(localStorage.getItem('cart') || '[]');
+        const existingItemIds = new Set(menuItems.map(item => String(item.id)));
+        const cleanedCart = cart.filter(cartItem => {
+          return cartItem.isWok || existingItemIds.has(String(cartItem.itemId));
+        });
+        localStorage.setItem('cart', JSON.stringify(cleanedCart));
         
         showOrderUI();
         updateItemBadges();

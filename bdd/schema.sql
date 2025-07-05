@@ -1,4 +1,3 @@
-
 -- Supprime les tables si elles existent déjà pour garantir un état propre.
 -- Le "CASCADE" supprime aussi tout ce qui dépend de la table.
 DROP TABLE IF EXISTS menu_items CASCADE;
@@ -38,7 +37,96 @@ CREATE TABLE orders (
   refusal_reason TEXT -- Optional reason for refusal
 );
 
--- Activer les publications en temps réel pour la table des commandes
--- L'erreur "already exists" sur la ligne suivante est normale et peut être ignorée.
--- Elle n'empêchera pas la création des tables.
+-- On réactive la publication en temps réel pour la table des commandes
 ALTER PUBLICATION supabase_realtime ADD TABLE orders;
+
+-- Activer RLS pour les autres tables
+ALTER TABLE menu_items ENABLE ROW LEVEL SECURITY;
+ALTER TABLE restaurant_status ENABLE ROW LEVEL SECURITY;
+
+-- Politiques de sécurité pour la table des commandes
+-- On active RLS mais on bloque la lecture directe. La lecture se fera via une fonction RPC.
+ALTER TABLE orders ENABLE ROW LEVEL SECURITY;
+
+-- 1. On autorise les utilisateurs anonymes à créer des commandes.
+CREATE POLICY "Allow anonymous inserts" ON orders
+FOR INSERT TO anon WITH CHECK (true);
+
+-- 2. On bloque la lecture directe pour tout le monde.
+CREATE POLICY "Deny all direct reads" ON orders
+FOR SELECT USING (false);
+
+-- Politiques de sécurité pour les autres tables
+
+-- 1. Tout le monde peut voir le menu
+CREATE POLICY "Allow public read access to menu" ON menu_items
+FOR SELECT USING (true);
+
+-- 2. Tout le monde peut voir le statut du restaurant
+CREATE POLICY "Allow public read access to restaurant status" ON restaurant_status
+FOR SELECT USING (true);
+
+-- Fonction RPC pour récupérer une commande par son ID, en contournant RLS.
+-- C'est la méthode sécurisée pour permettre à un utilisateur non connecté de voir sa propre commande.
+CREATE OR REPLACE FUNCTION get_order(order_id_in uuid)
+RETURNS TABLE (
+    id uuid,
+    created_at timestamptz,
+    customer_name text,
+    customer_phone text,
+    customer_address text,
+    items jsonb,
+    total numeric,
+    status text,
+    delivery_slot text,
+    refusal_reason text
+)
+LANGUAGE plpgsql SECURITY DEFINER AS $$
+BEGIN
+    RETURN QUERY
+    SELECT
+        o.id,
+        o.created_at,
+        o.customer_name,
+        o.customer_phone,
+        o.customer_address,
+        o.items,
+        o.total,
+        o.status,
+        o.delivery_slot,
+        o.refusal_reason
+    FROM
+        public.orders AS o
+    WHERE
+        o.id = order_id_in;
+END;
+$$;
+
+-- On donne la permission aux utilisateurs anonymes d'appeler cette fonction.
+GRANT EXECUTE ON FUNCTION get_order(uuid) TO anon;
+
+-- Fonction pour vérifier si l'utilisateur est un administrateur
+CREATE OR REPLACE FUNCTION is_admin()
+RETURNS boolean
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS $$
+BEGIN
+  RETURN (
+    SELECT auth.jwt() ->> 'email' IN ('lilianserre@icloud.com')
+  );
+END;
+$$;
+
+-- Politiques de sécurité pour les administrateurs
+-- Les admins peuvent tout faire sur les commandes
+CREATE POLICY "Allow admin full access on orders" ON orders
+FOR ALL USING (is_admin()) WITH CHECK (is_admin());
+
+-- Les admins peuvent gérer le statut du restaurant
+CREATE POLICY "Allow admin full access on restaurant_status" ON restaurant_status
+FOR ALL USING (is_admin()) WITH CHECK (is_admin());
+
+-- Les admins peuvent gérer le menu
+CREATE POLICY "Allow admin full access on menu_items" ON menu_items
+FOR ALL USING (is_admin()) WITH CHECK (is_admin());

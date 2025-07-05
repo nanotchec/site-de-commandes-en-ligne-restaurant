@@ -1,4 +1,3 @@
-
 -- Supprime les tables Wok si elles existent déjà pour garantir un état propre.
 DROP TABLE IF EXISTS wok_bases CASCADE;
 DROP TABLE IF EXISTS wok_pulpes CASCADE;
@@ -39,3 +38,31 @@ CREATE TABLE wok_toppings (
   name TEXT NOT NULL,
   price NUMERIC NOT NULL
 );
+
+-- Enable Row Level Security (RLS) for all Wok-related tables
+ALTER TABLE wok_bases ENABLE ROW LEVEL SECURITY;
+ALTER TABLE wok_pulpes ENABLE ROW LEVEL SECURITY;
+ALTER TABLE wok_favoris ENABLE ROW LEVEL SECURITY;
+ALTER TABLE wok_sauces ENABLE ROW LEVEL SECURITY;
+ALTER TABLE wok_toppings ENABLE ROW LEVEL SECURITY;
+
+-- Create policies to allow public read access to all Wok-related tables
+CREATE POLICY "Allow public read access" ON wok_bases FOR SELECT USING (true);
+CREATE POLICY "Allow public read access" ON wok_pulpes FOR SELECT USING (true);
+CREATE POLICY "Allow public read access" ON wok_favoris FOR SELECT USING (true);
+CREATE POLICY "Allow public read access" ON wok_sauces FOR SELECT USING (true);
+CREATE POLICY "Allow public read access" ON wok_toppings FOR SELECT USING (true);
+
+-- Allow admins to manage Wok items
+CREATE POLICY "Allow admin full access on wok_bases" ON wok_bases FOR ALL USING (is_admin()) WITH CHECK (is_admin());
+CREATE POLICY "Allow admin full access on wok_pulpes" ON wok_pulpes FOR ALL USING (is_admin()) WITH CHECK (is_admin());
+CREATE POLICY "Allow admin full access on wok_favoris" ON wok_favoris FOR ALL USING (is_admin()) WITH CHECK (is_admin());
+CREATE POLICY "Allow admin full access on wok_sauces" ON wok_sauces FOR ALL USING (is_admin()) WITH CHECK (is_admin());
+CREATE POLICY "Allow admin full access on wok_toppings" ON wok_toppings FOR ALL USING (is_admin()) WITH CHECK (is_admin());
+
+-- Allow admins to manage Wok items (optional, but good practice)
+-- Note: This assumes you have a way to identify admins, e.g., via a custom claim.
+-- Example for one table, you would repeat for others.
+-- CREATE POLICY "Allow admin full access" ON wok_bases
+-- FOR ALL USING (auth.jwt() ->> 'is_admin' = 'true')
+-- WITH CHECK (auth.jwt() ->> 'is_admin' = 'true');

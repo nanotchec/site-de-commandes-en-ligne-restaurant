@@ -94,7 +94,7 @@
         return;
       }
 
-      const { data: order, error } = await supabase.from('orders').select('*').eq('id', currentDemandId).single();
+      const { data: order, error } = await supabase.rpc('get_order', { order_id_in: currentDemandId }).single();
 
       if (error) {
         console.error('Error fetching order:', error);
@@ -183,13 +183,10 @@
       }
     }
 
-    document.addEventListener('DOMContentLoaded', renderStatus);
-    supabase.channel('order_tracking').on('postgres_changes', { event: '*', schema: 'public', table: 'orders' }, payload => {
-      const currentDemandId = localStorage.getItem('currentDemandId');
-      if (payload.new.id === currentDemandId) {
-        renderStatus();
-      }
-    }).subscribe();
+    document.addEventListener('DOMContentLoaded', () => {
+      renderStatus(); // Premier appel immédiat
+      setInterval(renderStatus, 5000); // Puis, répétition toutes les 5 secondes
+    });
   </script>
 </body>
 </html>
