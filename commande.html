@@ -388,13 +388,22 @@
     }
 
     // Helpers for restaurant status
-    function getRestaurantStatus() {
-      const status = localStorage.getItem('restaurantOuvert');
-      return status === null ? true : JSON.parse(status); // Default to true if not set
+    async function getRestaurantStatusFromSupabase() {
+      try {
+        const { data, error } = await supabase.from('restaurant_status').select('is_open').eq('id', 1).single();
+        if (error) {
+          console.error('Erreur lors de la récupération du statut du restaurant:', error);
+          return true; // Default to true if error
+        }
+        return data.is_open;
+      } catch (err) {
+        console.error('Erreur lors de la connexion à Supabase:', err);
+        return true; // Default to true if error
+      }
     }
 
-    function updateRestaurantStatusUI() {
-      const isOpen = getRestaurantStatus();
+    async function updateRestaurantStatusUI() {
+      const isOpen = await getRestaurantStatusFromSupabase();
 
       // Update mobile banner
       if (restaurantClosedBannerMobile) {
@@ -433,15 +442,8 @@
     // Initial update on load
     updateRestaurantStatusUI();
 
-    // Reactive update every 10 seconds
-    setInterval(updateRestaurantStatusUI, 10000);
-
-    // Listen for storage changes from other tabs/windows
-    window.addEventListener('storage', (e) => {
-      if (e.key === 'restaurantOuvert') {
-        updateRestaurantStatusUI();
-      }
-    });
+    // Reactive update every 30 seconds
+    setInterval(updateRestaurantStatusUI, 30000);
 
     // Scroll doux pour la nav des catégories
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
@@ -487,7 +489,8 @@
     formCoords.addEventListener('submit', async (e) => {
       e.preventDefault();
 
-      if (!getRestaurantStatus()) {
+      const isOpen = await getRestaurantStatusFromSupabase();
+      if (!isOpen) {
         alert('Le restaurant est actuellement fermé. Vous ne pouvez pas passer commande.');
         return;
       }
