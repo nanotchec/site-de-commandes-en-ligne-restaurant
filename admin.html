@@ -751,7 +751,7 @@
           <td class="p-4">${order.total.toFixed(2)}€</td>
           <td class="p-4">
             ${cfg.icon || ''} 
-            <select class="border rounded px-2 py-1 status-select" data-order-id="${order.id}">
+            <select class="bg-white border rounded px-2 py-1 status-select" data-order-id="${order.id}">
               <option value="submitted"${order.status==='submitted'?' selected':''}>${statusConfig.submitted.text}</option>
               <option value="accepted"${order.status==='accepted'?' selected':''}>${statusConfig.accepted.text}</option>
               <option value="preparing"${order.status==='preparing'?' selected':''}>${statusConfig.preparing.text}</option>
@@ -774,7 +774,7 @@
           <div class="flex items-center gap-2">
             <input type="time" step="60" class="border rounded px-2 py-1 text-xs delivery-slot-input" value="${order.delivery_slot||''}" data-order-id="${order.id}">
             <span class="text-lg">${cfg.icon}</span>
-            <select class="border rounded px-1 py-1 text-sm status-select" data-order-id="${order.id}">
+            <select class="bg-white border rounded px-1 py-1 text-sm status-select" data-order-id="${order.id}">
               <option value="submitted"${order.status==='submitted'?' selected':''}>${statusConfig.submitted.text}</option>
               <option value="accepted"${order.status==='accepted'?' selected':''}>${statusConfig.accepted.text}</option>
               <option value="preparing"${order.status==='preparing'?' selected':''}>${statusConfig.preparing.text}</option>
