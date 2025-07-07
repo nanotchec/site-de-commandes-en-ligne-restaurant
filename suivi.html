@@ -265,11 +265,54 @@
         });
     }
 
+    // --- Safety Net for Mobile ---
+    // This uses the Visibility API and polling as a fallback for mobile browsers
+    // that might aggressively close the realtime connection.
+    function setupVisibilityAndPolling() {
+      let pollingInterval = null;
+      const POLLING_RATE_MS = 10000; // Check every 10 seconds
+
+      const startPolling = () => {
+        // Clear any existing interval
+        if (pollingInterval) clearInterval(pollingInterval);
+        
+        // Don't start polling if we already have a more advanced view
+        // (like "refused" or a final state)
+        if (demandStatusMessageDiv.classList.contains('hidden') && orderDetailsDiv.classList.contains('hidden')) {
+          renderStatus();
+        }
+        
+        pollingInterval = setInterval(renderStatus, POLLING_RATE_MS);
+      };
+
+      const stopPolling = () => {
+        if (pollingInterval) clearInterval(pollingInterval);
+        pollingInterval = null;
+      };
+
+      document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible') {
+          console.log('Page is visible, ensuring latest status and starting poll.');
+          // Immediately fetch status when user comes back to the tab
+          renderStatus();
+          startPolling();
+        } else {
+          console.log('Page is hidden, stopping poll to save resources.');
+          stopPolling();
+        }
+      });
+
+      // Initial check
+      if (document.visibilityState === 'visible') {
+        startPolling();
+      }
+    }
+
     document.addEventListener('DOMContentLoaded', () => {
       requestNotificationPermission();
       renderStatus(); // Premier appel immédiat
-      setupRealtimeSubscription(); // Remplacer setInterval par la souscription temps réel
-      // setInterval(renderStatus, 5000); // Ancienne méthode
+      setupRealtimeSubscription(); // Main method: fast updates
+      setupVisibilityAndPolling(); // Fallback method: robust updates
     });
   </script>
 </body>
