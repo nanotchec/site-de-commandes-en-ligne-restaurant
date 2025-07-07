@@ -83,6 +83,7 @@
     const MAX_RETRIES = 15;
     const RETRY_DELAY_MS = 250; // 250ms delay
     let notificationPermission = false;
+    let lastKnownStatus = null;
 
     async function renderStatus() {
       const currentDemandId = localStorage.getItem('currentDemandId');
@@ -246,12 +247,15 @@
     // --- Realtime and Notifications ---
 
     function handleStatusChange(newOrder) {
-      // On vérifie que le statut a changé pour éviter les notifs inutiles
-      const oldStatusElement = document.getElementById('order-status');
-      const oldStatusText = oldStatusElement ? oldStatusElement.textContent : '';
-
-      if (oldStatusText && !oldStatusText.includes(newOrder.status)) {
-         showOrderStatusNotification(newOrder);
+      // On compare le nouveau statut avec le dernier statut connu
+      if (newOrder.status !== lastKnownStatus) {
+        // On n'affiche une notification que si le statut a réellement changé
+        // et que ce n'est pas le premier chargement de la page.
+        if (lastKnownStatus !== null) {
+          showOrderStatusNotification(newOrder);
+        }
+        // On met à jour le dernier statut connu.
+        lastKnownStatus = newOrder.status;
       }
       
       // Mettre à jour l'affichage avec les nouvelles données
