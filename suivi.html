@@ -48,6 +48,12 @@
   <main class="flex-1 pt-24 pb-12 max-w-3xl mx-auto px-4 text-center">
     <h1 class="text-4xl font-extrabold text-primary mb-10">Suivi de votre commande</h1>
 
+    <div id="notification-prompt" class="hidden text-left bg-yellow-100 border-l-4 border-yellow-500 text-yellow-800 p-4 mb-6 rounded-md" role="alert">
+      <p class="font-bold">Recevez des alertes en temps réel !</p>
+      <p class="text-sm">Pour savoir exactement quand votre commande est acceptée, en préparation ou prête, nous vous conseillons vivement d'activer les notifications.</p>
+      <p id="notification-prompt-blocked" class="hidden mt-2 text-xs">Il semble que les notifications sont bloquées. Pour les réactiver, allez dans les paramètres de votre navigateur pour ce site.</p>
+    </div>
+
     <div id="demand-status-message" class="bg-white/70 backdrop-blur-sm p-8 rounded-lg shadow-md space-y-4 mb-8 hidden">
       <p class="text-lg font-semibold" id="demand-message-text"></p>
       <button id="btn-new-demand-from-suivi" class="px-6 py-3 bg-accent text-white font-bold rounded-lg shadow-md hover:shadow-lg transition hidden">Faire une nouvelle demande</button>
@@ -289,6 +295,25 @@
         });
     }
 
+    function checkAndShowNotificationPrompt() {
+      if (!('Notification' in window)) return;
+
+      const promptEl = document.getElementById('notification-prompt');
+      const blockedEl = document.getElementById('notification-prompt-blocked');
+      
+      const permission = Notification.permission;
+
+      if (permission === 'granted') {
+        promptEl.classList.add('hidden');
+      } else if (permission === 'denied') {
+        promptEl.classList.remove('hidden');
+        blockedEl.classList.remove('hidden');
+      } else { // 'default'
+        promptEl.classList.remove('hidden');
+        blockedEl.classList.add('hidden');
+      }
+    }
+
     // --- Safety Net for Mobile ---
     // This uses the Visibility API and polling as a fallback for mobile browsers
     // that might aggressively close the realtime connection.
@@ -333,6 +358,7 @@
     }
 
     document.addEventListener('DOMContentLoaded', () => {
+      checkAndShowNotificationPrompt();
       requestNotificationPermission();
       renderStatus(); // Premier appel immédiat
       setupRealtimeSubscription(); // Main method: fast updates
