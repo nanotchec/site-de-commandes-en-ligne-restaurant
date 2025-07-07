@@ -214,7 +214,8 @@
           accepted: { text: 'Votre commande a été acceptée !' },
           preparing: { text: 'Votre commande est en cours de préparation.' },
           ready: { text: 'Votre commande est prête !' },
-          delivered: { text: 'Votre commande a été livrée.' }
+          delivered: { text: 'Votre commande a été livrée.' },
+          refused: { text: `Votre demande a été refusée.${order.refusal_reason ? `\nMotif: ${order.refusal_reason}` : ''}` }
       };
       
       const statusInfo = statusConfig[order.status];
