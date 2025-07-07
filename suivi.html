@@ -224,7 +224,13 @@
         icon: './assets/icons/delivery.svg'
       };
 
-      new Notification(title, options);
+      console.log('Attempting to show notification with title:', title);
+      try {
+        new Notification(title, options);
+        console.log('Notification created successfully.');
+      } catch (err) {
+        console.error('Error showing notification:', err);
+      }
     }
 
     function setupRealtimeSubscription() {
