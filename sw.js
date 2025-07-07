@@ -27,7 +27,7 @@ self.addEventListener('notificationclick', (event) => {
     }
     // Sinon, on ouvre une nouvelle fenêtre
     if (self.clients.openWindow) {
-      return self.clients.openWindow('/');
+      return self.clients.openWindow('./index.html');
     }
   }));
 }); 

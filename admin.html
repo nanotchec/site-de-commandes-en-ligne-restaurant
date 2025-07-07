@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Thaï Garden – Dashboard admin</title>
-  <link rel="manifest" href="/manifest.json">
+  <link rel="manifest" href="manifest.json">
 
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -281,7 +281,7 @@
 
       // Enregistrer le Service Worker
       if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('/sw.js')
+        navigator.serviceWorker.register('sw.js')
           .then(reg => console.log('Service Worker registered for admin.', reg))
           .catch(err => console.error('Service Worker registration failed for admin.', err));
       }
