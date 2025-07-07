@@ -328,16 +328,21 @@
         icon: './assets/icons/delivery.svg' // Assurez-vous que cette icône existe
       };
 
+      console.log('Admin: Attempting to show new order notification.');
+
       // Utiliser navigator.serviceWorker.ready pour s'assurer que le SW est actif
       if ('serviceWorker' in navigator) {
           navigator.serviceWorker.ready.then(registration => {
+              console.log('Admin: Service Worker is ready, showing notification.');
               registration.showNotification(title, options);
           }).catch(err => {
-              console.error('SW ready Error on admin, fallback:', err);
-              try { new Notification(title, options); } catch(e) { console.error(e); }
+              console.error('Admin: SW ready Error, using fallback:', err);
+              // Fallback pour les cas où le SW échoue (ex: desktop)
+              try { new Notification(title, options); } catch(e) { console.error("Admin: Fallback notification failed:", e); }
           });
       } else {
-        try { new Notification(title, options); } catch(e) { console.error(e); }
+        console.log('Admin: No SW support, using fallback.');
+        try { new Notification(title, options); } catch(e) { console.error("Admin: Fallback notification failed:", e); }
       }
       
       // Jouer le son de notification
