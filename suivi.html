@@ -119,7 +119,13 @@
         return;
       }
 
-      // Reset retry count if order is found
+      // Si la commande est trouvée, mettre à jour l'affichage
+      updateOrderView(order);
+    }
+
+    // Nouvelle fonction centralisée pour mettre à jour l'affichage
+    function updateOrderView(order) {
+      // Reset retry count if order is processed
       retryCount = 0;
 
       if (order.status === 'submitted') {
@@ -235,16 +241,19 @@
             }, 
             (payload) => {
               console.log('Changement de statut reçu!', payload.new);
-              const newStatusOrder = payload.new;
+              const newOrder = payload.new;
 
               // On vérifie que le statut a changé pour éviter les notifs inutiles
               const oldStatusElement = document.getElementById('order-status');
-              if (oldStatusElement && !oldStatusElement.textContent.includes(newStatusOrder.status)) {
-                 showOrderStatusNotification(newStatusOrder);
+              // Petite vérification pour s'assurer que l'élément existe avant de lire son contenu
+              const oldStatusText = oldStatusElement ? oldStatusElement.textContent : '';
+
+              if (oldStatusText && !oldStatusText.includes(newOrder.status)) {
+                 showOrderStatusNotification(newOrder);
               }
 
-              // Mettre à jour l'affichage
-              renderStatus();
+              // Mettre à jour l'affichage directement avec les nouvelles données, sans re-fetch
+              updateOrderView(newOrder);
             }
         )
         .subscribe((status, err) => {
