@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Thaï Garden – Suivi de commande</title>
+  <link rel="manifest" href="/manifest.json">
 
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -225,11 +226,26 @@
       };
 
       console.log('Attempting to show notification with title:', title);
-      try {
-        new Notification(title, options);
-        console.log('Notification created successfully.');
-      } catch (err) {
-        console.error('Error showing notification:', err);
+      
+      if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+          navigator.serviceWorker.getRegistration().then(reg => {
+              if (reg) {
+                  reg.showNotification(title, options);
+                  console.log('Notification sent to Service Worker.');
+              } else {
+                  console.log('Service Worker registration not found.');
+              }
+          }).catch(err => {
+              console.error('Service Worker registration error:', err);
+          });
+      } else {
+          // Fallback pour les cas où le SW n'est pas actif (ex: desktop sans SW)
+          try {
+            new Notification(title, options);
+            console.log('Notification created successfully (fallback).');
+          } catch (err) {
+            console.error('Error showing fallback notification:', err);
+          }
       }
     }
 
@@ -322,6 +338,16 @@
       renderStatus(); // Premier appel immédiat
       setupRealtimeSubscription(); // Main method: fast updates
       setupVisibilityAndPolling(); // Fallback method: robust updates
+
+      // Enregistrer le Service Worker
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/sw.js')
+          .then(registration => {
+            console.log('Service Worker registered with scope:', registration.scope);
+          }).catch(error => {
+            console.log('Service Worker registration failed:', error);
+          });
+      }
     });
   </script>
 </body>

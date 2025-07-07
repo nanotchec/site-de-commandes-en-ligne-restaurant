@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Thaï Garden – Dashboard admin</title>
+  <link rel="manifest" href="/manifest.json">
 
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -278,6 +279,13 @@
       // Demander la permission pour les notifications
       requestNotificationPermission();
 
+      // Enregistrer le Service Worker
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/sw.js')
+          .then(reg => console.log('Service Worker registered for admin.', reg))
+          .catch(err => console.error('Service Worker registration failed for admin.', err));
+      }
+
       // Toutes les fonctions d'initialisation de l'ancien code vont ici
       getRestaurantStatus().then(updateRestaurantStatusDisplay);
       toggleRestaurant.addEventListener('change', e => {
@@ -318,7 +326,14 @@
         icon: './assets/icons/delivery.svg' // Assurez-vous que cette icône existe
       };
 
-      new Notification(title, options);
+      if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+          navigator.serviceWorker.getRegistration().then(reg => {
+              if (reg) reg.showNotification(title, options);
+          });
+      } else {
+        // Fallback pour desktop
+        try { new Notification(title, options); } catch(e) { console.error(e); }
+      }
       
       // Jouer le son de notification
       notificationSound.play().catch(err => console.error("Erreur lecture son:", err));
