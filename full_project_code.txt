@@ -1,10 +1,8 @@
 --- .gitignore ---
-
 .DS_Store
 
 
 --- README.md ---
-
 Voici le README.md complet à copier-coller, tout au format Markdown, sans coupure ni oubli :
 
 # Site de commandes en ligne – Restaurant Thaï Garden
@@ -116,7 +114,6 @@ https://creativecommons.org/licenses/by-nc/4.0/legalcode
 
 
 --- admin.html ---
-
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -162,245 +159,417 @@ https://creativecommons.org/licenses/by-nc/4.0/legalcode
 </head>
 <body class="min-h-screen bg-gradient-to-b from-gray-50 to-white text-gray-800">
 
-  <!-- Header -->
-  <header class="fixed top-0 w-full bg-white/70 backdrop-blur-sm shadow z-50">
-    <!-- Top bar -->
-    <div class="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 py-4 px-6">
-      <span class="text-2xl font-bold text-primary">Dashboard Thaï Garden</span>
-      <div class="flex items-center space-x-2">
-        <span class="text-gray-700 font-medium">Restaurant:</span>
-        <label for="toggle-restaurant-status" class="flex items-center cursor-pointer">
-          <div class="relative">
-            <input type="checkbox" id="toggle-restaurant-status" class="sr-only">
-            <div class="block bg-gray-600 w-14 h-8 rounded-full"></div>
-            <div class="dot absolute left-1 top-1 bg-white w-6 h-6 rounded-full transition"></div>
-          </div>
-          <div id="restaurant-status-text" class="ml-3 text-gray-700 font-semibold">Fermé</div>
-        </label>
-      </div>
-      <a href="index.html" class="text-accent font-semibold hover:underline hidden sm:inline-block">← Retour au site</a>
-    </div>
-    <!-- Secondary navigation -->
-    <nav class="border-t border-gray-200 overflow-x-auto">
-        <div class="max-w-5xl mx-auto flex flex-nowrap sm:flex-wrap gap-4 px-6">
-             <button id="tab-demandes" class="flex items-center gap-2 py-3 px-4 border-b-2 border-accent font-semibold flex-shrink-0">
-                Demandes <span id="badge-demandes" class="ml-1 bg-red-500 text-white rounded-full px-2 text-sm hidden">0</span>
-            </button>
-            <button id="tab-commandes" class="flex items-center gap-2 py-3 px-4 text-gray-600 hover:text-primary flex-shrink-0">
-                Commandes <span id="badge-commandes" class="ml-1 bg-red-500 text-white rounded-full px-2 text-sm hidden">0</span>
-            </button>
-             <button id="tab-historique" class="flex items-center gap-2 py-3 px-4 text-gray-600 hover:text-primary flex-shrink-0">
-                Historique
-            </button>
+  <!-- Section de connexion (visible si non authentifié) -->
+  <div id="auth-section" class="flex items-center justify-center min-h-screen">
+    <div class="p-8 bg-white rounded-lg shadow-md w-full max-w-sm">
+      <h2 class="text-2xl font-bold text-center text-primary mb-6">Connexion Admin</h2>
+      <form id="login-form" class="space-y-4">
+        <div>
+          <label for="email" class="block mb-1 font-medium">Email</label>
+          <input type="email" id="email" required class="w-full px-3 py-2 border rounded-md focus:ring-accent focus:ring">
         </div>
-    </nav>
-  </header>
+        <div>
+          <label for="password" class="block mb-1 font-medium">Mot de passe</label>
+          <input type="password" id="password" required class="w-full px-3 py-2 border rounded-md focus:ring-accent focus:ring">
+        </div>
+        <button type="submit" class="w-full py-3 bg-accent text-white font-bold rounded-lg hover:shadow-lg transition">Se connecter</button>
+        <p id="auth-error" class="text-red-500 text-sm text-center hidden"></p>
+      </form>
+    </div>
+  </div>
 
-  <main class="pt-44 sm:pt-32 pb-12 max-w-5xl mx-auto">
+  <!-- Contenu principal de l'admin (caché si non authentifié) -->
+  <div id="admin-dashboard" class="hidden">
+    <!-- Header -->
+    <header class="fixed top-0 w-full bg-white/70 backdrop-blur-sm shadow z-50">
+      <!-- Top bar -->
+      <div class="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 py-4 px-6">
+        <span class="text-2xl font-bold text-primary">Dashboard Thaï Garden</span>
+        <div class="flex items-center space-x-2">
+          <span class="text-gray-700 font-medium">Restaurant:</span>
+          <label for="toggle-restaurant-status" class="flex items-center cursor-pointer">
+            <div class="relative">
+              <input type="checkbox" id="toggle-restaurant-status" class="sr-only">
+              <div class="block bg-gray-600 w-14 h-8 rounded-full"></div>
+              <div class="dot absolute left-1 top-1 bg-white w-6 h-6 rounded-full transition"></div>
+            </div>
+            <div id="restaurant-status-text" class="ml-3 text-gray-700 font-semibold">Fermé</div>
+          </label>
+        </div>
+        <button id="btn-logout" class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300">Déconnexion</button>
+        <a href="index.html" class="text-accent font-semibold hover:underline hidden sm:inline-block">← Retour au site</a>
+      </div>
+      <!-- Secondary navigation -->
+      <nav class="border-t border-gray-200 overflow-x-auto">
+        <div class="max-w-5xl mx-auto flex flex-nowrap sm:flex-wrap gap-4 px-6">
+          <button id="tab-demandes" class="flex items-center gap-2 py-3 px-4 border-b-2 border-accent font-semibold flex-shrink-0">
+            Demandes <span id="badge-demandes" class="ml-1 bg-red-500 text-white rounded-full px-2 text-sm hidden">0</span>
+          </button>
+          <button id="tab-commandes" class="flex items-center gap-2 py-3 px-4 text-gray-600 hover:text-primary flex-shrink-0">
+            Commandes <span id="badge-commandes" class="ml-1 bg-red-500 text-white rounded-full px-2 text-sm hidden">0</span>
+          </button>
+          <button id="tab-historique" class="flex items-center gap-2 py-3 px-4 text-gray-600 hover:text-primary flex-shrink-0">
+            Historique
+          </button>
+        </div>
+      </nav>
+    </header>
 
-    <div id="view-demandes" class="px-4">
+    <main class="pt-44 sm:pt-32 pb-12 max-w-5xl mx-auto">
+
+      <div id="view-demandes" class="px-4">
         <!-- Demandes en attente -->
         <h1 class="text-4xl font-extrabold text-primary text-center mb-10">Demandes en attente</h1>
         <div id="pending-container" class="space-y-4"></div>
-    </div>
+      </div>
 
-    <div id="view-commandes" class="hidden">
+      <div id="view-commandes" class="hidden">
         <h1 class="text-4xl font-extrabold text-primary text-center mb-10 px-4">Commandes</h1>
         <!-- Liste mobile (cartes) -->
         <div id="commandes-cards" class="space-y-4 md:hidden"></div>
         <div class="overflow-x-auto px-0 md:px-4 hidden md:block">
           <table class="w-full text-left border-collapse text-xs sm:text-sm">
-              <thead>
-                <tr class="border-b">
-                  <th class="p-4">Client</th>
-                  <th class="hidden md:table-cell p-4">Adresse</th>
-                  <th class="p-4">Créneau</th>
-                  <th class="p-4">Contenu</th>
-                  <th class="p-4">Total</th>
-                  <th class="p-4">Statut</th>
-                  <th class="p-4">Action</th>
-                </tr>
-              </thead>
-              <tbody id="commandes-body">
-                <!-- Les lignes de commande seront injectées ici par le JS -->
-              </tbody>
+            <thead>
+              <tr class="border-b">
+                <th class="p-4">Client</th>
+                <th class="hidden md:table-cell p-4">Adresse</th>
+                <th class="p-4">Créneau</th>
+                <th class="p-4">Contenu</th>
+                <th class="p-4">Total</th>
+                <th class="p-4">Statut</th>
+                <th class="p-4">Action</th>
+              </tr>
+            </thead>
+            <tbody id="commandes-body">
+              <!-- Les lignes de commande seront injectées ici par le JS -->
+            </tbody>
           </table>
         </div>
-    </div>
+      </div>
 
-    <div id="view-historique" class="px-4 hidden">
+      <div id="view-historique" class="px-4 hidden">
         <h1 class="text-4xl font-extrabold text-primary text-center mb-10">Historique des demandes</h1>
         <div id="history-container" class="space-y-4"></div>
+      </div>
+
+    </main>
+
+    <!-- Order Detail Drawer -->
+    <div id="order-drawer" class="fixed inset-y-0 right-0 w-full md:w-96 bg-white shadow-lg transform translate-x-full transition-transform z-[60]" role="dialog" aria-modal="true">
+      <header class="flex justify-between items-center p-4 border-b">
+        <h3 id="drawer-title" class="text-xl font-semibold"></h3>
+        <button id="drawer-close" class="text-gray-600 hover:text-gray-800" aria-label="Fermer le panneau de détails">✖️</button>
+      </header>
+      <div id="drawer-content" class="p-4 overflow-y-auto h-[calc(100%-64px)]"></div>
     </div>
 
-  </main>
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed bottom-4 right-4 p-4 bg-gray-800 text-white rounded-lg shadow-lg opacity-0 transition-opacity duration-300 z-[70]" role="alert"></div>
 
-
-
-
-
-  <template id="request-template">
-    <div class="bg-white p-4 rounded-lg shadow-md flex flex-col">
-      <div>
-        <p class="text-lg font-semibold req-name"></p>
-        <p class="text-gray-600 req-mode"></p>
-        <p class="text-gray-600 req-phone"></p>
-        <p class="text-gray-600 req-adresse"></p>
-      </div>
-      <div class="request-details mt-4"></div>
-      <div class="flex gap-2 mt-4 self-end">
-        <button class="px-4 py-2 bg-red-500 text-white rounded btn-refuse">Refuser</button>
-        <button class="px-4 py-2 bg-green-500 text-white rounded btn-accept">Accepter</button>
+    <!-- Delivery Slot Modal -->
+    <div id="delivery-slot-modal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-[80]">
+      <div class="bg-white p-8 rounded-lg shadow-xl max-w-sm w-full text-center">
+        <h3 class="text-2xl font-semibold text-primary mb-6">Saisir le créneau de livraison</h3>
+        <input type="time" id="delivery-slot-input" step="60" class="border rounded px-3 py-2 text-lg w-full mb-6">
+        <div class="flex justify-center gap-4">
+          <button id="btn-confirm-slot" class="px-6 py-3 bg-accent text-white font-bold rounded-lg shadow-md hover:shadow-lg transition">Confirmer</button>
+          <button id="btn-later-slot" class="px-6 py-3 bg-gray-300 text-gray-800 rounded-lg hover:bg-gray-400 transition">Plus tard</button>
+        </div>
       </div>
     </div>
-  </template>
 
-  
+    <!-- Refusal Reason Modal -->
+    <div id="refusal-reason-modal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-[80]">
+      <div class="bg-white p-8 rounded-lg shadow-xl max-w-md w-full">
+        <h3 class="text-2xl font-semibold text-primary mb-6 text-center">Motif de refus</h3>
+        <div id="refusal-reasons-list" class="space-y-3 mb-6"></div>
+        <textarea id="other-reason-input" class="hidden w-full border rounded px-3 py-2 mb-6" rows="3" placeholder="Précisez le motif..."></textarea>
+        <div class="flex justify-center gap-4">
+          <button id="btn-confirm-refusal" class="px-6 py-3 bg-red-500 text-white font-bold rounded-lg shadow-md hover:shadow-lg transition">Confirmer le refus</button>
+          <button id="btn-cancel-refusal" class="px-6 py-3 bg-gray-300 text-gray-800 rounded-lg hover:bg-gray-400 transition">Annuler</button>
+        </div>
+      </div>
+    </div>
 
-  <!-- Order Detail Drawer -->
-  <div id="order-drawer" class="fixed inset-y-0 right-0 w-full md:w-96 bg-white shadow-lg transform translate-x-full transition-transform z-[60]" role="dialog" aria-modal="true">
-    <header class="flex justify-between items-center p-4 border-b">
-      <h3 id="drawer-title" class="text-xl font-semibold"></h3>
-      <button id="drawer-close" class="text-gray-600 hover:text-gray-800" aria-label="Fermer le panneau de détails">✖️</button>
-    </header>
-    <div id="drawer-content" class="p-4 overflow-y-auto h-[calc(100%-64px)]"></div>
+    <!-- Request Template -->
+    <template id="request-template">
+      <div class="bg-white p-4 rounded-lg shadow-md flex flex-col">
+        <div>
+          <p class="text-lg font-semibold req-name"></p>
+          <p class="text-gray-600 req-phone"></p>
+          <p class="text-gray-600 req-adresse"></p>
+        </div>
+        <div class="request-details mt-4"></div>
+        <div class="flex gap-2 mt-4 self-end">
+          <button class="px-4 py-2 bg-red-500 text-white rounded btn-refuse">Refuser</button>
+          <button class="px-4 py-2 bg-green-500 text-white rounded btn-accept">Accepter</button>
+        </div>
+      </div>
+    </template>
   </div>
 
-  <!-- Toast Notification -->
-  <div id="toast" class="fixed bottom-4 right-4 p-4 bg-gray-800 text-white rounded-lg shadow-lg opacity-0 transition-opacity duration-300 z-[70]" role="alert"></div>
+  <script type="module">
+    import { supabase } from './js/supabase-client.js';
 
-  <!-- Delivery Slot Modal -->
-  <div id="delivery-slot-modal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-[80]">
-    <div class="bg-white p-8 rounded-lg shadow-xl max-w-sm w-full text-center">
-      <h3 class="text-2xl font-semibold text-primary mb-6">Saisir le créneau de livraison</h3>
-      <input type="time" id="delivery-slot-input" class="border rounded px-3 py-2 text-lg w-full mb-6">
-      <div class="flex justify-center gap-4">
-        <button id="btn-confirm-slot" class="px-6 py-3 bg-accent text-white font-bold rounded-lg shadow-md hover:shadow-lg transition">Confirmer</button>
-        <button id="btn-later-slot" class="px-6 py-3 bg-gray-300 text-gray-800 rounded-lg hover:bg-gray-400 transition">Plus tard</button>
-      </div>
-    </div>
-  </div>
+    // --- Sections principales ---
+    const authSection = document.getElementById('auth-section');
+    const adminDashboard = document.getElementById('admin-dashboard');
+    const loginForm = document.getElementById('login-form');
+    const authError = document.getElementById('auth-error');
+    const btnLogout = document.getElementById('btn-logout');
 
-  <!-- Refusal Reason Modal -->
-  <div id="refusal-reason-modal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-[80]">
-    <div class="bg-white p-8 rounded-lg shadow-xl max-w-md w-full">
-      <h3 class="text-2xl font-semibold text-primary mb-6 text-center">Motif de refus</h3>
-      <div id="refusal-reasons-list" class="space-y-3 mb-6">
-        <!-- Reasons will be injected here -->
-      </div>
-      <textarea id="other-reason-input" class="hidden w-full border rounded px-3 py-2 mb-6" rows="3" placeholder="Précisez le motif..."></textarea>
-      <div class="flex justify-center gap-4">
-        <button id="btn-confirm-refusal" class="px-6 py-3 bg-red-500 text-white font-bold rounded-lg shadow-md hover:shadow-lg transition">Confirmer le refus</button>
-        <button id="btn-cancel-refusal" class="px-6 py-3 bg-gray-300 text-gray-800 rounded-lg hover:bg-gray-400 transition">Annuler</button>
-      </div>
-    </div>
-  </div>
-
-</body>
-
-  <script>
-    /* === Simu base locale : tableau localStorage 'demandes' === */
-    function loadDemandes() {
-      return JSON.parse(localStorage.getItem('demandes') || '[]');
-    }
-    function saveDemandes(data) {
-      localStorage.setItem('demandes', JSON.stringify(data));
-    }
-
-    function loadCommandes() {
-        return JSON.parse(localStorage.getItem('commandes') || '[]');
-    }
-
-    function saveCommandes(data) {
-        localStorage.setItem('commandes', JSON.stringify(data));
-    }
-
-    const refusalReasons = [
+    // --- Constantes et éléments DOM ---
+    const refusalReasons       = [
       "Restaurant complet pour ce créneau.",
       "Zone de livraison non desservie.",
       "Problème technique, veuillez réessayer plus tard.",
       "Informations incomplètes ou incorrectes.",
       "Autre (préciser)"
     ];
-
-    const commandesBody = document.getElementById('commandes-body');
-
-    const pendingEl   = document.getElementById('pending-container');
-    const historyEl   = document.getElementById('history-container');
-    const tpl         = document.getElementById('request-template');
-    let currentId     = null; // id de la demande en cours
-
-    const tabDemandes = document.getElementById('tab-demandes');
-    const tabCommandes = document.getElementById('tab-commandes');
-    const tabHistorique = document.getElementById('tab-historique');
-    const viewDemandes = document.getElementById('view-demandes');
-    const viewCommandes = document.getElementById('view-commandes');
-    const viewHistorique = document.getElementById('view-historique');
-
-    const badgeDemandes = document.getElementById('badge-demandes');
-    const badgeCommandes = document.getElementById('badge-commandes');
-
-    const drawer = document.getElementById('order-drawer');
-    const drawerTitle = document.getElementById('drawer-title');
-    const drawerContent = document.getElementById('drawer-content');
-    const drawerClose = document.getElementById('drawer-close');
-    const toast = document.getElementById('toast');
-    const deliverySlotModal = document.getElementById('delivery-slot-modal');
-    const deliverySlotInput = document.getElementById('delivery-slot-input');
-    const btnConfirmSlot = document.getElementById('btn-confirm-slot');
-    const btnLaterSlot = document.getElementById('btn-later-slot');
-    const refusalReasonModal = document.getElementById('refusal-reason-modal');
-    const refusalReasonsList = document.getElementById('refusal-reasons-list');
-    const otherReasonInput = document.getElementById('other-reason-input');
-    const btnConfirmRefusal = document.getElementById('btn-confirm-refusal');
-    const btnCancelRefusal = document.getElementById('btn-cancel-refusal');
-
-    // Restaurant status toggle
-    const toggleRestaurantStatus = document.getElementById('toggle-restaurant-status');
+    const commandesBody        = document.getElementById('commandes-body');
+    const commandesCards       = document.getElementById('commandes-cards');
+    const pendingEl            = document.getElementById('pending-container');
+    const historyEl            = document.getElementById('history-container');
+    const tpl                  = document.getElementById('request-template');
+    const toggleRestaurant     = document.getElementById('toggle-restaurant-status');
     const restaurantStatusText = document.getElementById('restaurant-status-text');
+    const drawer               = document.getElementById('order-drawer');
+    const drawerTitle          = document.getElementById('drawer-title');
+    const drawerContent        = document.getElementById('drawer-content');
+    const drawerClose          = document.getElementById('drawer-close');
+    const toast                = document.getElementById('toast');
+    const deliverySlotModal    = document.getElementById('delivery-slot-modal');
+    const deliverySlotInput    = document.getElementById('delivery-slot-input');
+    const btnConfirmSlot       = document.getElementById('btn-confirm-slot');
+    const btnLaterSlot         = document.getElementById('btn-later-slot');
+    const refusalReasonModal   = document.getElementById('refusal-reason-modal');
+    const refusalReasonsList   = document.getElementById('refusal-reasons-list');
+    const otherReasonInput     = document.getElementById('other-reason-input');
+    const btnConfirmRefusal    = document.getElementById('btn-confirm-refusal');
+    const btnCancelRefusal     = document.getElementById('btn-cancel-refusal');
 
-    function getRestaurantStatus() {
-      const status = localStorage.getItem('restaurantOuvert');
-      return status === null ? true : JSON.parse(status); // Default to true if not set
+    let currentDemandeToAccept = null;
+    let currentDemandeToRefuse = null;
+
+    // --- Gestion de l'authentification ---
+    async function checkSession() {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        authSection.classList.add('hidden');
+        adminDashboard.classList.remove('hidden');
+        initializeApp(); // Lancer l'app principale
+      } else {
+        authSection.classList.remove('hidden');
+        adminDashboard.classList.add('hidden');
+      }
     }
 
-    function setRestaurantStatus(isOpen) {
-      localStorage.setItem('restaurantOuvert', JSON.stringify(isOpen));
+    loginForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      authError.classList.add('hidden');
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) {
+        authError.textContent = "Erreur de connexion : " + error.message;
+        authError.classList.remove('hidden');
+      } else {
+        checkSession(); // Re-vérifier la session pour afficher le dashboard
+      }
+    });
+
+    btnLogout.addEventListener('click', async () => {
+      await supabase.auth.signOut();
+      checkSession();
+    });
+
+    // --- Initialisation ---
+    // On vérifie la session au chargement de la page
+    checkSession();
+    
+    function initializeApp() {
+      // Toutes les fonctions d'initialisation de l'ancien code vont ici
+      getRestaurantStatus().then(updateRestaurantStatusDisplay);
+      toggleRestaurant.addEventListener('change', e => {
+        setRestaurantStatus(e.target.checked);
+        showToast(`Restaurant ${e.target.checked ? 'ouvert' : 'fermé'}.`);
+      });
+
+      // Lancer la récupération des données
+      fetchAndRenderAll();
+
+      // Mettre en place l'écoute des changements en temps réel
+      supabase.channel('orders_admin').on('postgres_changes', { event: '*', schema: 'public', table: 'orders' }, fetchAndRenderAll).subscribe();
+    }
+
+    // --- Gestion du statut du restaurant ---
+    async function getRestaurantStatus() {
+      const { data, error } = await supabase.from('restaurant_status').select('is_open').single();
+      if (error) { console.error(error); return true; }
+      return data.is_open;
+    }
+    async function setRestaurantStatus(isOpen) {
+      const { error } = await supabase.from('restaurant_status').update({ is_open: isOpen }).eq('id', 1);
+      if (error) { console.error(error); return; }
       updateRestaurantStatusDisplay(isOpen);
     }
-
     function updateRestaurantStatusDisplay(isOpen) {
-      toggleRestaurantStatus.checked = isOpen;
+      toggleRestaurant.checked = isOpen;
       restaurantStatusText.textContent = isOpen ? 'Ouvert' : 'Fermé';
       restaurantStatusText.classList.toggle('text-green-600', isOpen);
       restaurantStatusText.classList.toggle('text-red-600', !isOpen);
     }
 
-    // Initialize status on load
-    updateRestaurantStatusDisplay(getRestaurantStatus());
-
-    toggleRestaurantStatus.addEventListener('change', (event) => {
-      setRestaurantStatus(event.target.checked);
-      showToast(`Restaurant ${event.target.checked ? 'ouvert' : 'fermé'}.`);
+    // --- Drawer détails commande ---
+    drawerClose.onclick = () => closeDrawer();
+    function openDetailsDrawer(orderId) {
+      supabase.from('orders').select('*').eq('id', orderId).single()
+        .then(({ data: order, error }) => {
+          if (error || !order) { console.error(error); return; }
+          // Si déjà ouvert sur la même commande, on ferme
+          if (!drawer.classList.contains('translate-x-full') &&
+              drawerTitle.textContent.includes(order.id.slice(4))) {
+            closeDrawer();
+            return;
+          }
+          drawerTitle.textContent = `Commande #${order.id.slice(4)}`;
+          const itemsHtml = order.items.map(item => {
+            if (item.isWok && item.details) {
+              return `
+                <li class="mb-2">
+                  <strong>${item.name} (${item.quantity})</strong>
+                  <ul class="list-disc list-inside pl-4 text-sm">
+                    <li><strong>Base:</strong> ${item.details.base}</li>
+                    <li><strong>Pulpes:</strong> ${item.details.pulpes.join(', ') || 'Aucune'}</li>
+                    <li><strong>Favoris:</strong> ${item.details.favoris.join(', ') || 'Aucun'}</li>
+                    <li><strong>Sauce:</strong> ${item.details.sauce}</li>
+                    <li><strong>Toppings:</strong> ${item.details.toppings.join(', ') || 'Aucun'}</li>
+                  </ul>
+                </li>`;
+            } else {
+              return `<li>- ${item.name} (${item.quantity})</li>`;
+            }
+          }).join('');
+          drawerContent.innerHTML = `
+            <p><strong>Client:</strong> ${order.customer_name}</p>
+            <p><strong>Adresse:</strong> ${order.customer_address}</p>
+            <p><strong>Téléphone:</strong> ${order.customer_phone}</p>
+            <p><strong>Créneau:</strong> ${order.delivery_slot || 'Non défini'}</p>
+            <p><strong>Total:</strong> ${order.total.toFixed(2)}€</p>
+            <h4 class="font-semibold mt-4">Articles:</h4>
+            <ul>${itemsHtml}</ul>
+          `;
+          drawer.classList.remove('translate-x-full');
+        });
+    }
+    function closeDrawer() {
+      drawer.classList.add('translate-x-full');
+      showToast(`Détails de la commande fermés.`);
+    }
+    document.addEventListener('click', event => {
+      const inside = drawer.contains(event.target);
+      const isButton = event.target.classList.contains('text-accent');
+      if (!inside && !isButton && !drawer.classList.contains('translate-x-full')) {
+        closeDrawer();
+      }
     });
 
-    drawerClose.onclick = () => closeDrawer();
+    // --- Toast ---
+    function showToast(msg) {
+      toast.textContent = msg;
+      toast.classList.remove('hidden');
+      toast.offsetWidth; // reflow
+      toast.classList.add('opacity-100');
+      setTimeout(() => {
+        toast.classList.remove('opacity-100');
+        toast.addEventListener('transitionend', () => toast.classList.add('hidden'), { once: true });
+      }, 4000);
+    }
 
-    let currentDemandeToAccept = null; // Store the demand object temporarily
-    let currentDemandeToRefuse = null; // Store the demand object temporarily
+    // --- Outils de rendu et filtres ---
+    function setActiveTab(tab) {
+      const tabs  = [ 'tab-demandes', 'tab-commandes', 'tab-historique' ].map(id => document.getElementById(id));
+      const views = [ 'view-demandes', 'view-commandes', 'view-historique' ].map(id => document.getElementById(id));
+      tabs.forEach((t,i) => {
+        if (t === tab) {
+          t.classList.add('border-b-2','border-accent','font-semibold');
+          t.classList.remove('text-gray-600','hover:text-primary');
+          views[i].classList.remove('hidden');
+        } else {
+          t.classList.remove('border-b-2','border-accent','font-semibold');
+          t.classList.add('text-gray-600','hover:text-primary');
+          views[i].classList.add('hidden');
+        }
+      });
+    }
+    document.getElementById('tab-demandes').addEventListener('click', () => setActiveTab(document.getElementById('tab-demandes')));
+    document.getElementById('tab-commandes').addEventListener('click', () => setActiveTab(document.getElementById('tab-commandes')));
+    document.getElementById('tab-historique').addEventListener('click', () => setActiveTab(document.getElementById('tab-historique')));
 
-    btnConfirmSlot.addEventListener('click', () => {
-      const slot = deliverySlotInput.value;
+    async function render() {
+      const { data: orders, error } = await supabase.from('orders')
+        .select('*')
+        .order('created_at', { ascending: false });
+      if (error) { console.error(error); return; }
+      const demandes   = orders.filter(o => o.status === 'submitted' || o.status === 'pending');
+      const commandes  = orders.filter(o => ['accepted','preparing','ready','delivered'].includes(o.status));
+      const historique = orders.filter(o => ['accepted','refused','delivered','preparing','ready'].includes(o.status));
+      renderDemandes(demandes);
+      renderCommandes(commandes);
+      renderHistorique(historique);
+      updateBadges(demandes, commandes);
+    }
+
+    function updateBadges(demandes, commandes) {
+      const bd = document.getElementById('badge-demandes');
+      const bc = document.getElementById('badge-commandes');
+      bd.textContent = demandes.length;
+      bd.classList.toggle('hidden', demandes.length === 0);
+      const activeCmd = commandes.filter(o => o.status !== 'delivered').length;
+      bc.textContent = activeCmd;
+      bc.classList.toggle('hidden', activeCmd === 0);
+    }
+
+    // --- Mises à jour statuts ---
+    async function updateOrderStatus(orderId, newStatus) {
+      const { error } = await supabase.from('orders').update({ status: newStatus }).eq('id', orderId);
+      if (error) { console.error(error); showToast(`Erreur lors de la mise à jour du statut.`); return; }
+      render();
+      showToast(`Commande marquée comme ${statusConfig[newStatus].text}.`);
+    }
+
+    async function updateDeliverySlot(orderId, newSlot) {
+      const { error } = await supabase.from('orders').update({ delivery_slot: newSlot }).eq('id', orderId);
+      if (error) { console.error(error); showToast(`Erreur lors de la mise à jour du créneau de livraison.`); return; }
+      render();
+      showToast(`Créneau de livraison mis à jour pour la commande #${orderId.slice(4)}.`);
+    }
+
+    // Mise à jour pour refus/acceptation de demande
+    async function updateStatut(orderId, newStatus, reason = null) {
+      const updates = { status: newStatus };
+      if (newStatus === 'refused' && reason) updates.refusal_reason = reason;
+      const { error } = await supabase.from('orders').update(updates).eq('id', orderId);
+      if (error) { console.error(error); showToast(`Erreur lors de la mise à jour du statut.`); return; }
+      render();
+      showToast(`Demande ${newStatus === 'refused' ? 'refusée' : 'acceptée'}.`);
+    }
+
+    // --- Flux d'acceptation de demande ---
+    const btnConfirmSlotElem = document.getElementById('btn-confirm-slot');
+    const btnLaterSlotElem   = document.getElementById('btn-later-slot');
+
+    btnConfirmSlotElem.addEventListener('click', () => {
+      const slot = deliverySlotInput.value || null;
       if (currentDemandeToAccept) {
         createCommandFromDemand(currentDemandeToAccept, slot);
         deliverySlotModal.classList.add('hidden');
         currentDemandeToAccept = null;
       }
     });
-
-    btnLaterSlot.addEventListener('click', () => {
+    btnLaterSlotElem.addEventListener('click', () => {
       if (currentDemandeToAccept) {
-        createCommandFromDemand(currentDemandeToAccept, ''); // Empty slot
+        createCommandFromDemand(currentDemandeToAccept, null);
         deliverySlotModal.classList.add('hidden');
         currentDemandeToAccept = null;
       }
@@ -408,406 +577,645 @@ https://creativecommons.org/licenses/by-nc/4.0/legalcode
 
     btnConfirmRefusal.addEventListener('click', () => {
       let selectedReason = '';
-      const selectedRadio = refusalReasonsList.querySelector('input[name="refusal-reason"]:checked');
-      if (selectedRadio) {
-        selectedReason = selectedRadio.value;
-        if (selectedReason === 'Autre (préciser)') {
-          selectedReason = otherReasonInput.value.trim();
-        }
+      const sel = refusalReasonsList.querySelector('input[name="refusal-reason"]:checked');
+      if (sel) {
+        selectedReason = sel.value === 'Autre (préciser)' ? otherReasonInput.value.trim() : sel.value;
       }
-
       if (currentDemandeToRefuse && selectedReason) {
         updateStatut(currentDemandeToRefuse.id, 'refused', selectedReason);
         refusalReasonModal.classList.add('hidden');
-        currentDemandeToRefuse = null;
         otherReasonInput.classList.add('hidden');
         otherReasonInput.value = '';
+        currentDemandeToRefuse = null;
       } else {
-        showToast('Veuillez sélectionner un motif de refus ou préciser "Autre".');
+        showToast(`Veuillez sélectionner un motif de refus ou préciser "Autre".`);
       }
     });
-
     btnCancelRefusal.addEventListener('click', () => {
       refusalReasonModal.classList.add('hidden');
-      currentDemandeToRefuse = null;
       otherReasonInput.classList.add('hidden');
       otherReasonInput.value = '';
+      currentDemandeToRefuse = null;
     });
 
-    function promptForRefusalReason(demandeId) {
-      const demandes = loadDemandes();
-      currentDemandeToRefuse = demandes.find(d => d.id === demandeId);
-      if (!currentDemandeToRefuse) return;
-
-      refusalReasonsList.innerHTML = '';
-      refusalReasons.forEach((reason, index) => {
-        const div = document.createElement('div');
-        div.className = 'flex items-center';
-        const input = document.createElement('input');
-        input.type = 'radio';
-        input.name = 'refusal-reason';
-        input.id = `reason-${index}`;
-        input.value = reason;
-        input.className = 'mr-2';
-        input.addEventListener('change', () => {
-          if (reason === 'Autre (préciser)') {
-            otherReasonInput.classList.remove('hidden');
-            otherReasonInput.focus();
-          } else {
-            otherReasonInput.classList.add('hidden');
-            otherReasonInput.value = '';
-          }
+    function promptForRefusalReason(id) {
+      supabase.from('orders').select('*').eq('id', id).single()
+        .then(({ data, error }) => {
+          if (error) { console.error(error); return; }
+          currentDemandeToRefuse = data;
+          refusalReasonsList.innerHTML = '';
+          refusalReasons.forEach((r,idx) => {
+            const div = document.createElement('div');
+            div.className = 'flex items-center';
+            const input = document.createElement('input');
+            input.type = 'radio'; input.name = 'refusal-reason';
+            input.id = `reason-${idx}`; input.value = r; input.className = 'mr-2';
+            input.addEventListener('change', () => {
+              if (r === 'Autre (préciser)') otherReasonInput.classList.remove('hidden');
+              else { otherReasonInput.classList.add('hidden'); otherReasonInput.value = ''; }
+            });
+            const label = document.createElement('label');
+            label.htmlFor = `reason-${idx}`; label.textContent = r;
+            div.append(input, label);
+            refusalReasonsList.append(div);
+          });
+          refusalReasonModal.classList.remove('hidden');
         });
-
-        const label = document.createElement('label');
-        label.htmlFor = `reason-${index}`;
-        label.textContent = reason;
-
-        div.appendChild(input);
-        div.appendChild(label);
-        refusalReasonsList.appendChild(div);
-      });
-
-      refusalReasonModal.classList.remove('hidden');
     }
 
-    function createCommandFromDemand(demande, deliverySlot) {
-      const commandes = loadCommandes();
-      const newCommand = {
-        id: `cmd-${Date.now()}`,
-        demandeId: demande.id,
-        customer: { name: demande.nom, address: demande.adresse, phone: demande.tel },
-        deliverySlot: deliverySlot,
-        items: demande.items,
-        total: demande.total,
-        status: 'submitted'
-      };
-      commandes.push(newCommand);
-      saveCommandes(commandes);
-      showToast('Demande acceptée et commande créée.');
-      render();
-    }
-
-    function openDetailsDrawer(orderId) {
-        const commandes = loadCommandes();
-        const order = commandes.find(c => c.id === orderId);
-        if (!order) return;
-
-        if (!drawer.classList.contains('translate-x-full') && drawerTitle.textContent.includes(order.id.slice(4))) {
-            closeDrawer();
-            return;
-        }
-
-        drawerTitle.textContent = `Commande #${order.id.slice(4)}`;
-        
-        const itemsHtml = order.items.map(item => {
-            if (item.isWok && item.details) {
-                return `
-                    <li class="mb-2">
-                        <strong>${item.name} (${item.quantity})</strong>
-                        <ul class="list-disc list-inside pl-4 text-sm">
-                            <li><strong>Base:</strong> ${item.details.base}</li>
-                            <li><strong>Pulpes:</strong> ${item.details.pulpes.join(', ') || 'Aucune'}</li>
-                            <li><strong>Favoris:</strong> ${item.details.favoris.join(', ') || 'Aucun'}</li>
-                            <li><strong>Sauce:</strong> ${item.details.sauce}</li>
-                            <li><strong>Toppings:</strong> ${item.details.toppings.join(', ') || 'Aucun'}</li>
-                        </ul>
-                    </li>`;
-            } else {
-                return `<li>- ${item.name} (${item.quantity})</li>`;
-            }
-        }).join('');
-
-        let contentHtml = `
-            <p><strong>Client:</strong> ${order.customer.name}</p>
-            <p><strong>Adresse:</strong> ${order.customer.address}</p>
-            <p><strong>Téléphone:</strong> ${order.customer.phone}</p>
-            <p><strong>Créneau:</strong> ${order.deliverySlot || 'Non défini'}</p>
-            <p><strong>Total:</strong> ${order.total.toFixed(2)}€</p>
-            <h4 class="font-semibold mt-4">Articles:</h4>
-            <ul>${itemsHtml}</ul>
-        `;
-        drawerContent.innerHTML = contentHtml;
-        drawer.classList.remove('translate-x-full');
-    }
-
-    function closeDrawer() {
-      drawer.classList.add('translate-x-full');
-      showToast('Détails de la commande fermés.');
-    }
-
-    // Close drawer when clicking outside
-    document.addEventListener('click', (event) => {
-      const isClickInsideDrawer = drawer.contains(event.target);
-      const isDetailButton = event.target.classList.contains('text-accent'); // Assuming 'text-accent' is unique to detail buttons
-      if (!isClickInsideDrawer && !isDetailButton && !drawer.classList.contains('translate-x-full')) {
-        closeDrawer();
+    // --- Création de commande depuis une demande ---
+    async function createCommandFromDemand(demande, deliverySlot) {
+      const { error } = await supabase.from('orders')
+        .update({ status: 'accepted', delivery_slot: deliverySlot })
+        .eq('id', demande.id);
+      if (error) {
+        console.error(error);
+        showToast(`Erreur lors de l'acceptation de la demande.`);
+        return;
       }
-    });
-
-    function showToast(msg) {
-      toast.textContent = msg;
-      toast.classList.remove('hidden');
-      // Force reflow to ensure transition plays
-      toast.offsetWidth;
-      toast.classList.add('opacity-100');
-
-      setTimeout(() => {
-        toast.classList.remove('opacity-100');
-        // Wait for fade-out transition to complete before hiding
-        toast.addEventListener('transitionend', () => {
-          toast.classList.add('hidden');
-        }, { once: true });
-      }, 4000); // Display for 4 seconds
-    }
-
-    function setActiveTab(activeTab) {
-        const tabs = [tabDemandes, tabCommandes, tabHistorique];
-        const views = [viewDemandes, viewCommandes, viewHistorique];
-
-        tabs.forEach((tab, index) => {
-            const view = views[index];
-            if (tab === activeTab) {
-                view.classList.remove('hidden');
-                tab.classList.add('border-b-2', 'border-accent', 'font-semibold');
-                tab.classList.remove('text-gray-600', 'hover:text-primary');
-            } else {
-                view.classList.add('hidden');
-                tab.classList.remove('border-b-2', 'border-accent', 'font-semibold');
-                tab.classList.add('text-gray-600', 'hover:text-primary');
-            }
-        });
-    }
-
-    tabDemandes.addEventListener('click', () => setActiveTab(tabDemandes));
-    tabCommandes.addEventListener('click', () => setActiveTab(tabCommandes));
-    tabHistorique.addEventListener('click', () => setActiveTab(tabHistorique));
-
-    /* Rendu initial */
-    render();
-    setActiveTab(tabDemandes);
-
-    /* Re-render si localStorage change */
-    window.addEventListener('storage', () => {
+      showToast(`Demande acceptée et commande créée.`);
       render();
-    });
-
-    function render() {
-      const demandes = loadDemandes();
-      renderDemandes(demandes);
-
-      const commandes = loadCommandes();
-      renderCommandes(commandes);
-
-      updateBadges(demandes, commandes);
     }
 
-    function updateBadges(demandes, commandes) {
-        const badgeDemandes = document.getElementById('badge-demandes');
-        const badgeCommandes = document.getElementById('badge-commandes');
-
-        const pendingDemandes = demandes.filter(d => d.statut === 'pending').length;
-        badgeDemandes.textContent = pendingDemandes;
-        badgeDemandes.classList.toggle('hidden', pendingDemandes === 0);
-
-        const activeCommandes = commandes.filter(c => c.status !== 'delivered').length;
-        badgeCommandes.textContent = activeCommandes;
-        badgeCommandes.classList.toggle('hidden', activeCommandes === 0);
-    }
-
-    function updateOrderStatus(orderId, newStatus) {
-        const commandes = loadCommandes();
-        const order = commandes.find(o => o.id === orderId);
-        if (order) {
-            order.status = newStatus;
-            saveCommandes(commandes);
-            render();
-            showToast(`Commande marquée comme ${statusConfig[newStatus].text}.`);
-        }
-    }
-
-    function updateDeliverySlot(orderId, newSlot) {
-        const commandes = loadCommandes();
-        const order = commandes.find(o => o.id === orderId);
-        if (order) {
-            order.deliverySlot = newSlot;
-            saveCommandes(commandes);
-            render();
-            showToast(`Créneau de livraison mis à jour pour la commande #${order.id.slice(4)}.`);
-        }
-    }
-
+    // --- Rendu des listes ---
     function renderDemandes(data) {
       pendingEl.innerHTML = '';
-      historyEl.innerHTML = '';
-
+      data.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
       data.forEach(req => {
         const node = tpl.content.cloneNode(true);
-        node.querySelector('.req-name').textContent  = req.nom;
-        node.querySelector('.req-mode').textContent  = req.mode;
-        node.querySelector('.req-phone').textContent = req.tel;
-        node.querySelector('.req-adresse').textContent = req.adresse;
-
-        // Display items and total for the demand
+        node.querySelector('.req-name').textContent    = req.customer_name;
+        node.querySelector('.req-phone').textContent   = req.customer_phone;
+        node.querySelector('.req-adresse').textContent = req.customer_address;
+        // Détails articles & total
+        const details = document.createElement('div');
         const itemsHtml = req.items.map(item => {
-            if (item.isWok && item.details) {
-                return `
-                    <li class="mb-1 text-sm">
-                        <strong>${item.name} (${item.quantity})</strong>
-                        <ul class="list-disc list-inside pl-4 text-xs">
-                            <li>Base: ${item.details.base}</li>
-                            <li>Pulpes: ${item.details.pulpes.join(', ') || 'Aucune'}</li>
-                            <li>Favoris: ${item.details.favoris.join(', ') || 'Aucun'}</li>
-                            <li>Sauce: ${item.details.sauce}</li>
-                            <li>Toppings: ${item.details.toppings.join(', ') || 'Aucun'}</li>
-                        </ul>
-                    </li>`;
-            } else {
-                return `<li class="text-sm">- ${item.name} (${item.quantity})</li>`;
-            }
-        }).join('');
-
-        const detailsDiv = document.createElement('div');
-        detailsDiv.innerHTML = `
-            <h4 class="font-semibold mt-2">Articles:</h4>
-            <ul class="list-none">${itemsHtml}</ul>
-            <p class="font-bold mt-2">Total: ${req.total.toFixed(2)}€</p>
-        `;
-        node.querySelector('.request-details').appendChild(detailsDiv);
-
-        if (req.statut === 'pending') {
-          node.querySelector('.btn-refuse').onclick  = () => { promptForRefusalReason(req.id); };
-          node.querySelector('.btn-accept').onclick  = () => { updateStatut(req.id, 'accepted'); };
-          pendingEl.appendChild(node);
-        } else {
-          // Transformation pour l’historique
-          node.querySelector('.btn-refuse').remove();
-          const btn = node.querySelector('.btn-accept');
-          btn.className =
-            'px-4 py-2 rounded text-white ' +
-            (req.statut === 'accepted' ? 'bg-green-600' : 'bg-red-600');
-          btn.textContent =
-            req.statut === 'accepted' ? 'Acceptée' : 'Refusée';
-          if (req.statut === 'refused' && req.refusalReason) {
-            const reasonP = document.createElement('p');
-            reasonP.className = 'text-sm text-red-500 mt-2';
-            reasonP.textContent = `Motif: ${req.refusalReason}`;
-            node.querySelector('.request-details').appendChild(reasonP);
+          if (item.isWok && item.details) {
+            return `
+              <li class="mb-1 text-sm">
+                <strong>${item.name} (${item.quantity})</strong>
+                <ul class="list-disc list-inside pl-4 text-xs">
+                  <li>Base: ${item.details.base}</li>
+                  <li>Pulpes: ${item.details.pulpes.join(', ') || 'Aucune'}</li>
+                  <li>Favoris: ${item.details.favoris.join(', ') || 'Aucun'}</li>
+                  <li>Sauce: ${item.details.sauce}</li>
+                  <li>Toppings: ${item.details.toppings.join(', ') || 'Aucun'}</li>
+                </ul>
+              </li>`;
+          } else {
+            return `<li class="text-sm">- ${item.name} (${item.quantity})</li>`;
           }
-          historyEl.appendChild(node);
+        }).join('');
+        details.innerHTML = `
+          <h4 class="font-semibold mt-2">Articles:</h4>
+          <ul class="list-none">${itemsHtml}</ul>
+          <p class="font-bold mt-2">Total: ${req.total.toFixed(2)}€</p>
+        `;
+        node.querySelector('.request-details').append(details);
+
+        node.querySelector('.btn-refuse').onclick = () => promptForRefusalReason(req.id);
+        node.querySelector('.btn-accept').onclick = () => {
+          currentDemandeToAccept = req;
+          deliverySlotModal.classList.remove('hidden');
+        };
+
+        pendingEl.appendChild(node);
+      });
+    }
+
+    function renderHistorique(data) {
+      historyEl.innerHTML = '';
+      data.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+
+      const statusOrder = { 'accepted': 1, 'preparing': 2, 'ready': 3, 'delivered': 4, 'refused': 5 };
+
+      data.sort((a, b) => {
+        const statusDiff = (statusOrder[a.status] || 99) - (statusOrder[b.status] || 99);
+        if (statusDiff !== 0) return statusDiff;
+        return new Date(b.created_at) - new Date(a.created_at);
+      });
+      
+      data.forEach(req => {
+        const node = tpl.content.cloneNode(true);
+        node.querySelector('.req-name').textContent    = req.customer_name;
+        node.querySelector('.req-phone').textContent   = req.customer_phone;
+        node.querySelector('.req-adresse').textContent = req.customer_address;
+
+        const details = document.createElement('div');
+        const itemsHtml = req.items.map(item => {
+          if (item.isWok && item.details) {
+            return `
+              <li class="mb-1 text-sm">
+                <strong>${item.name} (${item.quantity})</strong>
+                <ul class="list-disc list-inside pl-4 text-xs">
+                  <li>Base: ${item.details.base}</li>
+                  <li>Pulpes: ${item.details.pulpes.join(', ') || 'Aucune'}</li>
+                  <li>Favoris: ${item.details.favoris.join(', ') || 'Aucun'}</li>
+                  <li>Sauce: ${item.details.sauce}</li>
+                  <li>Toppings: ${item.details.toppings.join(', ') || 'Aucun'}</li>
+                </ul>
+              </li>`;
+          } else {
+            return `<li class="text-sm">- ${item.name} (${item.quantity})</li>`;
+          }
+        }).join('');
+        details.innerHTML = `
+          <h4 class="font-semibold mt-2">Articles:</h4>
+          <ul class="list-none">${itemsHtml}</ul>
+          <p class="font-bold mt-2">Total: ${req.total.toFixed(2)}€</p>
+        `;
+        node.querySelector('.request-details').append(details);
+
+        // boutons transformés en statut fixe
+        node.querySelector('.btn-refuse').remove();
+        const btn = node.querySelector('.btn-accept');
+        const isAccepted = ['accepted','preparing','ready','delivered'].includes(req.status);
+        btn.className = `px-4 py-2 rounded text-white ${isAccepted ? 'bg-green-600' : 'bg-red-600'}`;
+        btn.textContent = isAccepted ? 'Acceptée' : 'Refusée';
+        if (req.status === 'refused' && req.refusal_reason) {
+          const p = document.createElement('p');
+          p.className = 'text-sm text-red-500 mt-2';
+          p.textContent = `Motif: ${req.refusal_reason}`;
+          node.querySelector('.request-details').append(p);
         }
+
+        historyEl.appendChild(node);
       });
     }
 
     function renderCommandes(commandes) {
-        commandesBody.innerHTML = '';
-        const commandesCards = document.getElementById('commandes-cards');
-        commandesCards.innerHTML = '';
-        const statusConfig = {
-            submitted: { icon: '⏳', color: 'bg-accent/10', text: 'En attente' },
-            preparing: { icon: '<span class="text-accent-dark">🍳</span>', color: 'bg-yellow-100', text: 'En préparation' },
-            ready: { icon: '<span class="text-green-600">✅</span>', color: 'bg-green-100', text: 'Prête' },
-            delivered: { icon: '<span class="text-gray-500">🚚</span>', color: 'bg-gray-100', text: 'Livrée' }
-        };
+      commandesBody.innerHTML = '';
+      commandesCards.innerHTML = '';
 
-        commandes.forEach(order => {
-            const config = statusConfig[order.status] || {};
-            const tr = document.createElement('tr');
-            tr.className = `border-b ${config.color || ''}`;
-            tr.innerHTML = `
-                <td class="p-4">${order.customer.name}</td>
-                <td class="p-4 hidden md:table-cell">${order.customer.address}</td>
-                <td class="p-4">
-                    <input type="time" class="border rounded px-2 py-1" value="${order.deliverySlot || ''}" onchange="updateDeliverySlot('${order.id}', this.value)">
-                </td>
-                <td class="p-4">${order.items.length} article(s)</td>
-                <td class="p-4">${order.total.toFixed(2)}€</td>
-                <td class="p-4">
-                    ${config.icon || ''} 
-                    <select class="border rounded px-2 py-1" onchange="updateOrderStatus('${order.id}', this.value)">
-                        <option value="submitted" ${order.status === 'submitted' ? 'selected' : ''}>${statusConfig.submitted.text}</option>
-                        <option value="preparing" ${order.status === 'preparing' ? 'selected' : ''}>${statusConfig.preparing.text}</option>
-                        <option value="ready" ${order.status === 'ready' ? 'selected' : ''}>${statusConfig.ready.text}</option>
-                        <option value="delivered" ${order.status === 'delivered' ? 'selected' : ''}>${statusConfig.delivered.text}</option>
-                    </select>
-                </td>
-                <td class="p-4"><button class="text-accent underline" onclick="openDetailsDrawer('${order.id}')">Détail</button></td>
-            `;
-            commandesBody.appendChild(tr);
+      const statusOrder = { 'accepted': 1, 'preparing': 2, 'ready': 3, 'delivered': 4 };
 
-            // ----- vue carte mobile -----
-            const card = document.createElement('div');
-            card.className = `${config.color || ''} p-4 rounded-lg shadow-md flex flex-col gap-2 md:hidden`;
-            card.innerHTML = `
-    <div class="flex justify-between items-center mb-2">
-      <p class="font-semibold text-base">${order.customer.name}</p>
-      <span class="text-sm font-medium">${order.total.toFixed(2)}€</span>
-    </div>
-    <div class="flex flex-col gap-2">
-      <div class="flex items-center gap-2">
-        <input
-          type="time"
-          class="border rounded px-2 py-1 text-xs w-24"
-          value="${order.deliverySlot || ''}"
-          onchange="updateDeliverySlot('${order.id}', this.value)"
-        />
-        <span class="text-lg">${config.icon}</span>
-        <select
-          class="border rounded px-1 py-1 text-sm w-auto"
-          onchange="updateOrderStatus('${order.id}', this.value)"
-        >
-          <option value="submitted" ${order.status === 'submitted' ? 'selected' : ''}>En attente</option>
-          <option value="preparing" ${order.status === 'preparing' ? 'selected' : ''}>En préparation</option>
-          <option value="ready" ${order.status === 'ready' ? 'selected' : ''}>Prête</option>
-          <option value="delivered" ${order.status === 'delivered' ? 'selected' : ''}>Livrée</option>
-        </select>
-      </div>
-      <button
-        class="text-accent underline self-end mt-1"
-        onclick="openDetailsDrawer('${order.id}')"
-      >
-        Détail
-      </button>
-    </div>`;
-            commandesCards.appendChild(card);
-        });
+      commandes.sort((a, b) => {
+        // D'abord par statut
+        const statusDiff = (statusOrder[a.status] || 99) - (statusOrder[b.status] || 99);
+        if (statusDiff !== 0) return statusDiff;
+        // Ensuite par date (plus récent en premier)
+        return new Date(b.created_at) - new Date(a.created_at);
+      });
+
+      commandes.forEach(order => {
+        const cfg = statusConfig[order.status] || {};
+        // version table desktop
+        const tr = document.createElement('tr');
+        tr.className = `border-b ${cfg.color || ''}`;
+        tr.innerHTML = `
+          <td class="p-4">${order.customer_name}</td>
+          <td class="p-4 hidden md:table-cell">${order.customer_address}</td>
+          <td class="p-4">
+            <input type="time" step="60" class="border rounded px-2 py-1 delivery-slot-input" value="${order.delivery_slot||''}" data-order-id="${order.id}">
+          </td>
+          <td class="p-4">${order.items.length} article(s)</td>
+          <td class="p-4">${order.total.toFixed(2)}€</td>
+          <td class="p-4">
+            ${cfg.icon || ''} 
+            <select class="border rounded px-2 py-1 status-select" data-order-id="${order.id}">
+              <option value="submitted"${order.status==='submitted'?' selected':''}>${statusConfig.submitted.text}</option>
+              <option value="accepted"${order.status==='accepted'?' selected':''}>${statusConfig.accepted.text}</option>
+              <option value="preparing"${order.status==='preparing'?' selected':''}>${statusConfig.preparing.text}</option>
+              <option value="ready"${order.status==='ready'?' selected':''}>${statusConfig.ready.text}</option>
+              <option value="delivered"${order.status==='delivered'?' selected':''}>${statusConfig.delivered.text}</option>
+            </select>
+          </td>
+          <td class="p-4"><button class="text-accent underline detail-button" data-order-id="${order.id}">Détail</button></td>
+        `;
+        commandesBody.appendChild(tr);
+
+        // version carte mobile
+        const card = document.createElement('div');
+        card.className = `${cfg.color||''} p-4 rounded-lg shadow-md flex flex-col gap-2 md:hidden`;
+        card.innerHTML = `
+          <div class="flex justify-between items-center mb-2">
+            <p class="font-semibold text-base">${order.customer_name}</p>
+            <span class="text-sm font-medium">${order.total.toFixed(2)}€</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <input type="time" step="60" class="border rounded px-2 py-1 text-xs delivery-slot-input" value="${order.delivery_slot||''}" data-order-id="${order.id}">
+            <span class="text-lg">${cfg.icon}</span>
+            <select class="border rounded px-1 py-1 text-sm status-select" data-order-id="${order.id}">
+              <option value="submitted"${order.status==='submitted'?' selected':''}>${statusConfig.submitted.text}</option>
+              <option value="accepted"${order.status==='accepted'?' selected':''}>${statusConfig.accepted.text}</option>
+              <option value="preparing"${order.status==='preparing'?' selected':''}>${statusConfig.preparing.text}</option>
+              <option value="ready"${order.status==='ready'?' selected':''}>${statusConfig.ready.text}</option>
+              <option value="delivered"${order.status==='delivered'?' selected':''}>${statusConfig.delivered.text}</option>
+            </select>
+          </div>
+          <button class="text-accent underline self-end mt-1 detail-button" data-order-id="${order.id}">Détail</button>
+        `;
+        commandesCards.appendChild(card);
+      });
+
+      // listeners
+      document.querySelectorAll('.delivery-slot-input').forEach(input => {
+        input.addEventListener('change', e => updateDeliverySlot(e.target.dataset.orderId, e.target.value));
+      });
+      document.querySelectorAll('.status-select').forEach(sel => {
+        sel.addEventListener('change', e => updateOrderStatus(e.target.dataset.orderId, e.target.value));
+      });
+      document.querySelectorAll('.detail-button').forEach(btn => {
+        btn.addEventListener('click', e => openDetailsDrawer(e.target.dataset.orderId));
+      });
     }
 
-    function updateStatut(id, statut, refusalReason = null) {
-      const demandes = loadDemandes();
-      const demandeIndex = demandes.findIndex(r => r.id === id);
-      if (demandeIndex > -1) {
-        const demande = demandes[demandeIndex];
-        demande.statut = statut;
-        if (statut === 'refused') {
-          demande.refusalReason = refusalReason;
+    // Initial render + abonnement realtime
+    render();
+    supabase.channel('orders_channel')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'orders' }, (payload) => {
+        console.log('Realtime change received!', payload);
+        render();
+      })
+      .subscribe((status, err) => {
+        if (status === 'SUBSCRIBED') {
+          console.log('✅ Realtime channel subscribed!');
         }
+        if (status === 'CHANNEL_ERROR') {
+          console.error('Realtime channel error:', err);
+        }
+        if (status === 'TIMED_OUT') {
+          console.warn('Realtime channel timed out.');
+        }
+      });
 
-        if (statut === 'accepted') {
-          saveDemandes(demandes); // Save the updated status to localStorage
-          currentDemandeToAccept = demande;
-          deliverySlotInput.value = ''; // Clear previous value
-          deliverySlotModal.classList.remove('hidden');
-        } else if (statut === 'refused') {
-          showToast('Demande refusée.');
-          saveDemandes(demandes); // Save changes for refused demand
-          render();
-        }
-      }
-    }
+    // Statuts disponibles (pour commandes et mises à jour)
+    const statusConfig = {
+      submitted:  { icon: '⏳', color: 'bg-accent/10', text: 'En attente' },
+      accepted:   { icon: '✅', color: 'bg-gray-100', text: 'Acceptée' },
+      preparing:  { icon: '🍳', color: 'bg-yellow-100', text: 'En préparation' },
+      ready:      { icon: '✅', color: 'bg-green-100', text: 'Prête' },
+      delivered:  { icon: '🚚', color: 'bg-gray-200',  text: 'Livrée' }
+    };
   </script>
 </body>
 </html>
 
---- commande.html ---
+--- bdd/insert_menu.sql ---
+-- Vider la table pour éviter les doublons avant de la remplir à nouveau.
+-- C'est une commande plus standard que TRUNCATE et devrait éviter les problèmes de permissions.
+DELETE FROM menu_items;
 
+-- Insertion des entrées
+INSERT INTO menu_items (name, description, price, category, image_url)
+VALUES
+  ('Nems Poulet x4', 'Délicieux nems croustillants au poulet, parfaits pour une entrée savoureuse.', 5.00, 'Entrées', 'assets/images/nems.jpg'),
+  ('Nems Crevettes x4', 'Nems croustillants aux crevettes, une entrée légère et parfumée.', 5.50, 'Entrées', 'assets/images/nems.jpg'),
+  ('Nems Légumes x4', 'Nems végétariens aux légumes frais, une option saine et gourmande.', 5.00, 'Entrées', 'assets/images/nems.jpg'),
+  ('Crevettes Tempura x3', 'Crevettes enrobées d''une pâte légère et frites à la perfection.', 4.90, 'Entrées', 'assets/images/nems.jpg'),
+  ('Beignet de crevette x3', 'Beignets de crevettes moelleux et savoureux.', 4.90, 'Entrées', 'assets/images/nems.jpg'),
+  ('Brochettes poulet satay x2', 'Brochettes de poulet marinées à la sauce satay, grillées et parfumées.', 5.00, 'Entrées', 'assets/images/nems.jpg'),
+  ('Brochettes poulet yakitori x2', 'Brochettes de poulet laquées à la sauce yakitori, tendres et sucrées-salées.', 4.50, 'Entrées', 'assets/images/nems.jpg'),
+  ('Brochette bœuf fromage x2', 'Brochettes de bœuf et fromage, une combinaison originale et fondante.', 5.50, 'Entrées', 'assets/images/nems.jpg'),
+  ('Pince de crabe x3', 'Délicieuses pinces de crabe, idéales pour les amateurs de fruits de mer.', 4.50, 'Entrées', 'assets/images/nems.jpg'),
+  ('Rouleaux de printemps x2', 'Rouleaux frais et légers, garnis de légumes croquants et de vermicelles.', 5.00, 'Entrées', 'assets/images/nems.jpg'),
+  ('Riz nature', 'Riz blanc parfumé, accompagnement idéal pour tous nos plats.', 4.00, 'Entrées', 'assets/images/nems.jpg');
+
+-- Insertion des plats
+INSERT INTO menu_items (name, description, price, category, image_url)
+VALUES
+  ('Pad Thaï - Poulet', 'Pâtes de riz, oignons, chou, carotte, œuf, soja, cacahuètes, citron, coriandre.', 12.50, 'Plats', 'assets/images/pad-thai.jpg'),
+  ('Pad Thaï - Tofu', 'Pâtes de riz, oignons, chou, carotte, œuf, soja, cacahuètes, citron, coriandre.', 12.50, 'Plats', 'assets/images/pad-thai.jpg'),
+  ('Pad Thaï - Poulet Crousti', 'Pâtes de riz, oignons, chou, carotte, œuf, soja, cacahuètes, citron, coriandre.', 13.50, 'Plats', 'assets/images/pad-thai.jpg'),
+  ('Pad Thaï - Bœuf', 'Pâtes de riz, oignons, chou, carotte, œuf, soja, cacahuètes, citron, coriandre.', 13.50, 'Plats', 'assets/images/pad-thai.jpg'),
+  ('Pad Thaï - Crevettes', 'Pâtes de riz, oignons, chou, carotte, œuf, soja, cacahuètes, citron, coriandre.', 13.50, 'Plats', 'assets/images/pad-thai.jpg'),
+  ('Khao Pad - Poulet', 'Riz frit, oignons, chou, carotte, œuf, soja, cacahuètes, citron, coriandre.', 12.50, 'Plats', 'assets/images/pad-thai.jpg'),
+  ('Khao Pad - Tofu', 'Riz frit, oignons, chou, carotte, œuf, soja, cacahuètes, citron, coriandre.', 12.50, 'Plats', 'assets/images/pad-thai.jpg'),
+  ('Khao Pad - Poulet Crousti', 'Riz frit, oignons, chou, carotte, œuf, soja, cacahuètes, citron, coriandre.', 13.50, 'Plats', 'assets/images/pad-thai.jpg'),
+  ('Khao Pad - Bœuf', 'Riz frit, oignons, chou, carotte, œuf, soja, cacahuètes, citron, coriandre.', 13.50, 'Plats', 'assets/images/pad-thai.jpg'),
+  ('Khao Pad - Crevettes', 'Riz frit, oignons, chou, carotte, œuf, soja, cacahuètes, citron, coriandre.', 13.50, 'Plats', 'assets/images/pad-thai.jpg'),
+  ('Bò Bún - Poulet', 'Vermicelle de riz, nems, salade, carotte, concombre, soja, menthe, coriandre, cacahuètes.', 12.50, 'Plats', 'assets/images/pad-thai.jpg'),
+  ('Bò Bún - Bœuf', 'Vermicelle de riz, nems, salade, carotte, concombre, soja, menthe, coriandre, cacahuètes.', 13.50, 'Plats', 'assets/images/pad-thai.jpg'),
+  ('Bò Bún - Crevettes', 'Vermicelle de riz, nems, salade, carotte, concombre, soja, menthe, coriandre, cacahuètes.', 13.50, 'Plats', 'assets/images/pad-thai.jpg'),
+  ('Soupe Tom Yum', 'Soupe thaïlandaise épicée à base de galanga, citronnelle, lait de coco et crevettes.', 14.50, 'Plats', 'assets/images/pad-thai.jpg'),
+  ('Poulet au curry', 'Poulet cuisiné avec des légumes et lait de coco. Accompagné de riz parfumé.', 14.50, 'Plats', 'assets/images/pad-thai.jpg');
+
+-- Insertion des desserts
+INSERT INTO menu_items (name, description, price, category, image_url)
+VALUES
+  ('Coupelle mangue', 'Délicieuse coupelle de mangue fraîche, un dessert exotique et rafraîchissant.', 5.00, 'Desserts', 'assets/images/nems.jpg'),
+  ('Coupelle ananas', 'Coupelle d''ananas frais, sucré et juteux.', 5.00, 'Desserts', 'assets/images/nems.jpg'),
+  ('Glace', 'Sélection de glaces artisanales pour une touche de douceur.', 4.90, 'Desserts', 'assets/images/nems.jpg'),
+  ('Mochi glace x2', 'Deux mochis glacés, une spécialité japonaise douce et rafraîchissante.', 5.00, 'Desserts', 'assets/images/nems.jpg');
+
+-- Insertion des boissons
+INSERT INTO menu_items (name, description, price, category, image_url)
+VALUES
+  ('Soft', 'Boissons rafraîchissantes sans alcool.', 2.00, 'Boissons', 'assets/images/nems.jpg'),
+  ('Maya', 'Boisson exotique à base de litchi et eau de coco.', 3.90, 'Boissons', 'assets/images/nems.jpg'),
+  ('Citronnade', 'Citronnade maison, désaltérante et acidulée.', 2.00, 'Boissons', 'assets/images/nems.jpg'),
+  ('Ginger beer', 'Boisson au gingembre, pétillante et légèrement épicée.', 3.00, 'Boissons', 'assets/images/nems.jpg'),
+  ('Eau / eau gazeuse', 'Eau plate ou gazeuse, pour accompagner votre repas.', 2.00, 'Boissons', 'assets/images/nems.jpg'),
+  ('Mogu Mogu', 'Boisson fruitée avec des morceaux de nata de coco.', 3.00, 'Boissons', 'assets/images/nems.jpg'),
+  ('Bubble Tea', 'Thé aux perles de tapioca, disponible en plusieurs saveurs.', 6.00, 'Boissons', 'assets/images/nems.jpg');
+
+--- bdd/insert_wok_data.sql ---
+
+-- Vider les tables Wok pour éviter les doublons avant de les remplir à nouveau.
+DELETE FROM wok_bases;
+DELETE FROM wok_pulpes;
+DELETE FROM wok_favoris;
+DELETE FROM wok_sauces;
+DELETE FROM wok_toppings;
+
+-- Insertion des bases du Wok
+INSERT INTO wok_bases (name, price)
+VALUES
+  ('Pâtes de riz', 6.90),
+  ('Nouilles jaunes', 6.90),
+  ('Udon', 6.90),
+  ('Riz parfumé', 6.90);
+
+-- Insertion des pulpes du Wok
+INSERT INTO wok_pulpes (name, price)
+VALUES
+  ('Oignons', 0.40),
+  ('Ail', 0.40),
+  ('Gingembre', 0.40),
+  ('Piment', 0.40);
+
+-- Insertion des favoris du Wok
+INSERT INTO wok_favoris (name, price)
+VALUES
+  ('Poulet', 2.00),
+  ('Poulet crousti', 2.80),
+  ('Bœuf', 2.50),
+  ('Crevettes', 2.50),
+  ('Calamar', 2.50),
+  ('Tofu', 2.00),
+  ('Pak choï', 1.40),
+  ('Poivrons', 1.40),
+  ('Oignons doux', 1.20),
+  ('Citronnelle', 1.20),
+  ('Brocolis', 1.40),
+  ('Basilic thaï', 1.20),
+  ('Mini maïs', 1.40),
+  ('Ananas', 1.40),
+  ('Champignon noir', 1.50),
+  ('Champignon de Paris', 1.50),
+  ('Shitaké', 1.50),
+  ('Bambou', 1.40),
+  ('Noix de cajou', 1.20);
+
+-- Insertion des sauces du Wok
+INSERT INTO wok_sauces (name)
+VALUES
+  ('Pad Thaï'),
+  ('Pad See Ew'),
+  ('Curry Rouge'),
+  ('Curry Jaune'),
+  ('Aigre-douce');
+
+-- Insertion des toppings du Wok
+INSERT INTO wok_toppings (name, price)
+VALUES
+  ('Coriandre fraîche', 0.60),
+  ('Cacahuètes', 0.60),
+  ('Oignons frits', 0.60),
+  ('Crevettes séchées', 0.60),
+  ('Ciboulette thaï', 0.60),
+  ('Citron', 0.60),
+  ('Graines de sesame', 0.60);
+
+
+--- bdd/orders_schema.sql ---
+-- Table for orders
+CREATE TABLE orders (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  customer_name TEXT NOT NULL,
+  customer_phone TEXT NOT NULL,
+  customer_address TEXT NOT NULL,
+  items JSONB NOT NULL, -- Store array of items as JSONB
+  total NUMERIC NOT NULL,
+  status TEXT NOT NULL DEFAULT 'submitted', -- e.g., 'submitted', 'accepted', 'refused', 'preparing', 'ready', 'delivered'
+  delivery_slot TEXT, -- Optional delivery time slot
+  refusal_reason TEXT -- Optional reason for refusal
+);
+
+--- bdd/restaurant_status_schema.sql ---
+-- Table for restaurant status
+CREATE TABLE restaurant_status (
+  id INT PRIMARY KEY DEFAULT 1,
+  is_open BOOLEAN NOT NULL DEFAULT TRUE
+);
+
+-- Insert initial status (open by default)
+INSERT INTO restaurant_status (id, is_open) VALUES (1, TRUE) ON CONFLICT (id) DO NOTHING;
+
+--- bdd/schema.sql ---
+-- Supprime les tables si elles existent déjà pour garantir un état propre.
+-- Le "CASCADE" supprime aussi tout ce qui dépend de la table.
+DROP TABLE IF EXISTS menu_items CASCADE;
+DROP TABLE IF EXISTS orders CASCADE;
+DROP TABLE IF EXISTS restaurant_status CASCADE;
+
+-- Table pour les articles du menu
+CREATE TABLE menu_items (
+  id BIGINT GENERATED BY DEFAULT AS IDENTITY PRIMARY KEY,
+  name TEXT NOT NULL,
+  description TEXT, -- Colonne pour la description de l'article
+  price NUMERIC NOT NULL,
+  category TEXT NOT NULL,
+  image_url TEXT
+);
+
+-- Table for restaurant status
+CREATE TABLE restaurant_status (
+  id INT PRIMARY KEY DEFAULT 1,
+  is_open BOOLEAN NOT NULL DEFAULT TRUE
+);
+
+-- Insert initial status (open by default)
+INSERT INTO restaurant_status (id, is_open) VALUES (1, TRUE) ON CONFLICT (id) DO NOTHING;
+
+-- Table pour les commandes
+CREATE TABLE orders (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  customer_name TEXT NOT NULL,
+  customer_phone TEXT NOT NULL,
+  customer_address TEXT NOT NULL,
+  items JSONB NOT NULL, -- Store array of items as JSONB
+  total NUMERIC NOT NULL,
+  status TEXT NOT NULL DEFAULT 'submitted', -- e.g., 'submitted', 'accepted', 'refused', 'preparing', 'ready', 'delivered'
+  delivery_slot TEXT, -- Optional delivery time slot
+  refusal_reason TEXT -- Optional reason for refusal
+);
+
+-- On réactive la publication en temps réel pour la table des commandes
+ALTER PUBLICATION supabase_realtime ADD TABLE orders;
+
+-- Activer RLS pour les autres tables
+ALTER TABLE menu_items ENABLE ROW LEVEL SECURITY;
+ALTER TABLE restaurant_status ENABLE ROW LEVEL SECURITY;
+
+-- Politiques de sécurité pour la table des commandes
+-- On active RLS mais on bloque la lecture directe. La lecture se fera via une fonction RPC.
+ALTER TABLE orders ENABLE ROW LEVEL SECURITY;
+
+-- 1. On autorise les utilisateurs anonymes à créer des commandes.
+CREATE POLICY "Allow anonymous inserts" ON orders
+FOR INSERT TO anon WITH CHECK (true);
+
+-- 2. On bloque la lecture directe pour tout le monde.
+CREATE POLICY "Deny all direct reads" ON orders
+FOR SELECT USING (false);
+
+-- Politiques de sécurité pour les autres tables
+
+-- 1. Tout le monde peut voir le menu
+CREATE POLICY "Allow public read access to menu" ON menu_items
+FOR SELECT USING (true);
+
+-- 2. Tout le monde peut voir le statut du restaurant
+CREATE POLICY "Allow public read access to restaurant status" ON restaurant_status
+FOR SELECT USING (true);
+
+-- Fonction RPC pour récupérer une commande par son ID, en contournant RLS.
+-- C'est la méthode sécurisée pour permettre à un utilisateur non connecté de voir sa propre commande.
+CREATE OR REPLACE FUNCTION get_order(order_id_in uuid)
+RETURNS TABLE (
+    id uuid,
+    created_at timestamptz,
+    customer_name text,
+    customer_phone text,
+    customer_address text,
+    items jsonb,
+    total numeric,
+    status text,
+    delivery_slot text,
+    refusal_reason text
+)
+LANGUAGE plpgsql SECURITY DEFINER AS $$
+BEGIN
+    RETURN QUERY
+    SELECT
+        o.id,
+        o.created_at,
+        o.customer_name,
+        o.customer_phone,
+        o.customer_address,
+        o.items,
+        o.total,
+        o.status,
+        o.delivery_slot,
+        o.refusal_reason
+    FROM
+        public.orders AS o
+    WHERE
+        o.id = order_id_in;
+END;
+$$;
+
+-- On donne la permission aux utilisateurs anonymes d'appeler cette fonction.
+GRANT EXECUTE ON FUNCTION get_order(uuid) TO anon;
+
+-- Fonction pour vérifier si l'utilisateur est un administrateur
+CREATE OR REPLACE FUNCTION is_admin()
+RETURNS boolean
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS $$
+BEGIN
+  RETURN (
+    SELECT auth.jwt() ->> 'email' IN ('lilianserre@icloud.com')
+  );
+END;
+$$;
+
+-- Politiques de sécurité pour les administrateurs
+-- Les admins peuvent tout faire sur les commandes
+CREATE POLICY "Allow admin full access on orders" ON orders
+FOR ALL USING (is_admin()) WITH CHECK (is_admin());
+
+-- Les admins peuvent gérer le statut du restaurant
+CREATE POLICY "Allow admin full access on restaurant_status" ON restaurant_status
+FOR ALL USING (is_admin()) WITH CHECK (is_admin());
+
+-- Les admins peuvent gérer le menu
+CREATE POLICY "Allow admin full access on menu_items" ON menu_items
+FOR ALL USING (is_admin()) WITH CHECK (is_admin());
+
+
+--- bdd/wok_schema.sql ---
+-- Supprime les tables Wok si elles existent déjà pour garantir un état propre.
+DROP TABLE IF EXISTS wok_bases CASCADE;
+DROP TABLE IF EXISTS wok_pulpes CASCADE;
+DROP TABLE IF EXISTS wok_favoris CASCADE;
+DROP TABLE IF EXISTS wok_sauces CASCADE;
+DROP TABLE IF EXISTS wok_toppings CASCADE;
+
+-- Table pour les bases du Wok
+CREATE TABLE wok_bases (
+  id BIGINT GENERATED BY DEFAULT AS IDENTITY PRIMARY KEY,
+  name TEXT NOT NULL,
+  price NUMERIC NOT NULL
+);
+
+-- Table pour les pulpes du Wok
+CREATE TABLE wok_pulpes (
+  id BIGINT GENERATED BY DEFAULT AS IDENTITY PRIMARY KEY,
+  name TEXT NOT NULL,
+  price NUMERIC NOT NULL
+);
+
+-- Table pour les favoris du Wok
+CREATE TABLE wok_favoris (
+  id BIGINT GENERATED BY DEFAULT AS IDENTITY PRIMARY KEY,
+  name TEXT NOT NULL,
+  price NUMERIC NOT NULL
+);
+
+-- Table pour les sauces du Wok
+CREATE TABLE wok_sauces (
+  id BIGINT GENERATED BY DEFAULT AS IDENTITY PRIMARY KEY,
+  name TEXT NOT NULL
+);
+
+-- Table pour les toppings du Wok
+CREATE TABLE wok_toppings (
+  id BIGINT GENERATED BY DEFAULT AS IDENTITY PRIMARY KEY,
+  name TEXT NOT NULL,
+  price NUMERIC NOT NULL
+);
+
+-- Enable Row Level Security (RLS) for all Wok-related tables
+ALTER TABLE wok_bases ENABLE ROW LEVEL SECURITY;
+ALTER TABLE wok_pulpes ENABLE ROW LEVEL SECURITY;
+ALTER TABLE wok_favoris ENABLE ROW LEVEL SECURITY;
+ALTER TABLE wok_sauces ENABLE ROW LEVEL SECURITY;
+ALTER TABLE wok_toppings ENABLE ROW LEVEL SECURITY;
+
+-- Create policies to allow public read access to all Wok-related tables
+CREATE POLICY "Allow public read access" ON wok_bases FOR SELECT USING (true);
+CREATE POLICY "Allow public read access" ON wok_pulpes FOR SELECT USING (true);
+CREATE POLICY "Allow public read access" ON wok_favoris FOR SELECT USING (true);
+CREATE POLICY "Allow public read access" ON wok_sauces FOR SELECT USING (true);
+CREATE POLICY "Allow public read access" ON wok_toppings FOR SELECT USING (true);
+
+-- Allow admins to manage Wok items
+CREATE POLICY "Allow admin full access on wok_bases" ON wok_bases FOR ALL USING (is_admin()) WITH CHECK (is_admin());
+CREATE POLICY "Allow admin full access on wok_pulpes" ON wok_pulpes FOR ALL USING (is_admin()) WITH CHECK (is_admin());
+CREATE POLICY "Allow admin full access on wok_favoris" ON wok_favoris FOR ALL USING (is_admin()) WITH CHECK (is_admin());
+CREATE POLICY "Allow admin full access on wok_sauces" ON wok_sauces FOR ALL USING (is_admin()) WITH CHECK (is_admin());
+CREATE POLICY "Allow admin full access on wok_toppings" ON wok_toppings FOR ALL USING (is_admin()) WITH CHECK (is_admin());
+
+-- Allow admins to manage Wok items (optional, but good practice)
+-- Note: This assumes you have a way to identify admins, e.g., via a custom claim.
+-- Example for one table, you would repeat for others.
+-- CREATE POLICY "Allow admin full access" ON wok_bases
+-- FOR ALL USING (auth.jwt() ->> 'is_admin' = 'true')
+-- WITH CHECK (auth.jwt() ->> 'is_admin' = 'true');
+
+
+--- commande.html ---
 <!DOCTYPE html>
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <link rel="stylesheet" href="css/styles.css">
-  <link rel="stylesheet" href="css/responsive.css">
+  <!-- <link rel="stylesheet" href="css/styles.css"> -->
+  <!-- <link rel="stylesheet" href="css/responsive.css"> -->
   <title>Thaï Garden – Demande de disponibilité</title>
 
   <!-- Google Fonts -->
@@ -862,6 +1270,13 @@ https://creativecommons.org/licenses/by-nc/4.0/legalcode
       scrollbar-color: #888 #f1f1f1; /* couleur du pouce et couleur de la piste */
     }
 
+    /* FIX WOK COMPOSER */
+    @media (min-width: 768px) { /* md breakpoint */
+      #wok-steps-content .wok-step-pane {
+        display: block !important;
+      }
+    }
+
     /* Product Modal Responsive Styles */
     #product-modal > div {
       /* Default for desktop */
@@ -894,22 +1309,35 @@ https://creativecommons.org/licenses/by-nc/4.0/legalcode
         z-index: 100;
       }
     }
+
+    #panier-section, #coords-modal {
+        max-width: none;
+    }
+
+    @media (min-width: 768px) { /* Forcer la largeur max sur desktop */
+      #coords-modal > div {
+        max-width: 28rem; /* 448px, équivalent de max-w-md de Tailwind */
+      }
+    }
+
+    @media (max-width: 767px) { /* Appliquer seulement sur mobile */
+      #coords-modal {
+        padding: 0 1rem;
+      }
+    }
   </style>
 </head>
 <body class="flex flex-col min-h-screen bg-gradient-to-b from-gray-50 to-white text-gray-800">
 
-  <!-- Header minimal -->
+  <!-- Sticky Navbar -->
   <header class="fixed top-0 w-full bg-white/70 backdrop-blur-sm shadow-md z-50">
-    <nav class="max-w-5xl mx-auto flex items-center justify-between py-4 px-6">
+    <nav class="max-w-7xl mx-auto flex items-center justify-between py-4 px-6 relative">
       <a href="index.html" class="text-2xl font-bold text-primary">Thaï Garden</a>
-      <div class="hidden md:flex gap-8 font-medium">
+      <div class="hidden md:flex gap-8 font-medium text-gray-700 absolute left-1/2 -translate-x-1/2">
         <a href="index.html" class="hover:text-accent transition">Accueil</a>
         <a href="commande.html" class="hover:text-accent transition">Menu</a>
         <a href="index.html#contact" class="hover:text-accent transition">Contact</a>
       </div>
-      <a href="commande.html" class="hidden md:block ml-6 px-4 py-2 bg-accent text-white font-semibold rounded-full shadow hover:shadow-lg transition">
-        Commander
-      </a>
       <button id="burger-btn" class="md:hidden">
         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
       </button>
@@ -918,7 +1346,6 @@ https://creativecommons.org/licenses/by-nc/4.0/legalcode
       <a href="index.html" class="block py-2 px-4 text-sm hover:bg-gray-200">Accueil</a>
       <a href="commande.html" class="block py-2 px-4 text-sm hover:bg-gray-200">Menu</a>
       <a href="index.html#contact" class="block py-2 px-4 text-sm hover:bg-gray-200">Contact</a>
-      <a href="commande.html" class="block py-2 px-4 text-sm hover:bg-gray-200">Commander</a>
     </div>
     <!-- Restaurant Closed Banner for Mobile -->
     <div id="restaurant-closed-banner-mobile" class="hidden bg-red-600 text-white text-center py-2 text-sm font-semibold">
@@ -927,22 +1354,12 @@ https://creativecommons.org/licenses/by-nc/4.0/legalcode
   </header>
 
   <!-- Contenu principal -->
-  <main class="flex-1 pt-24 pb-12 max-w-3xl mx-auto px-4">
+  <main class="flex-1 pt-24 pb-12 w-full max-w-4xl mx-auto">
 
-    <h1 class="text-4xl font-extrabold text-primary text-center mb-10">Commander</h1>
-
-    <!-- Message de refus (initiallement caché) -->
-    <section id="msg-refused" class="hidden bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-8" role="alert">
-      <strong class="font-bold">Demande refusée !</strong>
-      <span class="block sm:inline" id="refusal-reason-display"></span>
-      <p class="mt-4">Nous sommes désolés, votre demande n'a pas pu être acceptée pour le moment.</p>
-      <button id="btn-new-demand" class="mt-4 px-6 py-3 bg-accent text-white font-bold rounded-lg shadow-md hover:shadow-lg transition">Faire une nouvelle demande</button>
-    </section>
-
-    
+    <h1 class="text-4xl font-extrabold text-primary text-center mb-10 px-4">Commander</h1>
 
     <!-- Étape 2 : Formulaire « Demande de disponibilité » pour livraison -->
-    <section id="section-livraison" class="hidden mt-12 bg-white/70 backdrop-blur-sm p-8 rounded-lg shadow-md">
+    <section id="section-livraison" class="hidden mt-12 bg-white/70 backdrop-blur-sm p-8 rounded-lg shadow-md mx-4">
         <h2 class="text-2xl font-semibold mb-6 text-center">Vos coordonnées</h2>
       
         <p class="mb-6 text-center text-gray-700">
@@ -955,18 +1372,18 @@ https://creativecommons.org/licenses/by-nc/4.0/legalcode
       <!-- Étape 3 : Affichage du menu pour la commande -->
 
       <!-- Wok à composer -->
-      <section id="wok-composer" class="mb-8 pt-8 -mt-8">
+      <section id="wok-composer" class="mb-8 pt-8 -mt-8 px-4">
         <h2 class="text-2xl font-bold text-primary mb-4">Wok à composer</h2>
         <div class="bg-white p-4 md:p-8 rounded-lg shadow-md">
 
           <!-- Onglets pour Mobile -->
           <div class="md:hidden border-b border-gray-200 mb-4">
-            <nav class="-mb-px flex space-x-4 overflow-x-auto" aria-label="Tabs">
-              <button class="wok-tab whitespace-nowrap py-3 px-2 border-b-2 font-medium text-sm border-accent text-accent">Base</button>
-              <button class="wok-tab whitespace-nowrap py-3 px-2 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300">Pulpe</button>
-              <button class="wok-tab whitespace-nowrap py-3 px-2 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300">Favoris</button>
-              <button class="wok-tab whitespace-nowrap py-3 px-2 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300">Sauce</button>
-              <button class="wok-tab whitespace-nowrap py-3 px-2 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300">Toppings</button>
+            <nav class="-mb-px flex justify-around" aria-label="Tabs">
+              <button class="wok-tab py-3 px-1 text-xs font-medium border-b-2 border-accent text-accent">Base</button>
+              <button class="wok-tab py-3 px-1 text-xs font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300">Pulpe</button>
+              <button class="wok-tab py-3 px-1 text-xs font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300">Favoris</button>
+              <button class="wok-tab py-3 px-1 text-xs font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300">Sauce</button>
+              <button class="wok-tab py-3 px-1 text-xs font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300">Toppings</button>
             </nav>
           </div>
 
@@ -974,31 +1391,31 @@ https://creativecommons.org/licenses/by-nc/4.0/legalcode
           <div id="wok-steps-content">
             <!-- Étape 1: Base -->
             <div class="wok-step-pane md:mb-6">
-              <h3 class="hidden md:block text-xl font-semibold mb-2">1. Choix de la base</h3>
+              <h3 class="text-xl font-semibold mb-2">1. Choix de la base</h3>
               <div id="wok-base" class="grid md:grid-cols-2 gap-4"></div>
             </div>
 
             <!-- Étape 2: Pulpe -->
-            <div class="wok-step-pane hidden md:mb-6">
-              <h3 class="hidden md:block text-xl font-semibold mb-2">2. Choix de la pulpe</h3>
+            <div class="wok-step-pane hidden md:block md:mb-6">
+              <h3 class="text-xl font-semibold mb-2">2. Choix de la pulpe</h3>
               <div id="wok-pulpe" class="grid md:grid-cols-2 gap-4"></div>
             </div>
 
             <!-- Étape 3: Favoris -->
-            <div class="wok-step-pane hidden md:mb-6">
-              <h3 class="hidden md:block text-xl font-semibold mb-2">3. Choix des favoris</h3>
+            <div class="wok-step-pane hidden md:block md:mb-6">
+              <h3 class="text-xl font-semibold mb-2">3. Choix des favoris</h3>
               <div id="wok-favoris" class="grid md:grid-cols-3 gap-4"></div>
             </div>
 
             <!-- Étape 4: Sauce -->
-            <div class="wok-step-pane hidden md:mb-6">
-              <h3 class="hidden md:block text-xl font-semibold mb-2">4. Choix de la sauce</h3>
+            <div class="wok-step-pane hidden md:block md:mb-6">
+              <h3 class="text-xl font-semibold mb-2">4. Choix de la sauce</h3>
               <div id="wok-sauce" class="grid md:grid-cols-2 gap-4"></div>
             </div>
 
             <!-- Étape 5: Toppings -->
-            <div class="wok-step-pane hidden md:mb-6">
-              <h3 class="hidden md:block text-xl font-semibold mb-2">5. Toppings (+0.60€)</h3>
+            <div class="wok-step-pane hidden md:block md:mb-6">
+              <h3 class="text-xl font-semibold mb-2">5. Toppings (+0.60€)</h3>
               <div id="wok-toppings" class="grid md:grid-cols-2 gap-4"></div>
             </div>
           </div>
@@ -1012,36 +1429,36 @@ https://creativecommons.org/licenses/by-nc/4.0/legalcode
 
       <section id="order-menu" class="mt-8 md:mt-12">
         <!-- Sticky Nav pour mobile -->
-        <div id="category-nav" class="md:hidden sticky top-16 bg-white/90 backdrop-blur-sm z-40 overflow-x-auto">
-          <div class="flex items-center space-x-4 border-b px-4">
-            <a href="#wok-composer" class="category-link whitespace-nowrap py-3 px-2 text-sm font-medium text-gray-600">Wok</a>
-            <a href="#entrees-section" class="category-link whitespace-nowrap py-3 px-2 text-sm font-medium text-gray-600">Entrées</a>
-            <a href="#plats-section" class="category-link whitespace-nowrap py-3 px-2 text-sm font-medium text-gray-600">Plats</a>
-            <a href="#desserts-section" class="category-link whitespace-nowrap py-3 px-2 text-sm font-medium text-gray-600">Desserts</a>
-            <a href="#boissons-section" class="category-link whitespace-nowrap py-3 px-2 text-sm font-medium text-gray-600">Boissons</a>
+        <div id="category-nav" class="md:hidden sticky top-16 bg-white/90 backdrop-blur-sm z-40 left-0 right-0">
+          <div class="flex justify-around border-b px-4">
+            <a href="#wok-composer" class="category-link py-3 px-1 text-xs font-medium text-gray-600">Wok</a>
+            <a href="#entrees-section" class="category-link py-3 px-1 text-xs font-medium text-gray-600">Entrées</a>
+            <a href="#plats-section" class="category-link py-3 px-1 text-xs font-medium text-gray-600">Plats</a>
+            <a href="#desserts-section" class="category-link py-3 px-1 text-xs font-medium text-gray-600">Desserts</a>
+            <a href="#boissons-section" class="category-link py-3 px-1 text-xs font-medium text-gray-600">Boissons</a>
           </div>
         </div>
 
         <h2 class="hidden md:block text-3xl font-extrabold text-primary text-center mb-8">Notre Menu</h2>
 
-        <div id="entrees-section" class="mb-8 pt-8 -mt-8">
+        <div id="entrees-section" class="mb-8 pt-8 -mt-8 px-4">
           <h3 class="text-2xl font-bold text-primary mb-4">Entrées</h3>
-          <ul id="order-entrees-list" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-8"></ul>
+          <ul id="order-entrees-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8"></ul>
         </div>
 
-        <div id="plats-section" class="mb-8 pt-8 -mt-8">
+        <div id="plats-section" class="mb-8 pt-8 -mt-8 px-4">
           <h3 class="text-2xl font-bold text-primary mb-4">Plats</h3>
-          <ul id="order-plats-list" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-8"></ul>
+          <ul id="order-plats-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8"></ul>
         </div>
 
-        <div id="desserts-section" class="mb-8 pt-8 -mt-8">
+        <div id="desserts-section" class="mb-8 pt-8 -mt-8 px-4">
           <h3 class="text-2xl font-bold text-primary mb-4">Desserts</h3>
-          <ul id="order-desserts-list" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-8"></ul>
+          <ul id="order-desserts-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8"></ul>
         </div>
 
-        <div id="boissons-section" class="mb-8 pt-8 -mt-8">
+        <div id="boissons-section" class="mb-8 pt-8 -mt-8 px-4">
           <h3 class="text-2xl font-bold text-primary mb-4">Boissons</h3>
-          <ul id="order-boissons-list" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-8"></ul>
+          <ul id="order-boissons-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8"></ul>
         </div>
       </section>
 
@@ -1049,7 +1466,7 @@ https://creativecommons.org/licenses/by-nc/4.0/legalcode
 
   <!-- Panier flottant -->
   <div id="cart-float" class="fixed bottom-6 right-6 z-50 hidden md:block">
-    <a href="#" class="relative block">
+    <a href="#" class="relative block" style="background-color: transparent !important;">
       <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-accent" viewBox="0 0 20 20" fill="currentColor">
         <path d="M3 1a1 1 0 000 2h1.22l.305 1.222a.997.997 0 00.922.778h9.446a1 1 0 00.922-.778L16.78 3H17a1 1 0 000-2H3zM6.07 7l1.22 4.891a1 1 0 00.922.609h4.576a1 1 0 00.922-.609L14.93 7H6.07z" />
       </svg>
@@ -1113,10 +1530,11 @@ https://creativecommons.org/licenses/by-nc/4.0/legalcode
     </div>
   </section>
 
-  <!-- Script minimal : gestion d’affichage -->
+  <!-- Script minimal : gestion d'affichage -->
   <script type="module">
-    import { menuItems } from './data/menu.js';
-    import { initWokComposer } from './js/wok.js';
+    import { supabase } from './js/supabase-client.js';
+
+    let menuItems = [];
 
     const formDisponibilite = document.getElementById('form-disponibilite');
     const msgOk = document.getElementById('msg-ok');
@@ -1142,37 +1560,6 @@ https://creativecommons.org/licenses/by-nc/4.0/legalcode
     const restaurantClosedBannerMobile = document.getElementById('restaurant-closed-banner-mobile');
     const restaurantClosedMessageCart = document.getElementById('restaurant-closed-message-cart');
     const btnConfirmOrder = document.querySelector('#coords-modal button[type="submit"]');
-
-    // Descriptions for menu items
-    const itemDescriptions = {
-      "NEMS POULET X4": "Délicieux nems croustillants au poulet, parfaits pour une entrée savoureuse.",
-      "NEMS CREVETTES X4": "Nems croustillants aux crevettes, une entrée légère et parfumée.",
-      "NEMS LÉGUMES X4": "Nems végétariens aux légumes frais, une option saine et gourmande.",
-      "CREVETTES TEMPURA X3": "Crevettes enrobées d'une pâte légère et frites à la perfection.",
-      "BEIGNET DE CREVETTE X3": "Beignets de crevettes moelleux et savoureux.",
-      "BROCHETTES POULET SATAY X2": "Brochettes de poulet marinées à la sauce satay, grillées et parfumées.",
-      "BROCHETTES POULET YAKITORI X2": "Brochettes de poulet laquées à la sauce yakitori, tendres et sucrées-salées.",
-      "BROCHETTE BŒUF FROMAGE X2": "Brochettes de bœuf et fromage, une combinaison originale et fondante.",
-      "PINCE DE CRABE X3": "Délicieuses pinces de crabe, idéales pour les amateurs de fruits de mer.",
-      "ROULEAUX DE PRINTEMPS* X2": "Rouleaux frais et légers, garnis de légumes croquants et de vermicelles.",
-      "RIZ NATURE": "Riz blanc parfumé, accompagnement idéal pour tous nos plats.",
-      "PAD THAÏ": "Pâtes de riz - oignons - chou - carotte - œuf - soja - cacahuètes - citron - coriandre. 1 protéine au choix.",
-      "KHAO PAD": "Riz frit - oignons - chou - carotte - œuf - soja - cacahuètes - citron - coriandre. 1 protéine au choix.",
-      "BÒ BÚN": "Vermicelle de riz - nems - salade - carotte - concombre - soja - menthe - coriandre - cacahuètes. 1 protéine au choix.",
-      "SOUPE TOM YUM": "Soupe thaïlandaise épicée à base de galanga, citronnelle, lait de coco et crevettes.",
-      "POULET AU CURRY": "Poulet cuisiné avec des légumes et lait de coco. Accompagné de riz parfumé.",
-      "COUPELLE MANGUE": "Délicieuse coupelle de mangue fraîche, un dessert exotique et rafraîchissant.",
-      "COUPELLE ANANAS": "Coupelle d'ananas frais, sucré et juteux.",
-      "GLACE": "Sélection de glaces artisanales pour une touche de douceur.",
-      "MOCHI GLACE X2": "Deux mochis glacés, une spécialité japonaise douce et rafraîchissante.",
-      "SOFT": "Boissons rafraîchissantes sans alcool.",
-      "MAYA": "Boisson exotique à base de litchi et eau de coco.",
-      "CITRONNADE": "Citronnade maison, désaltérante et acidulée.",
-      "GINGER BEER": "Boisson au gingembre, pétillante et légèrement épicée.",
-      "EAU / EAU GAZEUSE": "Eau plate ou gazeuse, pour accompagner votre repas.",
-      "MOGU MOGU": "Boisson fruitée avec des morceaux de nata de coco.",
-      "BUBBLE TEA": "Thé aux perles de tapioca, disponible en plusieurs saveurs."
-    };
 
     // Product Modal elements
     const productModal = document.getElementById('product-modal');
@@ -1205,20 +1592,29 @@ https://creativecommons.org/licenses/by-nc/4.0/legalcode
       productModalImage.src = item.img;
       productModalImage.alt = item.nom;
       productModalName.textContent = item.nom;
-      productModalDescription.textContent = itemDescriptions[item.nom] || "Description non disponible.";
+      productModalDescription.textContent = item.description || "Description non disponible.";
       productModalPrice.textContent = `${item.prix.toFixed(2)}€`;
       productModalAddToCart.dataset.id = item.id;
       productModal.classList.remove('hidden');
     }
 
     // Helpers for restaurant status
-    function getRestaurantStatus() {
-      const status = localStorage.getItem('restaurantOuvert');
-      return status === null ? true : JSON.parse(status); // Default to true if not set
+    async function getRestaurantStatusFromSupabase() {
+      try {
+        const { data, error } = await supabase.from('restaurant_status').select('is_open').eq('id', 1).single();
+        if (error) {
+          console.error('Erreur lors de la récupération du statut du restaurant:', error);
+          return true; // Default to true if error
+        }
+        return data.is_open;
+      } catch (err) {
+        console.error('Erreur lors de la connexion à Supabase:', err);
+        return true; // Default to true if error
+      }
     }
 
-    function updateRestaurantStatusUI() {
-      const isOpen = getRestaurantStatus();
+    async function updateRestaurantStatusUI() {
+      const isOpen = await getRestaurantStatusFromSupabase();
 
       // Update mobile banner
       if (restaurantClosedBannerMobile) {
@@ -1257,15 +1653,8 @@ https://creativecommons.org/licenses/by-nc/4.0/legalcode
     // Initial update on load
     updateRestaurantStatusUI();
 
-    // Reactive update every 10 seconds
-    setInterval(updateRestaurantStatusUI, 10000);
-
-    // Listen for storage changes from other tabs/windows
-    window.addEventListener('storage', (e) => {
-      if (e.key === 'restaurantOuvert') {
-        updateRestaurantStatusUI();
-      }
-    });
+    // Reactive update every 30 seconds
+    setInterval(updateRestaurantStatusUI, 30000);
 
     // Scroll doux pour la nav des catégories
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
@@ -1308,64 +1697,90 @@ https://creativecommons.org/licenses/by-nc/4.0/legalcode
       panierSection.classList.remove('hidden'); // Return to cart view
     });
 
-    formCoords.addEventListener('submit', (e) => {
+    formCoords.addEventListener('submit', async (e) => {
       e.preventDefault();
 
-      if (!getRestaurantStatus()) {
+      const isOpen = await getRestaurantStatusFromSupabase();
+      if (!isOpen) {
         alert('Le restaurant est actuellement fermé. Vous ne pouvez pas passer commande.');
         return;
       }
 
       const cart = JSON.parse(localStorage.getItem('cart') || '[]');
       const total = parseFloat(panierTotal.textContent);
+      const btnSubmit = e.target.querySelector('button[type="submit"]');
+      btnSubmit.disabled = true;
+      btnSubmit.textContent = 'Envoi en cours...';
 
-      const nouvelleDemande = {
-        id: `req-${Date.now()}`,
-        nom: nomCoordsInput.value,
-        tel: telCoordsInput.value,
-        adresse: adresseCoordsInput.value,
-        mode: 'Livraison', // Always delivery for now
-        statut: 'pending',
+      const orderId = crypto.randomUUID(); // Générer l'ID unique côté client
+
+      const newOrderData = {
+        id: orderId, // Utiliser l'ID généré
+        customer_name: nomCoordsInput.value,
+        customer_phone: telCoordsInput.value,
+        customer_address: adresseCoordsInput.value,
         items: cart.map(item => {
           const menuItem = item.isWok ? item.details : menuItems.find(m => String(m.id) === item.itemId);
-          return { 
-            id: item.itemId, 
-            name: menuItem.nom, 
-            quantity: item.qty, 
-            price: menuItem.prix, 
+          return {
+            id: item.itemId,
+            name: menuItem.nom,
+            quantity: item.qty,
+            price: menuItem.prix,
             isWok: item.isWok || false,
-            details: item.isWok ? menuItem.details : null
+            details: item.isWok ? menuItem : null
           };
         }),
-        total: total
+        total: total,
+        status: 'submitted' // Statut initial
       };
 
-      const demandes = loadDemandes();
-      demandes.push(nouvelleDemande);
-      saveDemandes(demandes);
+      // Insérer la commande dans Supabase
+      const { error } = await supabase.from('orders').insert([newOrderData]);
 
+      if (error) {
+        console.error('Erreur lors de l\'envoi de la commande:', error);
+        alert('Une erreur est survenue. Veuillez réessayer.');
+        btnSubmit.disabled = false;
+        btnSubmit.textContent = 'Confirmer la commande';
+        return;
+      }
+      
       localStorage.removeItem('cart');
-      localStorage.setItem('currentDemandId', nouvelleDemande.id); // Store demand ID for tracking page
-      window.location.href = 'suivi.html'; // Redirect to tracking page
+      localStorage.setItem('currentDemandId', orderId); // Utiliser l'ID généré
+      window.location.href = 'suivi.html';
     });
 
-    // Helpers pour le localStorage
-    function loadDemandes() {
-      const demandesJSON = localStorage.getItem('demandes');
-      return demandesJSON ? JSON.parse(demandesJSON) : [];
-    }
+    document.addEventListener('DOMContentLoaded', async () => {
+      const currentOrderId = localStorage.getItem('currentDemandId');
+      
+      if (currentOrderId) {
+        const { data: order, error } = await supabase.rpc('get_order', { order_id_in: currentOrderId }).single();
 
-    function saveDemandes(demandes) {
-      localStorage.setItem('demandes', JSON.stringify(demandes, null, 2)); // pretty print
-    }
+        if (error || !order) {
+          // Si erreur ou commande non trouvée, on nettoie et on continue
+          localStorage.removeItem('currentDemandId');
+        } else {
+          // Si la commande est en cours (ni livrée, ni refusée), on redirige vers le suivi
+          if (order.status !== 'delivered' && order.status !== 'refused') {
+            window.location.href = 'suivi.html';
+            return; // Important: arrêter l'exécution ici
+          } else {
+            // Si la commande est terminée (livrée ou refusée), on nettoie pour permettre une nouvelle commande
+            localStorage.removeItem('currentDemandId');
+          }
+        }
+      }
+      
+      // Si aucune commande active (ou si elle vient d'être nettoyée), on affiche le menu
+      fetchAndShowMenu();
+    });
 
-    function loadCommandes() {
-      const commandesJSON = localStorage.getItem('commandes');
-      return commandesJSON ? JSON.parse(commandesJSON) : [];
-    }
-
-    function saveCommandes(commandes) {
-      localStorage.setItem('commandes', JSON.stringify(commandes, null, 2));
+    window.addWokToCart = function(wokItem) {
+      const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+      cart.push({ itemId: `wok-${Date.now()}`, qty: 1, isWok: true, details: wokItem });
+      localStorage.setItem('cart', JSON.stringify(cart));
+      updateCartBadge();
+      updateItemBadges();
     }
 
     function showOrderUI() {
@@ -1382,19 +1797,18 @@ https://creativecommons.org/licenses/by-nc/4.0/legalcode
       menuItems.forEach(item => {
         const li = document.createElement('li');
         // Vue mobile : liste, Vue desktop : grille
-        li.className = 'bg-white p-4 rounded-lg shadow-md flex md:flex-col items-center text-center relative md:p-4 cursor-pointer';
+        li.className = 'bg-white p-4 rounded-lg shadow-md flex items-center md:flex-col md:text-center relative cursor-pointer';
         li.onclick = () => openProductModal(item);
         li.innerHTML = `
-          <img src="${item.img}" alt="${item.nom}" class="w-24 h-24 md:w-32 md:h-32 rounded-lg object-cover mr-4 md:mr-0 md:mb-4" />
+          <img src="${item.img}" alt="${item.nom}" class="w-20 h-20 md:w-32 md:h-32 rounded-lg object-cover mr-4 md:mr-0 md:mb-4" />
           <div class="flex-grow text-left md:text-center">
             <p class="font-medium text-lg">${item.nom}</p>
-            <span class="font-semibold text-accent md:hidden">${item.prix.toFixed(2)}€</span>
+            <span class="font-semibold text-accent">${item.prix.toFixed(2)}€</span>
           </div>
-          <div class="flex flex-col items-center">
-             <span class="font-semibold text-accent hidden md:block mb-2">${item.prix.toFixed(2)}€</span>
-            <button data-id="${item.id}" class="mt-2 px-4 py-2 bg-accent text-white font-semibold rounded-full shadow hover:shadow-lg transition">+</button>
+          <div class="flex flex-col items-center pl-4 md:pl-0">
+             <button data-id="${item.id}" class="mt-2 px-4 py-2 bg-accent text-white font-semibold rounded-full shadow hover:shadow-lg transition">+</button>
           </div>
-          <span data-id="${item.id}" class="item-qty-badge absolute top-0 right-0 bg-blue-500 text-white text-xs font-bold rounded-full h-6 w-6 flex items-center justify-center hidden">0</span>
+          <span data-id="${item.id}" class="item-qty-badge absolute top-1 right-1 bg-blue-500 text-white text-xs font-bold rounded-full h-6 w-6 flex items-center justify-center hidden">0</span>
         `;
         
         switch (item.categorie) {
@@ -1420,11 +1834,9 @@ https://creativecommons.org/licenses/by-nc/4.0/legalcode
         });
       });
 
-      initWokComposer();
       updateCartBadge();
       updateItemBadges();
       setupCategoryObserver(); // Pour la nav sticky
-      setupWokTabs(); // Pour le formulaire Wok
     }
 
     function setupWokTabs() {
@@ -1433,10 +1845,13 @@ https://creativecommons.org/licenses/by-nc/4.0/legalcode
 
       tabs.forEach((tab, index) => {
         tab.addEventListener('click', () => {
-          // Masquer tous les contenus
-          panes.forEach(pane => pane.classList.add('hidden'));
-          // Afficher le contenu correspondant
-          panes[index].classList.remove('hidden');
+          // Masquer tous les panneaux
+          panes.forEach(p => p.classList.add('hidden'));
+          
+          // Afficher celui qui correspond à l'onglet cliqué
+          if (panes[index]) {
+            panes[index].classList.remove('hidden');
+          }
 
           // Gérer le style des onglets
           tabs.forEach(t => {
@@ -1448,21 +1863,14 @@ https://creativecommons.org/licenses/by-nc/4.0/legalcode
         });
       });
 
-      // Gérer l'affichage desktop (tout est visible)
-      const handleDesktopView = () => {
-        if (window.innerWidth >= 768) { // 768px est le point de rupture `md` de Tailwind
-          panes.forEach(pane => pane.classList.remove('hidden'));
-        } else {
-          // Sur mobile, s'assurer que seul le premier onglet est visible au départ
-          panes.forEach((pane, index) => {
-            if (index !== 0) pane.classList.add('hidden');
-          });
-        }
-      };
-
-      // Appeler la fonction au chargement et au redimensionnement
-      handleDesktopView();
-      window.addEventListener('resize', handleDesktopView);
+      // Gérer l'affichage au premier chargement (pour mobile)
+      if (window.innerWidth < 768) {
+        panes.forEach((pane, index) => {
+          if (index !== 0) {
+            pane.classList.add('hidden');
+          }
+        });
+      }
     }
 
     function setupCategoryObserver() {
@@ -1518,7 +1926,10 @@ https://creativecommons.org/licenses/by-nc/4.0/legalcode
       const count = cart.reduce((sum, it) => sum + it.qty, 0);
       const total = cart.reduce((sum, cartItem) => {
           const menuItem = cartItem.isWok ? cartItem.details : menuItems.find(item => String(item.id) === cartItem.itemId);
-          return sum + (menuItem.prix * cartItem.qty);
+          if (menuItem) {
+            return sum + (menuItem.prix * cartItem.qty);
+          }
+          return sum; // Si l'article n'est pas trouvé, on ne l'ajoute pas au total
       }, 0);
 
       const cartFloat = document.getElementById('cart-float'); // Bouton panier desktop
@@ -1542,11 +1953,7 @@ https://creativecommons.org/licenses/by-nc/4.0/legalcode
       } else {
         // Sur les écrans desktop
         mobileCartButton.classList.add('hidden'); // S'assurer que le panier mobile est masqué
-        if (count > 0) {
-          cartFloat.classList.remove('hidden'); // Afficher le panier desktop s'il y a des articles
-        } else {
-          cartFloat.classList.add('hidden'); // Masquer le panier desktop s'il n'y a pas d'articles
-        }
+        cartFloat.classList.remove('hidden'); // Toujours afficher le panier desktop
       }
     }
 
@@ -1572,11 +1979,11 @@ https://creativecommons.org/licenses/by-nc/4.0/legalcode
               <p class="text-sm text-gray-600">${menuItem.prix.toFixed(2)}€</p>
               ${cartItem.isWok ? `
                 <div class="text-xs text-gray-500 pl-4">
-                  <p><strong>Base:</strong> ${menuItem.details.base}</p>
-                  <p><strong>Pulpes:</strong> ${menuItem.details.pulpes.join(', ') || 'Aucune'}</p>
-                  <p><strong>Favoris:</strong> ${menuItem.details.favoris.join(', ') || 'Aucun'}</p>
-                  <p><strong>Sauce:</strong> ${menuItem.details.sauce}</p>
-                  <p><strong>Toppings:</strong> ${menuItem.details.toppings.join(', ') || 'Aucun'}</p>
+                  <p><strong>Base:</strong> ${menuItem.base}</p>
+                  <p><strong>Pulpes:</strong> ${menuItem.pulpes.join(', ') || 'Aucune'}</p>
+                  <p><strong>Favoris:</strong> ${menuItem.favoris.join(', ') || 'Aucun'}</p>
+                  <p><strong>Sauce:</strong> ${menuItem.sauce}</p>
+                  <p><strong>Toppings:</strong> ${menuItem.toppings.join(', ') || 'Aucun'}</p>
                 </div>
               ` : ''}
             </div>
@@ -1587,6 +1994,17 @@ https://creativecommons.org/licenses/by-nc/4.0/legalcode
               <button data-id="${cartItem.itemId}" class="btn-remove-item text-red-500 hover:text-red-700">Supprimer</button>
             </div>
           `;
+          
+          if (!cartItem.isWok) {
+            li.classList.add('cursor-pointer', 'hover:bg-gray-50');
+            li.addEventListener('click', () => {
+              const originalMenuItem = menuItems.find(item => String(item.id) === cartItem.itemId);
+              if (originalMenuItem) {
+                openProductModal(originalMenuItem);
+              }
+            });
+          }
+
           panierList.appendChild(li);
           total += menuItem.prix * cartItem.qty;
         }
@@ -1596,15 +2014,24 @@ https://creativecommons.org/licenses/by-nc/4.0/legalcode
 
       // Add event listeners for quantity buttons
       panierList.querySelectorAll('.btn-qty-increase').forEach(btn => {
-        btn.addEventListener('click', e => updateQuantity(String(e.target.dataset.id), 1));
+        btn.addEventListener('click', e => {
+          e.stopPropagation();
+          updateQuantity(String(e.target.dataset.id), 1);
+        });
       });
 
       panierList.querySelectorAll('.btn-qty-decrease').forEach(btn => {
-        btn.addEventListener('click', e => updateQuantity(String(e.target.dataset.id), -1));
+        btn.addEventListener('click', e => {
+          e.stopPropagation();
+          updateQuantity(String(e.target.dataset.id), -1);
+        });
       });
 
       panierList.querySelectorAll('.btn-remove-item').forEach(btn => {
-        btn.addEventListener('click', e => removeFromCart(String(e.target.dataset.id)));
+        btn.addEventListener('click', e => {
+          e.stopPropagation();
+          removeFromCart(String(e.target.dataset.id));
+        });
       });
     }
 
@@ -1636,56 +2063,42 @@ https://creativecommons.org/licenses/by-nc/4.0/legalcode
       updateItemBadges();
     }
 
-    document.addEventListener('DOMContentLoaded', () => {
-      // Check for existing active demand/order and redirect to suivi.html
-      const currentDemandId = localStorage.getItem('currentDemandId');
-      if (currentDemandId) {
-        const demandes = loadDemandes();
-        const currentDemand = demandes.find(d => d.id === currentDemandId);
-
-        if (currentDemand) {
-          if (currentDemand.statut === 'pending') {
-            window.location.href = 'suivi.html';
-            return;
-          } else if (currentDemand.statut === 'accepted') {
-            const commandes = loadCommandes();
-            const associatedCommand = commandes.find(cmd => cmd.demandeId === currentDemand.id);
-            if (associatedCommand && associatedCommand.status !== 'delivered') {
-              window.location.href = 'suivi.html';
-              return;
-            }
-          } else if (currentDemand.statut === 'refused') {
-            msgRefused.classList.remove('hidden');
-            if (currentDemand.refusalReason) {
-              refusalReasonDisplay.textContent = ` Motif: ${currentDemand.refusalReason}`;
-            }
-            orderMenuSection.classList.add('hidden');
-            wokComposerSection.classList.add('hidden');
-            cartFloat.classList.add('hidden');
-            mobileCartButton.classList.add('hidden'); // Hide mobile cart button as well
-            
-            btnNewDemand.addEventListener('click', () => {
-              localStorage.removeItem('currentDemandId');
-              localStorage.removeItem('cart');
-              window.location.href = 'commande.html'; // Reload to start a new order
-            });
-            return;
-          }
+    async function fetchAndShowMenu() {
+      try {
+        const { data, error } = await supabase.from('menu_items').select('*');
+        if (error) {
+          console.error("Erreur lors de la récupération du menu:", error);
+          // Afficher un message d'erreur à l'utilisateur pourrait être une bonne amélioration
+          return;
         }
+        
+        menuItems = data.map(item => ({
+          id: item.id,
+          nom: item.name,
+          description: item.description,
+          prix: item.price,
+          categorie: item.category,
+          img: item.image_url
+        }));
+
+        // Nettoyer le panier des articles qui n'existent plus
+        let cart = JSON.parse(localStorage.getItem('cart') || '[]');
+        const existingItemIds = new Set(menuItems.map(item => String(item.id)));
+        const cleanedCart = cart.filter(cartItem => {
+          return cartItem.isWok || existingItemIds.has(String(cartItem.itemId));
+        });
+        localStorage.setItem('cart', JSON.stringify(cleanedCart));
+        
+        showOrderUI();
+        updateItemBadges();
+        setupWokTabs();
+
+      } catch (err) {
+        console.error("Une erreur s'est produite lors du chargement du menu:", err);
       }
-
-      showOrderUI(); // Always show order UI on this page if no active order
-      updateItemBadges(); // Initial update on page load
-    });
-
-    window.addWokToCart = function(wokItem) {
-      const cart = JSON.parse(localStorage.getItem('cart') || '[]');
-      cart.push({ itemId: `wok-${Date.now()}`, qty: 1, isWok: true, details: wokItem });
-      localStorage.setItem('cart', JSON.stringify(cart));
-      updateCartBadge();
-      updateItemBadges();
     }
   </script>
+  <script type="module" src="js/wok.js"></script>
   <script src="js/responsive.js"></script>
 
   <!-- Product Detail Modal -->
@@ -1709,7 +2122,6 @@ https://creativecommons.org/licenses/by-nc/4.0/legalcode
 </html>
 
 --- css/responsive.css ---
-
 /* Base styles - (Mobile First) */
 
 /* Small devices (landscape phones, 576px and up) */
@@ -1720,6 +2132,11 @@ https://creativecommons.org/licenses/by-nc/4.0/legalcode
 /* Medium devices (tablets, 768px and up) */
 @media (min-width: 768px) {
   /* ... */
+}
+
+/* Responsive adjustments for wok composer */
+@media (max-width: 767px) {
+  /* JavaScript will handle display property */
 }
 
 /* Large devices (desktops, 992px and up) */
@@ -1734,69 +2151,313 @@ https://creativecommons.org/licenses/by-nc/4.0/legalcode
 
 
 --- css/styles.css ---
+/* General Body and Typography */
+body {
+  font-family: 'Noto Sans', sans-serif;
+  color: #333;
+  line-height: 1.6;
+  background-color: #f8f8f8;
+}
 
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Playfair Display', serif;
+  color: #222;
+  margin-bottom: 0.5em;
+}
 
+a {
+  color: #ED8B00;
+  text-decoration: none;
+}
 
---- data/menu.js ---
+a:hover {
+  text-decoration: underline;
+}
 
-export const menuItems = [
-  // Entrées
-  { "id": 1, "nom": "Nems Poulet x4", "prix": 5.00, "categorie": "Entrées", "img": "assets/images/nems.jpg" },
-  { "id": 2, "nom": "Nems Crevettes x4", "prix": 5.50, "categorie": "Entrées", "img": "assets/images/nems.jpg" },
-  { "id": 3, "nom": "Nems Légumes x4", "prix": 5.00, "categorie": "Entrées", "img": "assets/images/nems.jpg" },
-  { "id": 4, "nom": "Crevettes Tempura x3", "prix": 4.90, "categorie": "Entrées", "img": "assets/images/nems.jpg" },
-  { "id": 5, "nom": "Beignet de crevette x3", "prix": 4.90, "categorie": "Entrées", "img": "assets/images/nems.jpg" },
-  { "id": 6, "nom": "Brochettes poulet satay x2", "prix": 5.00, "categorie": "Entrées", "img": "assets/images/nems.jpg" },
-  { "id": 7, "nom": "Brochettes poulet yakitori x2", "prix": 4.50, "categorie": "Entrées", "img": "assets/images/nems.jpg" },
-  { "id": 8, "nom": "Brochette bœuf fromage x2", "prix": 5.50, "categorie": "Entrées", "img": "assets/images/nems.jpg" },
-  { "id": 9, "nom": "Pince de crabe x3", "prix": 4.50, "categorie": "Entrées", "img": "assets/images/nems.jpg" },
-  { "id": 10, "nom": "Rouleaux de printemps x2", "prix": 5.00, "categorie": "Entrées", "img": "assets/images/nems.jpg" },
-  { "id": 11, "nom": "Riz nature", "prix": 4.00, "categorie": "Entrées", "img": "assets/images/nems.jpg" },
+/* Header */
+header {
+  background-color: #fff;
+  padding: 1rem 0;
+  border-bottom: 1px solid #eee;
+}
 
-  // Plats
-  { "id": 12, "nom": "Pad Thaï - Poulet", "prix": 12.50, "categorie": "Plats", "img": "assets/images/pad-thai.jpg" },
-  { "id": 13, "nom": "Pad Thaï - Tofu", "prix": 12.50, "categorie": "Plats", "img": "assets/images/pad-thai.jpg" },
-  { "id": 14, "nom": "Pad Thaï - Poulet Crousti", "prix": 13.50, "categorie": "Plats", "img": "assets/images/pad-thai.jpg" },
-  { "id": 15, "nom": "Pad Thaï - Bœuf", "prix": 13.50, "categorie": "Plats", "img": "assets/images/pad-thai.jpg" },
-  { "id": 16, "nom": "Pad Thaï - Crevettes", "prix": 13.50, "categorie": "Plats", "img": "assets/images/pad-thai.jpg" },
-  
-  { "id": 17, "nom": "Khao Pad - Poulet", "prix": 12.50, "categorie": "Plats", "img": "assets/images/pad-thai.jpg" },
-  { "id": 18, "nom": "Khao Pad - Tofu", "prix": 12.50, "categorie": "Plats", "img": "assets/images/pad-thai.jpg" },
-  { "id": 19, "nom": "Khao Pad - Poulet Crousti", "prix": 13.50, "categorie": "Plats", "img": "assets/images/pad-thai.jpg" },
-  { "id": 20, "nom": "Khao Pad - Bœuf", "prix": 13.50, "categorie": "Plats", "img": "assets/images/pad-thai.jpg" },
-  { "id": 21, "nom": "Khao Pad - Crevettes", "prix": 13.50, "categorie": "Plats", "img": "assets/images/pad-thai.jpg" },
+nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
 
-  { "id": 22, "nom": "Bò Bún - Poulet", "prix": 12.50, "categorie": "Plats", "img": "assets/images/pad-thai.jpg" },
-  { "id": 23, "nom": "Bò Bún - Bœuf", "prix": 13.50, "categorie": "Plats", "img": "assets/images/pad-thai.jpg" },
-  { "id": 24, "nom": "Bò Bún - Crevettes", "prix": 13.50, "categorie": "Plats", "img": "assets/images/pad-thai.jpg" },
+nav .logo {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: #704B24;
+}
 
-  { "id": 25, "nom": "Soupe Tom Yum", "prix": 14.50, "categorie": "Plats", "img": "assets/images/pad-thai.jpg" },
-  { "id": 26, "nom": "Poulet au curry", "prix": 14.50, "categorie": "Plats", "img": "assets/images/pad-thai.jpg" },
+nav ul {
+  list-style: none;
+  display: flex;
+  gap: 2rem;
+}
 
-  // Desserts
-  { "id": 27, "nom": "Coupelle mangue", "prix": 5.00, "categorie": "Desserts", "img": "assets/images/nems.jpg" },
-  { "id": 28, "nom": "Coupelle ananas", "prix": 5.00, "categorie": "Desserts", "img": "assets/images/nems.jpg" },
-  { "id": 29, "nom": "Glace", "prix": 4.90, "categorie": "Desserts", "img": "assets/images/nems.jpg" },
-  { "id": 30, "nom": "Mochi glace x2", "prix": 5.00, "categorie": "Desserts", "img": "assets/images/nems.jpg" },
+nav ul li a {
+  font-weight: 500;
+  color: #555;
+  transition: color 0.3s ease;
+}
 
-  // Boissons
-  { "id": 31, "nom": "Soft", "prix": 2.00, "categorie": "Boissons", "img": "assets/images/nems.jpg" },
-  { "id": 32, "nom": "Maya", "prix": 3.90, "categorie": "Boissons", "img": "assets/images/nems.jpg" },
-  { "id": 33, "nom": "Citronnade", "prix": 2.00, "categorie": "Boissons", "img": "assets/images/nems.jpg" },
-  { "id": 34, "nom": "Ginger beer", "prix": 3.00, "categorie": "Boissons", "img": "assets/images/nems.jpg" },
-  { "id": 35, "nom": "Eau / eau gazeuse", "prix": 2.00, "categorie": "Boissons", "img": "assets/images/nems.jpg" },
-  { "id": 36, "nom": "Mogu Mogu", "prix": 3.00, "categorie": "Boissons", "img": "assets/images/nems.jpg" },
-  { "id": 37, "nom": "Bubble Tea", "prix": 6.00, "categorie": "Boissons", "img": "assets/images/nems.jpg" }
-]
+nav ul li a:hover {
+  color: #ED8B00;
+}
+
+.hero {
+  background-size: cover;
+  background-position: center;
+  color: white;
+  text-align: center;
+  padding: 4rem 1.5rem;
+  position: relative;
+}
+
+.hero::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1;
+}
+
+.hero-content {
+  position: relative;
+  z-index: 2;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.hero h1 {
+  font-size: 3rem;
+  margin-bottom: 0.5rem;
+  color: white;
+}
+
+.hero p {
+  font-size: 1.2rem;
+  margin-bottom: 1.5rem;
+}
+
+.btn {
+  display: inline-block;
+  background-color: #ED8B00;
+  color: white;
+  padding: 0.8rem 1.5rem;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+}
+
+.btn:hover {
+  background-color: #d47a00;
+  text-decoration: none;
+}
+
+/* Sections */
+section {
+  padding: 3rem 1.5rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+section h2 {
+  font-size: 2.5rem;
+  text-align: center;
+  margin-bottom: 2rem;
+  color: #704B24;
+}
+
+.about-us, .menu-preview, .contact {
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  margin-bottom: 2rem;
+}
+
+.about-us p {
+  text-align: center;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.menu-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+.menu-item {
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+.menu-item img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+}
+
+.menu-item-content {
+  padding: 1rem;
+}
+
+.menu-item h3 {
+  font-size: 1.5rem;
+  color: #704B24;
+  margin-bottom: 0.5rem;
+}
+
+.menu-item p {
+  font-size: 0.9rem;
+  color: #666;
+}
+
+/* Contact Form */
+.contact-form {
+  max-width: 600px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.contact-form label {
+  font-weight: 500;
+}
+
+.contact-form input,
+.contact-form textarea {
+  padding: 0.8rem;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  font-size: 1rem;
+}
+
+.contact-form textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+.contact-form button {
+  background-color: #704B24;
+  color: white;
+  padding: 1rem;
+  border: none;
+  border-radius: 5px;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.contact-form button:hover {
+  background-color: #5a3b1d;
+}
+
+/* Footer */
+footer {
+  background-color: #333;
+  color: white;
+  text-align: center;
+  padding: 2rem 1.5rem;
+  margin-top: auto; /* Pushes footer to the bottom */
+}
+
+footer p {
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+/* --- FIX WOK TEXT COLOR --- */
+#wok-composer, #wok-composer label, #wok-composer h3 {
+  color: #333 !important; /* Forcer le texte en noir */
+}
+/* --- FIN FIX WOK --- */
+
+/* Utility Classes (if not using Tailwind fully) */
+.text-center {
+  text-align: center;
+}
+
+.mb-4 {
+  margin-bottom: 1rem;
+}
+
+/* Additional styles for the wok composer tabs */
+.wok-tab {
+  cursor: pointer;
+}
+
+.wok-tab.active {
+  border-color: #ED8B00;
+  color: #ED8B00;
+}
+
+.wok-step-pane {
+  padding: 1rem 0;
+}
+
+.wok-step-pane.wok-pane-active {
+  display: block;
+}
+
+#product-modal {
+  z-index: 1000;
+}
+
+#product-modal > div {
+  max-width: 90vw;
+  max-height: 90vh; /* ou une autre valeur adaptée */
+}
+
+#product-modal-image {
+  max-height: 300px;
+}
+
+#panier-section {
+  z-index: 999;
+}
+
+#panier-section > div {
+  max-height: 90vh; /* ou une autre valeur adaptée */
+}
+
+#mobile-cart-button {
+  transition: transform 0.3s ease;
+}
+
+#coords-modal {
+  z-index: 1001;
+}
+
+#coords-modal > div {
+  max-width: 90vw;
+}
+
+.hidden {
+  display: none !important;
+}
 
 --- index.html ---
-
 <!DOCTYPE html>
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="css/styles.css">
+  <!-- <link rel="stylesheet" href="css/styles.css"> -->
   <title>Thaï Garden – Accueil</title>
 
   <!-- Google Fonts -->
@@ -1835,9 +2496,9 @@ export const menuItems = [
 
   <!-- Sticky Navbar -->
   <header class="fixed top-0 w-full bg-white/70 backdrop-blur-sm shadow-md z-50">
-    <nav class="max-w-5xl mx-auto flex items-center justify-between py-4 px-6">
+    <nav class="max-w-7xl mx-auto flex items-center justify-between py-4 px-6">
       <a href="index.html" class="text-2xl font-bold text-primary">Thaï Garden</a>
-      <div class="hidden md:flex gap-8 font-medium">
+      <div class="hidden md:flex gap-8 font-medium text-gray-700">
         <a href="index.html" class="hover:text-accent transition">Accueil</a>
         <a href="commande.html" class="hover:text-accent transition">Menu</a>
         <a href="#contact" class="hover:text-accent transition">Contact</a>
@@ -1879,7 +2540,7 @@ export const menuItems = [
 
   <!-- Services -->
   <section class="py-16 bg-gradient-to-r from-white to-gray-100 fade-in-section">
-    <div class="max-w-5xl mx-auto px-6 grid grid-cols-1 md:grid-cols-3 gap-8">
+    <div class="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-3 gap-8">
       <div class="bg-white p-8 rounded-lg shadow-md hover:shadow-lg transition text-center transform transition-transform duration-300 hover:scale-105">
         <img src="assets/icons/accessibility.svg" alt="Accessibilité" class="h-12 mx-auto mb-4" />
         <h3 class="text-xl font-semibold mb-2">Accessibilité</h3>
@@ -1900,7 +2561,7 @@ export const menuItems = [
 
   <!-- Contact Section -->
   <section id="contact" class="py-16 bg-gradient-to-b from-white to-gray-50 fade-in-section">
-    <div class="max-w-5xl mx-auto px-6 grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+    <div class="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
       <!-- Left column: horaires + contact -->
       <div class="space-y-8">
         <div>
@@ -1929,7 +2590,7 @@ export const menuItems = [
 
   <!-- Social Networks Section -->
   <section class="py-16 bg-gradient-to-b from-gray-50 to-white fade-in-section">
-    <div class="max-w-5xl mx-auto px-6 text-center">
+    <div class="max-w-7xl mx-auto px-6 text-center">
       <h2 class="text-3xl font-extrabold text-primary mb-8">Suivez-nous sur les réseaux sociaux !</h2>
       <div class="flex justify-center gap-8">
         <a href="https://www.facebook.com/profile.php?id=100086590987828" target="_blank" rel="noopener noreferrer" class="text-primary hover:text-accent transition">
@@ -1948,7 +2609,7 @@ export const menuItems = [
 
   <!-- Footer -->
   <footer class="mt-auto bg-[#704B24] text-white py-6">
-    <div class="max-w-5xl mx-auto text-center">
+    <div class="max-w-7xl mx-auto text-center">
       <p>© 2025 Thaï Garden — Mauguio</p>
       
     </div>
@@ -1962,7 +2623,6 @@ export const menuItems = [
 </html>
 
 --- js/main.js ---
-
 // Scroll fade-in animation avec translate Y
 window.addEventListener('DOMContentLoaded', function() {
   const observer = new IntersectionObserver((entries) => {
@@ -1988,7 +2648,6 @@ window.addEventListener('DOMContentLoaded', function() {
 });
 
 --- js/responsive.js ---
-
 document.addEventListener('DOMContentLoaded', function () {
   const burgerBtn = document.getElementById('burger-btn');
   const mobileMenu = document.getElementById('mobile-menu');
@@ -1999,60 +2658,60 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 
+--- js/supabase-client.js ---
+
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+
+// Remplacez les valeurs ci-dessous par votre URL et votre clé anonyme Supabase
+const supabaseUrl = 'https://sjnhfchjznlovroljojv.supabase.co';
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNqbmhmY2hqem5sb3Zyb2xqb2p2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE0NjE2ODYsImV4cCI6MjA2NzAzNzY4Nn0.D5c3eivo1vsr-xJDx_6Jo0aFQVzszL_3EFgvf1a8Q0k';
+
+// Créez et exportez le client Supabase
+export const supabase = createClient(supabaseUrl, supabaseKey);
+
+
 --- js/wok.js ---
+import { supabase } from './supabase-client.js';
 
-
-export const wokOptions = {
-  bases: [
-    { nom: "Pâtes de riz", prix: 6.90 },
-    { nom: "Nouilles jaunes", prix: 6.90 },
-    { nom: "Udon", prix: 6.90 },
-    { nom: "Riz parfumé", prix: 6.90 },
-  ],
-  pulpes: [
-    { nom: "Oignons", prix: 0.40 },
-    { nom: "Ail", prix: 0.40 },
-    { nom: "Gingembre", prix: 0.40 },
-    { nom: "Piment", prix: 0.40 },
-  ],
-  favoris: [
-    { nom: "Poulet", prix: 2.00 },
-    { nom: "Poulet crousti", prix: 2.80 },
-    { nom: "Bœuf", prix: 2.50 },
-    { nom: "Crevettes", prix: 2.50 },
-    { nom: "Calamar", prix: 2.50 },
-    { nom: "Tofu", prix: 2.00 },
-    { nom: "Pak choï", prix: 1.40 },
-    { nom: "Poivrons", prix: 1.40 },
-    { nom: "Oignons doux", prix: 1.20 },
-    { nom: "Citronnelle", prix: 1.20 },
-    { nom: "Brocolis", prix: 1.40 },
-    { nom: "Basilic thaï", prix: 1.20 },
-    { nom: "Mini maïs", prix: 1.40 },
-    { nom: "Ananas", prix: 1.40 },
-    { nom: "Champignon noir", prix: 1.50 },
-    { nom: "Champignon de Paris", prix: 1.50 },
-    { nom: "Shitaké", prix: 1.50 },
-    { nom: "Bambou", prix: 1.40 },
-    { nom: "Noix de cajou", prix: 1.20 },
-  ],
-  sauces: [
-    { nom: "Pad Thaï" },
-    { nom: "Pad See Ew" },
-    { nom: "Curry Rouge" },
-    { nom: "Curry Jaune" },
-    { nom: "Aigre-douce" },
-  ],
-  toppings: [
-    { nom: "Coriandre fraîche", prix: 0.60 },
-    { nom: "Cacahuètes", prix: 0.60 },
-    { nom: "Oignons frits", prix: 0.60 },
-    { nom: "Crevettes séchées", prix: 0.60 },
-    { nom: "Ciboulette thaï", prix: 0.60 },
-    { nom: "Citron", prix: 0.60 },
-    { nom: "Graines de sesame", prix: 0.60 },
-  ],
+let wokOptions = {
+  bases: [],
+  pulpes: [],
+  favoris: [],
+  sauces: [],
+  toppings: [],
 };
+
+async function fetchWokOptions() {
+  try {
+    const results = await Promise.all([
+      supabase.from('wok_bases').select('*'),
+      supabase.from('wok_pulpes').select('*'),
+      supabase.from('wok_favoris').select('*'),
+      supabase.from('wok_sauces').select('*'),
+      supabase.from('wok_toppings').select('*')
+    ]);
+
+    const [bases, pulpes, favoris, sauces, toppings] = results;
+
+    if (bases.error) throw new Error(`Erreur bases: ${bases.error.message}`);
+    if (pulpes.error) throw new Error(`Erreur pulpes: ${pulpes.error.message}`);
+    if (favoris.error) throw new Error(`Erreur favoris: ${favoris.error.message}`);
+    if (sauces.error) throw new Error(`Erreur sauces: ${sauces.error.message}`);
+    if (toppings.error) throw new Error(`Erreur toppings: ${toppings.error.message}`);
+
+    wokOptions = {
+      bases: bases.data || [],
+      pulpes: pulpes.data || [],
+      favoris: favoris.data || [],
+      sauces: sauces.data || [],
+      toppings: toppings.data || [],
+    };
+
+    console.log('Wok options fetched successfully:', wokOptions);
+  } catch (error) {
+    console.error('Error fetching wok options:', error);
+  }
+}
 
 let selectedWok = {
   base: null,
@@ -2068,21 +2727,25 @@ function renderWokOptions() {
 
   const renderOptions = (containerId, items, type) => {
     const container = document.getElementById(containerId);
+    if (!container) {
+      console.error(`Erreur : Le conteneur #${containerId} est introuvable dans le DOM.`);
+      return;
+    }
     container.innerHTML = '';
     items.forEach(item => {
       const div = document.createElement('div');
       div.className = 'flex items-center gap-2';
       const input = document.createElement('input');
       input.type = type === 'radio' ? 'radio' : 'checkbox';
-      input.name = type === 'radio' ? containerId : item.nom;
-      input.value = item.nom;
-      input.dataset.prix = item.prix || 0;
+      input.name = type === 'radio' ? containerId : item.name;
+      input.value = item.name;
+      input.dataset.price = item.price || 0;
       input.dataset.category = containerId.replace('wok-', '');
       input.addEventListener('change', updateWokSelection);
 
       const label = document.createElement('label');
-      label.textContent = `${item.nom}${item.prix ? ` (+${item.prix.toFixed(2)}€)` : ''}`;
-      label.htmlFor = input.id = `${containerId}-${item.nom}`;
+      label.textContent = `${item.name}${item.price ? ` (+${item.price.toFixed(2)}€)` : ''}`;
+      label.htmlFor = input.id = `${containerId}-${item.name}`;
 
       div.appendChild(input);
       div.appendChild(label);
@@ -2099,22 +2762,27 @@ function renderWokOptions() {
 
 function updateWokSelection(event) {
   const { value, checked, dataset, type } = event.target;
-  const prix = parseFloat(dataset.prix);
+  const price = parseFloat(dataset.price) || 0;
   const category = dataset.category; // e.g., 'base', 'pulpe', 'favoris'
 
   if (type === 'radio') {
-    selectedWok[category] = { nom: value, prix };
-  } else {
-    // For checkboxes, map the singular category to the plural property name in the selectedWok object
-    const listName = category === 'pulpe' ? 'pulpes' : category;
+    selectedWok[category] = { name: value, price };
+  } else { // Checkbox
+    const categoryMapping = {
+      'pulpe': 'pulpes',
+      'favoris': 'favoris',
+      'toppings': 'toppings'
+    };
+    const listName = categoryMapping[category];
+
+    if (!listName || !selectedWok[listName]) return; // Safety check
+
     const list = selectedWok[listName];
 
-    if (!list) return; // Safety check
-
     if (checked) {
-      list.push({ nom: value, prix });
+      list.push({ name: value, price });
     } else {
-      const index = list.findIndex(item => item.nom === value);
+      const index = list.findIndex(item => item.name === value);
       if (index > -1) list.splice(index, 1);
     }
   }
@@ -2124,10 +2792,10 @@ function updateWokSelection(event) {
 
 function calculateWokTotal() {
   let total = 0;
-  if (selectedWok.base) total += selectedWok.base.prix;
-  selectedWok.pulpes.forEach(p => total += p.prix);
-  selectedWok.favoris.forEach(f => total += f.prix);
-  selectedWok.toppings.forEach(t => total += t.prix);
+  if (selectedWok.base) total += selectedWok.base.price;
+  selectedWok.pulpes.forEach(p => total += p.price);
+  selectedWok.favoris.forEach(f => total += f.price);
+  selectedWok.toppings.forEach(t => total += t.price);
 
   selectedWok.total = total;
   document.getElementById('wok-total').textContent = total.toFixed(2);
@@ -2163,13 +2831,11 @@ document.getElementById('btn-add-wok').addEventListener('click', () => {
     nom: 'Wok Composé',
     prix: selectedWok.total,
     categorie: 'Wok',
-    details: {
-      base: selectedWok.base.nom,
-      pulpes: selectedWok.pulpes.map(p => p.nom),
-      favoris: selectedWok.favoris.map(f => f.nom),
-      sauce: selectedWok.sauce.nom,
-      toppings: selectedWok.toppings.map(t => t.nom),
-    }
+    base: selectedWok.base.name,
+    pulpes: selectedWok.pulpes.map(p => p.name),
+    favoris: selectedWok.favoris.map(f => f.name),
+    sauce: selectedWok.sauce.name,
+    toppings: selectedWok.toppings.map(t => t.name),
   };
 
   window.addWokToCart(wokItem);
@@ -2177,13 +2843,20 @@ document.getElementById('btn-add-wok').addEventListener('click', () => {
   resetWokForm();
 });
 
-export function initWokComposer() {
+async function initWokComposer() {
+  await fetchWokOptions();
   renderWokOptions();
+}
+
+// Lançons l'initialisation dès que le script est chargé et que le DOM est prêt.
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initWokComposer);
+} else {
+  initWokComposer();
 }
 
 
 --- menu.html ---
-
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -2505,7 +3178,6 @@ export function initWokComposer() {
 </html>
 
 --- suivi.html ---
-
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -2573,18 +3245,8 @@ export function initWokComposer() {
 
     </main>
 
-  <script>
-    function loadDemandes() {
-      return JSON.parse(localStorage.getItem('demandes') || '[]');
-    }
-
-    function saveDemandes(data) {
-      localStorage.setItem('demandes', JSON.stringify(data));
-    }
-
-    function loadCommandes() {
-      return JSON.parse(localStorage.getItem('commandes') || '[]');
-    }
+  <script type="module">
+    import { supabase } from './js/supabase-client.js';
 
     const demandStatusMessageDiv = document.getElementById('demand-status-message');
     const demandMessageText = document.getElementById('demand-message-text');
@@ -2593,7 +3255,6 @@ export function initWokComposer() {
 
     btnNewDemandFromSuivi.addEventListener('click', () => {
       localStorage.removeItem('currentDemandId');
-      localStorage.removeItem('currentOrderId');
       window.location.href = 'commande.html';
     });
 
@@ -2601,83 +3262,74 @@ export function initWokComposer() {
     const MAX_RETRIES = 15;
     const RETRY_DELAY_MS = 250; // 250ms delay
 
-    function renderStatus() {
+    async function renderStatus() {
       const currentDemandId = localStorage.getItem('currentDemandId');
       console.log('currentDemandId:', currentDemandId);
-      const demandes = loadDemandes();
-      console.log('demandes:', demandes);
-      const currentDemand = demandes.find(d => d.id === currentDemandId);
-      console.log('currentDemand:', currentDemand);
 
-      if (!currentDemand && retryCount < MAX_RETRIES) {
-        // If demand not found and retries left, try again after a short delay
-        retryCount++;
-        setTimeout(renderStatus, RETRY_DELAY_MS);
-        return; // Exit this call, wait for retry
-      }
-
-      if (!currentDemand) {
-        // If still not found after max retries
+      if (!currentDemandId) {
         demandStatusMessageDiv.classList.remove('hidden');
-        demandMessageText.textContent = 'Aucune demande en cours ou trouvée.';
+        demandMessageText.textContent = 'Aucune commande en cours ou trouvée.';
         btnNewDemandFromSuivi.classList.remove('hidden');
         orderDetailsDiv.classList.add('hidden');
         return;
       }
 
-      // Reset retry count if demand is found
-      retryCount = 0;
+      const { data: order, error } = await supabase.rpc('get_order', { order_id_in: currentDemandId }).single();
 
-      if (currentDemand.statut === 'pending') {
-        demandStatusMessageDiv.classList.remove('hidden');
-        demandMessageText.innerHTML = '⌛ En attente de validation du restaurant.<br><span class="text-sm text-gray-600">Cela ne prendra pas plus de quelques minutes. En cas de problème, contactez le restaurant au <a href="tel:+33987117057" class="text-accent hover:underline">+33 9 87 11 70 57</a>.</span>';
-        btnNewDemandFromSuivi.classList.add('hidden');
-        orderDetailsDiv.classList.add('hidden');
-      } else if (currentDemand.statut === 'refused') {
-        demandStatusMessageDiv.classList.remove('hidden');
-        demandMessageText.innerHTML = `Votre demande a été refusée par le restaurant.<br><span class="text-sm text-gray-600">Le restaurant n'est malheureusement pas en mesure de prendre votre commande pour le moment. ${currentDemand.refusalReason ? `<br>Motif: ${currentDemand.refusalReason}` : ''}</span>`;
-        btnNewDemandFromSuivi.classList.remove('hidden');
-        orderDetailsDiv.classList.add('hidden');
-      } else if (currentDemand.statut === 'accepted') {
-        demandStatusMessageDiv.classList.add('hidden');
-        orderDetailsDiv.classList.remove('hidden');
-        renderOrderDetails(currentDemand.id);
-      }
-    }
-
-    let orderRetryCount = 0;
-    const ORDER_MAX_RETRIES = 15;
-    const ORDER_RETRY_DELAY_MS = 250; // Same as demand retries
-
-    function renderOrderDetails(demandId) {
-      const commandes = loadCommandes();
-      const order = commandes.find(cmd => cmd.demandeId === demandId);
-
-      if (!order && orderRetryCount < ORDER_MAX_RETRIES) {
-        // If order not found and retries left, try again after a short delay
-        orderRetryCount++;
-        setTimeout(() => renderOrderDetails(demandId), ORDER_RETRY_DELAY_MS);
-        return; // Exit this call, wait for retry
+      if (error) {
+        console.error('Error fetching order:', error);
+        if (retryCount < MAX_RETRIES) {
+          retryCount++;
+          setTimeout(renderStatus, RETRY_DELAY_MS);
+        } else {
+          demandStatusMessageDiv.classList.remove('hidden');
+          demandMessageText.textContent = 'Erreur lors du chargement de la commande. Veuillez réessayer.';
+          btnNewDemandFromSuivi.classList.remove('hidden');
+          orderDetailsDiv.classList.add('hidden');
+        }
+        return;
       }
 
       if (!order) {
-        // If still not found after max retries
-        orderDetailsDiv.innerHTML = '<p class="text-red-700 bg-red-100 p-4 rounded-lg font-bold">Erreur : Commande associée introuvable. Veuillez contacter le support.</p>';
+        demandStatusMessageDiv.classList.remove('hidden');
+        demandMessageText.textContent = 'Commande introuvable.';
+        btnNewDemandFromSuivi.classList.remove('hidden');
+        orderDetailsDiv.classList.add('hidden');
         return;
       }
 
       // Reset retry count if order is found
-      orderRetryCount = 0;
+      retryCount = 0;
 
+      if (order.status === 'submitted') {
+        demandStatusMessageDiv.classList.remove('hidden');
+        demandMessageText.innerHTML = '⌛ En attente de validation du restaurant.<br><span class="text-sm text-gray-600">Cela ne prendra pas plus de quelques minutes. En cas de problème, contactez le restaurant au <a href="tel:+33987117057" class="text-accent hover:underline">+33 9 87 11 70 57</a>.</span>';
+        btnNewDemandFromSuivi.classList.add('hidden');
+        orderDetailsDiv.classList.add('hidden');
+      } else if (order.status === 'refused') {
+        demandStatusMessageDiv.classList.remove('hidden');
+        demandMessageText.innerHTML = `Votre demande a été refusée par le restaurant.<br><span class="text-sm text-gray-600">Le restaurant n'est malheureusement pas en mesure de prendre votre commande pour le moment. ${order.refusal_reason ? `<br>Motif: ${order.refusal_reason}` : ''}</span>`;
+        btnNewDemandFromSuivi.classList.remove('hidden');
+        orderDetailsDiv.classList.add('hidden');
+      } else {
+        demandStatusMessageDiv.classList.add('hidden');
+        orderDetailsDiv.classList.remove('hidden');
+        renderOrderDetails(order);
+      }
+    }
+
+    function renderOrderDetails(order) {
       const statusConfig = {
           submitted: { icon: '⏳', color: 'text-yellow-500', text: 'En attente' },
+          pending: { icon: '⏳', color: 'text-yellow-500', text: 'En attente' },
+          accepted: { icon: '✅', color: 'text-green-500', text: 'Acceptée' },
           preparing: { icon: '<span class="text-accent">🍳</span>', color: 'text-yellow-500', text: 'En préparation' },
           ready: { icon: '<span class="text-green-500">✅</span>', color: 'text-green-500', text: 'Prête' },
           delivered: { icon: '<span class="text-gray-500">🚚</span>', color: 'text-gray-500', text: 'Livrée' }
       };
 
-      document.getElementById('order-id').textContent = order.id.slice(4);
-      document.getElementById('delivery-slot').textContent = order.deliverySlot || "En attente de confirmation du créneau.";
+      document.getElementById('order-id').textContent = order.id.slice(0, 8); // Display first 8 chars of ID
+      document.getElementById('delivery-slot').textContent = order.delivery_slot ? order.delivery_slot.substring(0, 5) : "En attente de confirmation du créneau.";
       document.getElementById('order-total').textContent = order.total.toFixed(2);
 
       const config = statusConfig[order.status] || {};
@@ -2693,16 +3345,16 @@ export function initWokComposer() {
           const li = document.createElement('li');
           if (item.isWok && item.details) {
               li.innerHTML = `
-                  ${item.name} (${item.quantity})
+                  <strong>${item.name} (${item.quantity})</strong>
                   <ul class="list-disc list-inside pl-4 text-sm">
-                      <li><strong>Base:</strong> ${item.details.base}</li>
-                      <li><strong>Pulpes:</strong> ${item.details.pulpes.join(', ') || 'Aucune'}</li>
-                      <li><strong>Favoris:</strong> ${item.details.favoris.join(', ') || 'Aucun'}</li>
-                      <li><strong>Sauce:</strong> ${item.details.sauce}</li>
-                      <li><strong>Toppings:</strong> ${item.details.toppings.join(', ') || 'Aucun'}</li>
+                      <li><strong>Base:</strong> ${item.details?.base || 'Non spécifiée'}</li>
+                      <li><strong>Pulpes:</strong> ${(item.details?.pulpes || []).join(', ') || 'Aucune'}</li>
+                      <li><strong>Favoris:</strong> ${(item.details?.favoris || []).join(', ') || 'Aucun'}</li>
+                      <li><strong>Sauce:</strong> ${item.details?.sauce || 'Non spécifiée'}</li>
+                      <li><strong>Toppings:</strong> ${(item.details?.toppings || []).join(', ') || 'Aucune'}</li>
                   </ul>`;
           } else {
-              li.textContent = `${item.name} (${item.quantity})`;
+              li.innerHTML = `<strong>${item.name} (${item.quantity})</strong>`;
           }
           itemsList.appendChild(li);
         });
@@ -2711,11 +3363,9 @@ export function initWokComposer() {
       }
     }
 
-    document.addEventListener('DOMContentLoaded', renderStatus);
-    window.addEventListener('storage', (e) => {
-      if (e.key === 'demandes' || e.key === 'commandes') {
-        renderStatus();
-      }
+    document.addEventListener('DOMContentLoaded', () => {
+      renderStatus(); // Premier appel immédiat
+      setInterval(renderStatus, 5000); // Puis, répétition toutes les 5 secondes
     });
   </script>
 </body>
