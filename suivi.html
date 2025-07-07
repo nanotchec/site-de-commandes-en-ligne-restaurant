@@ -81,6 +81,7 @@
     let retryCount = 0;
     const MAX_RETRIES = 15;
     const RETRY_DELAY_MS = 250; // 250ms delay
+    let notificationPermission = false;
 
     async function renderStatus() {
       const currentDemandId = localStorage.getItem('currentDemandId');
@@ -183,9 +184,83 @@
       }
     }
 
+    function requestNotificationPermission() {
+      if (!('Notification' in window)) {
+        console.log("Ce navigateur ne supporte pas les notifications desktop");
+        return;
+      }
+      if (Notification.permission === 'granted') {
+        notificationPermission = true;
+      } else if (Notification.permission !== 'denied') {
+        Notification.requestPermission().then(permission => {
+          if (permission === 'granted') {
+            notificationPermission = true;
+          }
+        });
+      }
+    }
+
+    function showOrderStatusNotification(order) {
+      if (!notificationPermission) return;
+      const statusConfig = {
+          accepted: { text: 'Votre commande a été acceptée !' },
+          preparing: { text: 'Votre commande est en cours de préparation.' },
+          ready: { text: 'Votre commande est prête !' },
+          delivered: { text: 'Votre commande a été livrée.' }
+      };
+      
+      const statusInfo = statusConfig[order.status];
+      if (!statusInfo) return;
+
+      const title = 'Mise à jour de votre commande';
+      const options = {
+        body: statusInfo.text,
+        icon: './assets/icons/delivery.svg'
+      };
+
+      new Notification(title, options);
+    }
+
+    function setupRealtimeSubscription() {
+      const currentDemandId = localStorage.getItem('currentDemandId');
+      if (!currentDemandId) return;
+
+      supabase.channel(`order-status-${currentDemandId}`)
+        .on('postgres_changes', 
+            { 
+              event: 'UPDATE', 
+              schema: 'public', 
+              table: 'orders',
+              filter: `id=eq.${currentDemandId}`
+            }, 
+            (payload) => {
+              console.log('Changement de statut reçu!', payload.new);
+              const newStatusOrder = payload.new;
+
+              // On vérifie que le statut a changé pour éviter les notifs inutiles
+              const oldStatusElement = document.getElementById('order-status');
+              if (oldStatusElement && !oldStatusElement.textContent.includes(newStatusOrder.status)) {
+                 showOrderStatusNotification(newStatusOrder);
+              }
+
+              // Mettre à jour l'affichage
+              renderStatus();
+            }
+        )
+        .subscribe((status, err) => {
+          if (status === 'SUBSCRIBED') {
+            console.log('✅ Connecté au suivi de commande en temps réel!');
+          } else if (err) {
+            console.error('Erreur de connexion temps réel:', err);
+          }
+        });
+    }
+
     document.addEventListener('DOMContentLoaded', () => {
+      requestNotificationPermission();
       renderStatus(); // Premier appel immédiat
-      setInterval(renderStatus, 5000); // Puis, répétition toutes les 5 secondes
+      setupRealtimeSubscription(); // Remplacer setInterval par la souscription temps réel
+      // setInterval(renderStatus, 5000); // Ancienne méthode
     });
   </script>
 </body>

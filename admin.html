@@ -42,6 +42,7 @@
   </style>
 </head>
 <body class="min-h-screen bg-gradient-to-b from-gray-50 to-white text-gray-800">
+  <audio id="notification-sound" src="assets/notification.mp3" preload="auto"></audio>
 
   <!-- Section de connexion (visible si non authentifié) -->
   <div id="auth-section" class="flex items-center justify-center min-h-screen">
@@ -231,9 +232,11 @@
     const otherReasonInput     = document.getElementById('other-reason-input');
     const btnConfirmRefusal    = document.getElementById('btn-confirm-refusal');
     const btnCancelRefusal     = document.getElementById('btn-cancel-refusal');
+    const notificationSound    = document.getElementById('notification-sound');
 
     let currentDemandeToAccept = null;
     let currentDemandeToRefuse = null;
+    let notificationPermission = false;
 
     // --- Gestion de l'authentification ---
     async function checkSession() {
@@ -272,6 +275,9 @@
     checkSession();
     
     function initializeApp() {
+      // Demander la permission pour les notifications
+      requestNotificationPermission();
+
       // Toutes les fonctions d'initialisation de l'ancien code vont ici
       getRestaurantStatus().then(updateRestaurantStatusDisplay);
       toggleRestaurant.addEventListener('change', e => {
@@ -280,10 +286,42 @@
       });
 
       // Lancer la récupération des données
-      fetchAndRenderAll();
+      render();
 
       // Mettre en place l'écoute des changements en temps réel
-      supabase.channel('orders_admin').on('postgres_changes', { event: '*', schema: 'public', table: 'orders' }, fetchAndRenderAll).subscribe();
+      setupRealtimeListeners();
+    }
+
+    // --- Notifications ---
+    function requestNotificationPermission() {
+      if (!('Notification' in window)) {
+        console.log("Ce navigateur ne supporte pas les notifications desktop");
+        return;
+      }
+      if (Notification.permission === 'granted') {
+        notificationPermission = true;
+      } else if (Notification.permission !== 'denied') {
+        Notification.requestPermission().then(permission => {
+          if (permission === 'granted') {
+            notificationPermission = true;
+          }
+        });
+      }
+    }
+
+    function showNewOrderNotification(order) {
+      if (!notificationPermission) return;
+
+      const title = `Nouvelle commande de ${order.customer_name}!`;
+      const options = {
+        body: `${order.items.length} article(s) pour un total de ${order.total.toFixed(2)}€`,
+        icon: './assets/icons/delivery.svg' // Assurez-vous que cette icône existe
+      };
+
+      new Notification(title, options);
+      
+      // Jouer le son de notification
+      notificationSound.play().catch(err => console.error("Erreur lecture son:", err));
     }
 
     // --- Gestion du statut du restaurant ---
@@ -703,24 +741,25 @@
       });
     }
 
-    // Initial render + abonnement realtime
-    render();
-    supabase.channel('orders_channel')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'orders' }, (payload) => {
-        console.log('Realtime change received!', payload);
-        render();
-      })
-      .subscribe((status, err) => {
-        if (status === 'SUBSCRIBED') {
-          console.log('✅ Realtime channel subscribed!');
-        }
-        if (status === 'CHANNEL_ERROR') {
-          console.error('Realtime channel error:', err);
-        }
-        if (status === 'TIMED_OUT') {
-          console.warn('Realtime channel timed out.');
-        }
-      });
+    function setupRealtimeListeners() {
+      supabase.channel('orders-realtime')
+        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'orders' }, (payload) => {
+          console.log('Nouvelle commande reçue!', payload.new);
+          showNewOrderNotification(payload.new);
+          render(); 
+        })
+        .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'orders' }, (payload) => {
+          console.log('Commande mise à jour.', payload.new);
+          render();
+        })
+        .subscribe((status, err) => {
+          if (status === 'SUBSCRIBED') {
+            console.log('✅ Connecté aux notifications en temps réel!');
+          } else if (err) {
+            console.error('Erreur de connexion temps réel:', err);
+          }
+        });
+    }
 
     // Statuts disponibles (pour commandes et mises à jour)
     const statusConfig = {
