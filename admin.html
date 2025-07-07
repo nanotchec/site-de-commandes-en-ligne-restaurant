@@ -298,6 +298,8 @@
 
       // Mettre en place l'écoute des changements en temps réel
       setupRealtimeListeners();
+      // Mettre en place le filet de sécurité pour la robustesse
+      setupVisibilityAndPolling();
     }
 
     // --- Notifications ---
@@ -340,6 +342,39 @@
       
       // Jouer le son de notification
       notificationSound.play().catch(err => console.error("Erreur lecture son:", err));
+    }
+
+    // --- Safety Net for Admin Page ---
+    function setupVisibilityAndPolling() {
+      let pollingInterval = null;
+      // Intervalle plus long pour l'admin car le temps réel est la méthode préférée
+      const POLLING_RATE_MS = 15000; // Toutes les 15 secondes
+
+      const startPolling = () => {
+        if (pollingInterval) clearInterval(pollingInterval);
+        pollingInterval = setInterval(render, POLLING_RATE_MS);
+      };
+
+      const stopPolling = () => {
+        if (pollingInterval) clearInterval(pollingInterval);
+        pollingInterval = null;
+      };
+
+      document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible') {
+          console.log('Admin page is visible, ensuring latest data and restarting poll.');
+          render(); // Mettre à jour immédiatement au retour
+          startPolling();
+        } else {
+          console.log('Admin page is hidden, stopping poll.');
+          stopPolling();
+        }
+      });
+
+      // Démarrage initial
+      if (document.visibilityState === 'visible') {
+        startPolling();
+      }
     }
 
     // --- Gestion du statut du restaurant ---
