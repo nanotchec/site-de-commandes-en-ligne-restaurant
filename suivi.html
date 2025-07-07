@@ -119,8 +119,8 @@
         return;
       }
 
-      // Si la commande est trouvée, mettre à jour l'affichage
-      updateOrderView(order);
+      // Si la commande est trouvée, la passer au gestionnaire de changement
+      handleStatusChange(order);
     }
 
     // Nouvelle fonction centralisée pour mettre à jour l'affichage
@@ -233,6 +233,21 @@
       }
     }
 
+    // --- Realtime and Notifications ---
+
+    function handleStatusChange(newOrder) {
+      // On vérifie que le statut a changé pour éviter les notifs inutiles
+      const oldStatusElement = document.getElementById('order-status');
+      const oldStatusText = oldStatusElement ? oldStatusElement.textContent : '';
+
+      if (oldStatusText && !oldStatusText.includes(newOrder.status)) {
+         showOrderStatusNotification(newOrder);
+      }
+      
+      // Mettre à jour l'affichage avec les nouvelles données
+      updateOrderView(newOrder);
+    }
+
     function setupRealtimeSubscription() {
       const currentDemandId = localStorage.getItem('currentDemandId');
       if (!currentDemandId) return;
@@ -246,20 +261,8 @@
               filter: `id=eq.${currentDemandId}`
             }, 
             (payload) => {
-              console.log('Changement de statut reçu!', payload.new);
-              const newOrder = payload.new;
-
-              // On vérifie que le statut a changé pour éviter les notifs inutiles
-              const oldStatusElement = document.getElementById('order-status');
-              // Petite vérification pour s'assurer que l'élément existe avant de lire son contenu
-              const oldStatusText = oldStatusElement ? oldStatusElement.textContent : '';
-
-              if (oldStatusText && !oldStatusText.includes(newOrder.status)) {
-                 showOrderStatusNotification(newOrder);
-              }
-
-              // Mettre à jour l'affichage directement avec les nouvelles données, sans re-fetch
-              updateOrderView(newOrder);
+              console.log('>>> REALTIME UPDATE RECEIVED <<<', payload);
+              handleStatusChange(payload.new);
             }
         )
         .subscribe((status, err) => {
