@@ -227,25 +227,19 @@
 
       console.log('Attempting to show notification with title:', title);
       
-      if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
-          navigator.serviceWorker.getRegistration().then(reg => {
-              if (reg) {
-                  reg.showNotification(title, options);
-                  console.log('Notification sent to Service Worker.');
-              } else {
-                  console.log('Service Worker registration not found.');
-              }
+      // Utiliser navigator.serviceWorker.ready pour s'assurer que le SW est actif
+      if ('serviceWorker' in navigator) {
+          navigator.serviceWorker.ready.then(registration => {
+              registration.showNotification(title, options);
+              console.log('Notification sent to active Service Worker.');
           }).catch(err => {
-              console.error('Service Worker registration error:', err);
+              console.error('SW ready Error, fallback:', err);
+              // Fallback pour les cas où le SW échoue (ex: desktop)
+              try { new Notification(title, options); } catch(e) { console.error("Fallback notification failed:", e); }
           });
       } else {
-          // Fallback pour les cas où le SW n'est pas actif (ex: desktop sans SW)
-          try {
-            new Notification(title, options);
-            console.log('Notification created successfully (fallback).');
-          } catch (err) {
-            console.error('Error showing fallback notification:', err);
-          }
+        console.log('No SW support, using fallback.');
+        try { new Notification(title, options); } catch (err) { console.error("Fallback notification failed:", err); }
       }
     }
 

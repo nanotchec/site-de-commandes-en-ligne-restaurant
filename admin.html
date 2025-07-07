@@ -326,12 +326,15 @@
         icon: './assets/icons/delivery.svg' // Assurez-vous que cette icône existe
       };
 
-      if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
-          navigator.serviceWorker.getRegistration().then(reg => {
-              if (reg) reg.showNotification(title, options);
+      // Utiliser navigator.serviceWorker.ready pour s'assurer que le SW est actif
+      if ('serviceWorker' in navigator) {
+          navigator.serviceWorker.ready.then(registration => {
+              registration.showNotification(title, options);
+          }).catch(err => {
+              console.error('SW ready Error on admin, fallback:', err);
+              try { new Notification(title, options); } catch(e) { console.error(e); }
           });
       } else {
-        // Fallback pour desktop
         try { new Notification(title, options); } catch(e) { console.error(e); }
       }
       
