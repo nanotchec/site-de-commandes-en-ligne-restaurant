@@ -270,7 +270,7 @@
     // that might aggressively close the realtime connection.
     function setupVisibilityAndPolling() {
       let pollingInterval = null;
-      const POLLING_RATE_MS = 10000; // Check every 10 seconds
+      const POLLING_RATE_MS = 5000; // Check every 5 seconds
 
       const startPolling = () => {
         // Clear any existing interval
