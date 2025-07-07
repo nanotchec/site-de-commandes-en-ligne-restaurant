@@ -54,6 +54,10 @@
       <p id="notification-prompt-blocked" class="hidden mt-2 text-xs">Il semble que les notifications sont bloquées. Pour les réactiver, allez dans les paramètres de votre navigateur pour ce site.</p>
     </div>
 
+    <div id="notification-info" class="hidden text-left bg-blue-100 border-l-4 border-blue-500 text-blue-800 p-4 mb-6 rounded-md" role="status">
+      <p class="text-sm"><b>Astuce :</b> sur mobile, les notifications peuvent être retardées si vous quittez cette page. N'hésitez pas à la consulter régulièrement pour suivre l'avancement de votre commande.</p>
+    </div>
+
     <div id="demand-status-message" class="bg-white/70 backdrop-blur-sm p-8 rounded-lg shadow-md space-y-4 mb-8 hidden">
       <p class="text-lg font-semibold" id="demand-message-text"></p>
       <button id="btn-new-demand-from-suivi" class="px-6 py-3 bg-accent text-white font-bold rounded-lg shadow-md hover:shadow-lg transition hidden">Faire une nouvelle demande</button>
@@ -300,11 +304,16 @@
 
       const promptEl = document.getElementById('notification-prompt');
       const blockedEl = document.getElementById('notification-prompt-blocked');
+      const infoEl = document.getElementById('notification-info');
       
       const permission = Notification.permission;
 
+      // Cacher les deux messages par défaut
+      promptEl.classList.add('hidden');
+      infoEl.classList.add('hidden');
+
       if (permission === 'granted') {
-        promptEl.classList.add('hidden');
+        infoEl.classList.remove('hidden');
       } else if (permission === 'denied') {
         promptEl.classList.remove('hidden');
         blockedEl.classList.remove('hidden');
