@@ -97,6 +97,9 @@
           <button id="tab-historique" class="flex items-center gap-2 py-3 px-4 text-gray-600 hover:text-primary flex-shrink-0">
             Historique
           </button>
+          <button id="tab-menu" class="flex items-center gap-2 py-3 px-4 text-gray-600 hover:text-primary flex-shrink-0">
+            Gestion menu
+          </button>
         </div>
       </nav>
     </header>
@@ -136,6 +139,12 @@
       <div id="view-historique" class="px-4 hidden">
         <h1 class="text-4xl font-extrabold text-primary text-center mb-10">Historique des demandes</h1>
         <div id="history-container" class="space-y-4"></div>
+      </div>
+
+      <!-- Vue gestion du menu & Wok -->
+      <div id="view-menu" class="px-4 hidden">
+        <h1 class="text-4xl font-extrabold text-primary text-center mb-10">Gestion du menu &amp; Wok</h1>
+        <div id="menu-management-container"></div>
       </div>
 
     </main>
@@ -468,8 +477,8 @@
 
     // --- Outils de rendu et filtres ---
     function setActiveTab(tab) {
-      const tabs  = [ 'tab-demandes', 'tab-commandes', 'tab-historique' ].map(id => document.getElementById(id));
-      const views = [ 'view-demandes', 'view-commandes', 'view-historique' ].map(id => document.getElementById(id));
+      const tabs  = [ 'tab-demandes', 'tab-commandes', 'tab-historique', 'tab-menu' ].map(id => document.getElementById(id));
+      const views = [ 'view-demandes', 'view-commandes', 'view-historique', 'view-menu' ].map(id => document.getElementById(id));
       tabs.forEach((t,i) => {
         if (t === tab) {
           t.classList.add('border-b-2','border-accent','font-semibold');
@@ -485,6 +494,7 @@
     document.getElementById('tab-demandes').addEventListener('click', () => setActiveTab(document.getElementById('tab-demandes')));
     document.getElementById('tab-commandes').addEventListener('click', () => setActiveTab(document.getElementById('tab-commandes')));
     document.getElementById('tab-historique').addEventListener('click', () => setActiveTab(document.getElementById('tab-historique')));
+    document.getElementById('tab-menu').addEventListener('click', () => setActiveTab(document.getElementById('tab-menu')));
 
     async function render() {
       const { data: orders, error } = await supabase.from('orders')
@@ -828,5 +838,7 @@
       delivered:  { icon: '🚚', color: 'bg-gray-200',  text: 'Livrée' }
     };
   </script>
+  <!-- Script de gestion du menu & Wok -->
+  <script type="module" src="js/menu-admin.js"></script>
 </body>
 </html>
