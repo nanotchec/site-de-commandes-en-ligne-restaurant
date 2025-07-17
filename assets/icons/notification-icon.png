@@ -1,0 +1,6 @@
+<!-- Placeholder - Cette icône sera remplacée par une vraie icône PNG -->
+<svg xmlns="http://www.w3.org/2000/svg" width="192" height="192" viewBox="0 0 192 192">
+  <rect width="192" height="192" fill="#704B24" rx="20"/>
+  <path d="M96 32c-8.8 0-16 7.2-16 16v8c-17.7 3.3-31 18.7-31 37v24c0 6.6-5.4 12-12 12h-6c-4.4 0-8 3.6-8 8s3.6 8 8 8h118c4.4 0 8-3.6 8-8s-3.6-8-8-8h-6c-6.6 0-12-5.4-12-12V93c0-18.3-13.3-33.7-31-37v-8c0-8.8-7.2-16-16-16zM80 157c0 8.8 7.2 16 16 16s16-7.2 16-16" fill="#ED8B00"/>
+  <text x="96" y="180" font-family="Arial, sans-serif" font-size="20" font-weight="bold" text-anchor="middle" fill="white">TG</text>
+</svg> 
