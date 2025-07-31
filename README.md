@@ -4,6 +4,14 @@ Ce dépôt contient tout le code du site du restaurant **Thaï Garden** de Maugu
 
 L'objectif du projet est de proposer une expérience de commande moderne et responsive, que ce soit pour les clients (consultation du menu, création d'un wok personnalisé, suivi de commande) ou pour l'équipe en cuisine via un tableau de bord temps réel.
 
+## 🎬 Démonstrations
+
+### Interface client
+![Démonstration interface client](./demo/demofront.gif)
+
+### Interface administration
+![Démonstration interface administration](./demo/demoback.gif)
+
 ## Table des matières
 - [Fonctionnalités principales](#fonctionnalités-principales)
 - [Technologies](#technologies)
