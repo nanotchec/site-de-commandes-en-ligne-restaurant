@@ -1,108 +1,60 @@
-Voici le README.md complet à copier-coller, tout au format Markdown, sans coupure ni oubli :
+# Thaï Garden – Plateforme de commandes en ligne
 
-# Site de commandes en ligne – Restaurant Thaï Garden
+Ce dépôt contient tout le code du site du restaurant **Thaï Garden** de Mauguio. Vous pouvez consulter la version en production à l'adresse <https://thai-garden-mauguio.fr>.
 
-Projet web pour le restaurant Thaï Garden à Mauguio.
-- Menu interactif moderne, responsive, sans PDF.
-- Base pour la future prise de commandes et paiement en ligne.
-- Design UX/UI inspiré des meilleurs sites de restauration.
+L'objectif du projet est de proposer une expérience de commande moderne et responsive, que ce soit pour les clients (consultation du menu, création d'un wok personnalisé, suivi de commande) ou pour l'équipe en cuisine via un tableau de bord temps réel.
 
----
+## Table des matières
+- [Fonctionnalités principales](#fonctionnalités-principales)
+- [Technologies](#technologies)
+- [Structure du dépôt](#structure-du-dépôt)
+- [Mise en route](#mise-en-route)
+- [Configuration de Supabase](#configuration-de-supabase)
+- [Base de données](#base-de-données)
+- [Licence](#licence)
 
-## 🚀 Présentation
+## Fonctionnalités principales
+- **Menu dynamique** accessible sur `index.html` et `menu.html`.
+- **Wok à composer** avec choix des bases, ingrédients et toppings (voir `js/wok.js`).
+- **Dashboard d'administration** (`admin.html`) connecté à **Supabase** pour gérer en temps réel les plats et les commandes.
+- **Suivi de commande client** via `suivi.html`.
+- **PWA** : manifest, Service Worker (`sw.js`) et possibilité d'installer le site sur mobile.
+- **Notifications** pour informer le personnel de nouvelles commandes.
 
-Ce dépôt propose le site vitrine du restaurant Thaï Garden, développé en HTML/CSS/Tailwind.  
-**Objectif MVP :** permettre aux clients de consulter le menu de façon agréable, depuis mobile ou ordinateur.  
-Ce projet sert de fondation à une future application de commande en ligne avec notifications, paiement, etc.
+## Technologies
+- **HTML5** et **Tailwind CSS** pour la partie front.
+- **JavaScript** vanilla pour les interactions et l'intégration Supabase.
+- **Supabase / PostgreSQL** pour la persistance des données.
+- **Service Worker** pour la couche PWA et les notifications.
 
----
+## Structure du dépôt
+- `index.html`, `menu.html`, `commande.html`, `admin.html`, `suivi.html` – pages principales de l'application.
+- `css/` – styles et configuration Tailwind.
+- `js/` – scripts (menu burger, gestion du wok, client Supabase...).
+- `bdd/` – scripts SQL permettant de créer les tables nécessaires (menu, commandes, statut restaurant...).
+- `assets/` – images et icônes.
 
-## 📝 Cahier des charges
-
-Le cahier des charges complet du projet (objectifs, parcours utilisateur, évolutions prévues…) est disponible ici :  
-👉 [Cahier Des Charges Thai Garden.pdf](./Cahier%20Des%20Charges%20Thai%20Garden.pdf)
-
----
-
-## ✨ Fonctionnalités principales
-
-- Menu interactif (HTML, images, pas de PDF)
-- Header sticky (collé en haut au scroll)
-- Titres de section sticky (reliés à la section courante)
-- Cartes plats et entrées modernes avec survol animé
-- Section contact et horaires
-- Carte Google Maps intégrée
-- Dégradés et effets de fond
-- Design responsive (mobile, tablette, desktop)
-- Code optimisé pour évolution vers une appli de commande
-
----
-
-## 🛣️ Roadmap / Évolutions prévues
-
-- [ ] Formulaire de demande de créneau (livraison / retrait)
-- [ ] Dashboard Manel (gestion des demandes en back-office)
-- [ ] Paiement en ligne (Stripe, Lydia, PayPal)
-- [ ] Suivi de commande, historique, compte client
-- [ ] Notifications (SMS/email)
-- [ ] Hébergement sur Vercel/Netlify
-
----
-
-## 🛠 Stack technique
-
-- Frontend : HTML5, CSS3, JavaScript, Tailwind CSS  
-- Typographie : Playfair Display & Noto Sans (Google Fonts)
-- Backend (à venir) : Supabase (PostgreSQL)
-- Notifications (à venir) : Twilio, EmailJS, Web Push  
-- Déploiement : Vercel 
-
----
-
-## 📦 Installation et lancement
-
-1. **Cloner ce dépôt**
+## Mise en route
+1. **Cloner le projet**
    ```bash
    git clone https://github.com/nanotchec/site-de-commandes-en-ligne-restaurant.git
    cd site-de-commandes-en-ligne-restaurant
+   ```
+2. **Lancer un serveur local**
+   ```bash
+   python3 -m http.server 8000
+   ```
+   Ouvrez ensuite <http://localhost:8000> dans votre navigateur.
+3. **Configurer Supabase** : voir la section ci-dessous.
 
-2.	**Lancer un serveur local (optionnel, mais conseillé)**
-Installer serve si besoin :
+## Configuration de Supabase
+Le fichier `js/supabase-client.js` contient des clés publiques de démonstration. Remplacez-les par vos propres identifiants Supabase (URL et clé anonyme). Veillez à ne pas committer vos clés privées.
 
-npm install -g serve
-serve .
+## Base de données
+Le répertoire `bdd/` regroupe les scripts SQL pour créer les tables `menu`, `wok_*`, `orders` et autres. Importez-les dans votre instance PostgreSQL/Supabase pour avoir une structure identique à celle du site.
 
-ou :
-
-python3 -m http.server 8000
-
-Le site sera accessible sur http://localhost:8000.
-
-3.	**Ouvrir dans un navigateur :**
-Double-cliquer sur index.html fonctionne aussi si tu n’utilises pas de serveur local.
-
-⸻
-
-🤝 Contribution
-	1.	Forkez ce dépôt
-	2.	Créez une branche (feature/ma-fonctionnalité)
-	3.	Commitez vos changements
-	4.	Ouvrez une Pull Request
-
-⸻
-
-⚖️ Licence
-
-Ce projet est distribué sous licence Creative Commons Attribution – NonCommercial 4.0 International (CC BY-NC 4.0).
-
-Vous êtes libres de :
-	•	Partager : copier et redistribuer le matériel sur tous supports
-	•	Adapter : remixer, transformer, créer à partir du matériel
-
-À condition de :
-	•	Attribution : créditer l’auteur original (Thaï Garden)
-	•	NonCommercial : interdit toute utilisation commerciale ou intégration dans un commerce
-
-Voir le texte complet de la licence ici : [LICENSE](LICENSE)
-https://creativecommons.org/licenses/by-nc/4.0/legalcode
-# site-de-commandes-en-ligne-restaurant
+## Licence
+Le projet se réfère à la licence Creative Commons **CC BY-NC 4.0**, mais aucun fichier `LICENSE` n'est fourni dans ce dépôt.
+ 
+EOF
+)
